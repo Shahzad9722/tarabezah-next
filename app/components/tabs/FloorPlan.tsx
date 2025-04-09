@@ -1,7 +1,7 @@
 'use client';
 
 import { DndContext, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import Canvas from '@/app/components/canvas/Canvas';
+import { Canvas } from '@/app/components/canvas/Canvas';
 import FurnitureSidebar from '@/app/components/sidebar/FurnitureSidebar';
 import FloorSelector from '@/app/components/floor/FloorSelector';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';

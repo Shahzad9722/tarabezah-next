@@ -4,8 +4,14 @@ import { useCanvasHandlers } from '@/app/hooks/useCanvasHandlers';
 import { ZoomControls } from './ZoomControls';
 import { TableConfigDialog } from './TableConfigDialog';
 import { CanvasElements } from './CanvasElements';
+import { FurnitureItem } from '@/app/types/furniture';
 
-export const Canvas: React.FC = () => {
+
+interface CanvasProps {
+  placedItems: FurnitureItem[];
+  setPlacedItems: React.Dispatch<React.SetStateAction<FurnitureItem[]>>;
+}
+export const Canvas: React.FC<CanvasProps> = ({ placedItems, setPlacedItems }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const {
     state,
@@ -64,7 +70,8 @@ export const Canvas: React.FC = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          <CanvasElements scale={state.scale} panOffset={state.panOffset} />
+          <CanvasElements scale={state.scale} panOffset={state.panOffset} placedItems={placedItems}
+            setPlacedItems={setPlacedItems} />
         </div>
       </div>
 
