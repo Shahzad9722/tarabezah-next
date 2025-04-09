@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useFloorplan } from '@/context/FloorplanContext';
+import { useFloorplan } from '@/app/context/FloorplanContext';
 import { CanvasElement } from './CanvasElement';
 
 interface CanvasElementsProps {
@@ -10,7 +10,7 @@ interface CanvasElementsProps {
 
 export const CanvasElements: React.FC<CanvasElementsProps> = ({ scale, panOffset }) => {
   const { activeFloorplan } = useFloorplan();
-  
+
   return (
     <>
       {activeFloorplan?.elements.map(element => (
