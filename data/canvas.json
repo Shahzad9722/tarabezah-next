@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": "22590f53-a2c6-449a-93d0-054e12e9b6ad",
+      "type": "table-round-small",
+      "x": 315,
+      "y": 135,
+      "floorId": 1,
+      "rotation": 0,
+      "scale": 1,
+      "label": "Table (round)",
+      "imagePath": "/images/elements/table-round-small.svg",
+      "status": "Upcoming"
+    }
+  ]
+}
