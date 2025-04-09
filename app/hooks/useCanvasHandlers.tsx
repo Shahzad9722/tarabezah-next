@@ -21,7 +21,7 @@ export interface CanvasState {
     maxCapacity: string;
 }
 
-export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement>) => {
+export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) => {
     const { selectedElementId, setSelectedElementId, addElement } = useFloorplan();
 
     const [state, setState] = useState<CanvasState>({
