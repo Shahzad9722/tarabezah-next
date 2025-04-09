@@ -237,7 +237,7 @@ export const Canvas: React.FC = () => {
                     style={{
                         backgroundImage: `
               linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
-              linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px);
+              linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px)
             `,
 
                         backgroundSize: `${20 * scale}px ${20 * scale}px`,
