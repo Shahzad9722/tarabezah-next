@@ -168,7 +168,7 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
                 // Directly add decorative items
                 addElement({
                     libraryItemId: libraryItem.id,
-                    type: libraryItem.type,
+                    elementType: libraryItem.type,
                     x,
                     y,
                     width: libraryItem.defaultWidth,
@@ -189,7 +189,7 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
 
         addElement({
             libraryItemId: libraryItem.id,
-            type: libraryItem.type,
+            elementType: libraryItem.type,
             x,
             y,
             width: libraryItem.defaultWidth,
