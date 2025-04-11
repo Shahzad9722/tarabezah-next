@@ -45,7 +45,7 @@ export const ElementProperties: React.FC = () => {
 
         const updates: Record<string, any> = { name };
 
-        if (selectedElement?.type === 'reservable') {
+        if (selectedElement?.elementType === 'reservable') {
             updates.minCapacity = minCapacity ? parseInt(minCapacity, 10) : undefined;
             updates.maxCapacity = maxCapacity ? parseInt(maxCapacity, 10) : undefined;
         }
@@ -101,7 +101,7 @@ export const ElementProperties: React.FC = () => {
                         />
                     </div>
 
-                    {selectedElement.type === 'reservable' && (
+                    {selectedElement.elementType === 'reservable' && (
                         <>
                             <div className="space-y-2">
                                 <Label htmlFor="minCapacity">Min Capacity</Label>
