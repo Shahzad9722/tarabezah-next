@@ -30,8 +30,12 @@ const FilterBar = ({
   };
 
   // filter plans
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFloorPlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setFilters({ ...selectedFilters, floorPlanId: e.target.value }));
+  };
+
+  const handleTableTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch(setFilters({ ...selectedFilters, tableType: e.target.value }));
   };
 
   // console.log('selectedFilters', selectedFilters);
@@ -44,11 +48,10 @@ const FilterBar = ({
             <label className='text-xl text-color-E9E3D7 font-medium'>Floorplan</label>
             <div className='relative'>
               <select
-                onChange={handleFilterChange}
+                onChange={handleFloorPlanChange}
                 value={selectedFilters.floorPlanId || ''}
                 className='w-full bg-color-222036 text-[#909090] text-xl pl-4 pr-8 py-2 rounded-[4px] focus:outline-none appearance-none'
               >
-                <option value=''>Select Floor plan</option>
                 {floorPlans?.map((floorPlan) => (
                   <option key={floorPlan.guid} value={floorPlan.guid}>
                     {floorPlan.name}
@@ -78,7 +81,12 @@ const FilterBar = ({
           <div className='flex flex-col gap-2.5 md:w-[200px]'>
             <label className='text-xl text-color-E9E3D7 font-medium'>Table types</label>
             <div className='relative'>
-              <select className='w-full bg-color-222036 text-[#909090] text-xl pl-4 pr-8 py-2 rounded-[4px] focus:outline-none appearance-none'>
+              <select
+                onChange={handleTableTypeChange}
+                value={selectedFilters.tableType || ''}
+                className='w-full bg-color-222036 text-[#909090] text-xl pl-4 pr-8 py-2 rounded-[4px] focus:outline-none appearance-none'
+              >
+                <option value=''>All</option>
                 {tableTypes?.map((type) => (
                   <option key={type} value={type}>
                     {type}

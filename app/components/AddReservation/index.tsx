@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { addGuestSchema, addReservationFormSchema } from '@/app/lib/validations';
 import { Form } from '../ui/form';
 import ClientSearch from './steps/client-search';
+import { toast } from 'sonner';
 
 const AddReservationIcon = () => (
   <svg width='29' height='29' viewBox='0 0 29 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -238,6 +239,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         const reservationFormEntities = await res.json();
         return reservationFormEntities.entities;
       },
+      enabled: false,
     });
 
   const { mutateAsync: addGuest, isPending: addingGuest } = useMutation({
@@ -250,11 +252,26 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   });
 
   const { mutateAsync: addReservation, isPending: submittingReservationForm } = useMutation({
-    mutationFn: (data) => {
+    mutationFn: (data: any) => {
       return fetch(`/api/reservation/form`, {
         method: 'post',
         body: JSON.stringify(data),
       });
+    },
+    onSuccess: () => {
+      toast.success('Reservation created successfully!');
+    },
+  });
+
+  const { mutateAsync: addWalkin, isPending: submittingWalkinForm } = useMutation({
+    mutationFn: (data: any) => {
+      return fetch(`/api/reservation/walk-in/form`, {
+        method: 'post',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      toast.success('Reservation created successfully!');
     },
   });
 
@@ -290,10 +307,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       const response = await addGuest(payload);
       const { guest } = await response.json();
       // console.log('guest', guest);
-      setSelectedClient(guest.data);
+      setSelectedClient(guest);
       setShowAddNewClient(false);
 
-      reservationForm.setValue('clientId', guest.data.guidId);
+      reservationForm.setValue('clientId', guest.guid);
     } catch (error) {
       console.log(error);
     }
@@ -307,7 +324,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       });
       if (!walkIn) {
         if (isValid) {
-          createReservation(reservationForm.getValues());
+          await addReservation(reservationForm.getValues());
+          formReset();
         }
       } else {
         const errorFields = Object.keys(reservationForm?.formState?.errors);
@@ -315,8 +333,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
         const isValid = errorFields.every((field) => !requiredFields.includes(field));
         if (isValid) {
-          //TODO
-          // call walk-in form api
+          await addWalkin(reservationForm.getValues());
+          formReset();
         }
       }
     } catch (error) {
@@ -324,18 +342,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     }
   };
 
-  const createReservation = async (payload: any) => {
-    // console.log('payload', payload);
-    try {
-      await addReservation(payload);
-
-      reservationForm.reset();
-      setShowConfirmDialog(false);
-      setSelectedClient({});
-      setCurrentStep(1);
-    } catch (error) {
-      console.log(error);
-    }
+  const formReset = () => {
+    reservationForm.reset();
+    guestForm.reset();
+    setShowConfirmDialog(false);
+    setSelectedClient({});
+    setCurrentStep(1);
   };
 
   const nextStep = () => {
@@ -368,10 +380,13 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     }
   }, [reservationForm?.formState?.errors]);
 
-  // console.log('selected', selectedClient);
   // console.log('entities', entities);
   // console.log('reservation form', reservationForm.watch());
   // console.log('reservation form errors', reservationForm.formState.errors);
+  // console.log('selected', selectedClient);
+  // console.log('showAddNewClient', showAddNewClient);
+  // console.log('currentStep', currentStep);
+  console.log('reservationForm.watch()', reservationForm.watch());
   return (
     <div className='flex flex-col md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
@@ -428,7 +443,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         {showAddNewClient && (
           <Form {...guestForm}>
             <form onSubmit={guestForm.handleSubmit(createGuest)} className='space-y-4'>
-              {!fetchingEntities && currentStep === 1 && (
+              {currentStep === 1 && (
                 <ClientSearchStep
                   form={guestForm}
                   sources={entities.sources}
@@ -448,8 +463,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
             {currentStep === 3 &&
               (walkIn ? <GeneralInfoStep form={reservationForm} /> : <PartySizeStep form={reservationForm} />)}
 
-            {!fetchingEntities &&
-              currentStep === 4 &&
+            {currentStep === 4 &&
               (walkIn ? (
                 <GeneralInfoStep form={reservationForm} />
               ) : (

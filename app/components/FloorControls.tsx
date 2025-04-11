@@ -13,11 +13,12 @@ import {
 } from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
+import { useFloorplan } from '@/app/context/FloorplanContext';
 
 interface FloorControlsProps {
   floors: Floor[];
   activeFloorIndex: number;
-  onFloorChange: (index: number) => void;
+  onFloorChange: (index: string) => void;
   onAddFloor: () => void;
   onRemoveFloor: (index: number) => void;
   onRenameFloor: (index: number, newName: string) => void;
@@ -31,6 +32,12 @@ export function FloorControls({
   onRemoveFloor,
   onRenameFloor,
 }: FloorControlsProps) {
+
+  const {
+    activeFloorplan,
+  } = useFloorplan();
+
+
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [floorToRename, setFloorToRename] = useState<{
     index: number;
@@ -54,11 +61,11 @@ export function FloorControls({
           <div className='relative w-full md:w-[362px]'>
             <select
               className='bg-color-222036 text-color-E9E3D7 pl-4 pr-8 py-2 rounded-[4px] w-full text-xl appearance-none'
-              value={activeFloorIndex}
-              onChange={(e) => onFloorChange(parseInt(e.target.value))}
+              value={activeFloorplan?.id}
+              onChange={(e) => onFloorChange(e.target.value)}
             >
               {floors.map((floor, index) => (
-                <option key={floor.guid} value={index}>
+                <option key={floor.guid} value={floor.guid}>
                   {floor.name}
                 </option>
               ))}

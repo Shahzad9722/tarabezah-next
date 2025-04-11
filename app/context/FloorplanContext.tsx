@@ -1,8 +1,9 @@
-
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { CanvasElement, ElementLibraryItem, Floorplan, Restaurant } from '@/app/types';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
+import { useLoader } from '@/app/context/loaderContext';
 
 interface FloorplanContextType {
     restaurant: Restaurant;
@@ -11,7 +12,7 @@ interface FloorplanContextType {
     elementLibrary: ElementLibraryItem[];
     activeFloorplan: Floorplan | undefined;
 
-    // Actions
+    setRestaurant: (restaurant: Restaurant) => void;
     setActiveFloorplanId: (id: string) => void;
     setSelectedElementId: (id: string | null) => void;
     addFloorplan: (name: string) => void;
@@ -22,73 +23,6 @@ interface FloorplanContextType {
     deleteElement: (id: string) => void;
     publishFloorplans: () => void;
 }
-
-const defaultElementLibrary: ElementLibraryItem[] = [
-    {
-        id: 'table-round',
-        name: 'Round Table',
-        type: 'reservable',
-        icon: '🔘',
-        defaultWidth: 100,
-        defaultHeight: 100,
-    },
-    {
-        id: 'table-rect',
-        name: 'Rectangular Table',
-        type: 'reservable',
-        icon: '🔲',
-        defaultWidth: 120,
-        defaultHeight: 80,
-    },
-    {
-        id: 'chair',
-        name: 'Chair',
-        type: 'reservable',
-        icon: '🪑',
-        defaultWidth: 50,
-        defaultHeight: 50,
-    },
-    {
-        id: 'plant',
-        name: 'Plant',
-        type: 'decorative',
-        icon: '🪴',
-        defaultWidth: 60,
-        defaultHeight: 60,
-    },
-    {
-        id: 'wall',
-        name: 'Wall',
-        type: 'decorative',
-        icon: '🧱',
-        defaultWidth: 200,
-        defaultHeight: 20,
-    },
-    {
-        id: 'bar',
-        name: 'Bar',
-        type: 'decorative',
-        icon: '🍸',
-        defaultWidth: 200,
-        defaultHeight: 80,
-    },
-    {
-        id: 'sofa',
-        name: 'Sofa',
-        type: 'reservable',
-        icon: '🛋️',
-        defaultWidth: 150,
-        defaultHeight: 60,
-    },
-    {
-        id: 'door',
-        name: 'Door',
-        type: 'decorative',
-        icon: '🚪',
-        defaultWidth: 80,
-        defaultHeight: 20,
-    },
-];
 
 const defaultRestaurant: Restaurant = {
     id: uuidv4(),
@@ -108,9 +42,33 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     const [restaurant, setRestaurant] = useState<Restaurant>(defaultRestaurant);
     const [activeFloorplanId, setActiveFloorplanId] = useState<string>(restaurant.floorplans[0].id);
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-    const [elementLibrary] = useState<ElementLibraryItem[]>(defaultElementLibrary);
+    const { showLoader, hideLoader } = useLoader();
 
-    const activeFloorplan = restaurant.floorplans.find(fp => fp.id === activeFloorplanId);
+    // Fetch dynamic elements
+    const {
+        isLoading: fetchingElements,
+        data: elementLibrary = [],
+        isError,
+        error,
+    } = useQuery<ElementLibraryItem[]>({
+        queryKey: ['elements'],
+        queryFn: async () => {
+            const res = await fetch(`/api/restaurant/elements`);
+            if (!res.ok) throw new Error('Failed to fetch elements');
+            const data = await res.json();
+            // Transform the response
+            return data.elements.map((el: any): ElementLibraryItem => ({
+                id: el.guid,
+                name: el.name,
+                icon: el.imageUrl || '❓', // fallback to emoji or default icon
+                type: el.purpose?.toLowerCase() === 'reservable' ? 'reservable' : 'decorative',
+                defaultWidth: 100,
+                defaultHeight: 100,
+            }));
+        },
+    });
+
+    const activeFloorplan = restaurant.floorplans.find(fp => fp.id === activeFloorplanId) ?? restaurant.floorplans[0];
 
     const addFloorplan = (name: string) => {
         const newFloorplan: Floorplan = {
@@ -168,14 +126,20 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
             id: uuidv4(),
         };
 
-        setRestaurant(prev => ({
-            ...prev,
-            floorplans: prev.floorplans.map(fp =>
-                fp.id === activeFloorplanId
-                    ? { ...fp, elements: [...fp.elements, newElement] }
-                    : fp
-            ),
-        }));
+        setRestaurant(prev => {
+            const updatedFloorplans = prev.floorplans.map(fp => {
+                if (fp.id === activeFloorplanId) {
+                    // Create a NEW array for elements
+                    return {
+                        ...fp,
+                        elements: [...fp.elements, newElement]
+                    };
+                }
+                return fp;
+            });
+
+            return { ...prev, floorplans: updatedFloorplans };
+        });
 
         setSelectedElementId(newElement.id);
     };
@@ -216,13 +180,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const publishFloorplans = () => {
-        // In a real application, this would save to a database
-        // For now, we'll just log to the console and show a toast
-
-
-        // Save to localStorage as demo persistence
         localStorage.setItem('restaurant', JSON.stringify(restaurant));
-
         toast.success("Floorplans published successfully!");
     };
 
@@ -233,6 +191,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         elementLibrary,
         activeFloorplan,
 
+        setRestaurant,
         setActiveFloorplanId,
         setSelectedElementId,
         addFloorplan,
@@ -243,6 +202,15 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         deleteElement,
         publishFloorplans,
     };
+
+    useEffect(() => {
+        if (fetchingElements) {
+            showLoader();
+        } else {
+            hideLoader();
+        }
+    }, [fetchingElements]);
+    if (isError) return <div>Error: {(error as Error).message}</div>;
 
     return (
         <FloorplanContext.Provider value={value}>

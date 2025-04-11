@@ -25,12 +25,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    console.log('payload', JSON.stringify(payload, null, 2));
+    // console.log('payload', JSON.stringify(payload, null, 2));
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/create-floorplans`,
-      {
-        ...payload,
-      },
+      payload,
       {
         headers: {
           'Content-Type': 'application/json',

@@ -6,7 +6,7 @@ interface FilterState {
 
 const initialState: FilterState = {
   filters: {
-    floorPlanId: 'd4f9a1b2-c03e-4f5a-8b67-9a0e7f2c3d45',
+    floorPlanId: '',
   },
 };
 

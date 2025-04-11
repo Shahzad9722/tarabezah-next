@@ -26,6 +26,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   const elementRef = useRef<HTMLDivElement>(null);
   const libraryItem = elementLibrary.find(item => item.id === element.libraryItemId);
+  // console.log("libraryItem", element, elementLibrary)
 
   const { isDragging, startDrag } = useElementDrag({
     element,
@@ -59,7 +60,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   return (
     <div
       ref={elementRef}
-      className={`canvas-element ${element.type} ${isSelected ? 'selected' : ''}`}
+      className={`canvas-element ${element.elementType} ${isSelected ? 'selected' : ''}`}
       style={{
         position: 'absolute',
         left: `${(element.x + panOffset.x) * scale}px`,
@@ -78,7 +79,11 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
             className="text-center"
             style={{ fontSize: `${Math.min(element.width, element.height) * 0.5 * scale}px` }}
           >
-            {libraryItem.icon}
+            <img
+              src={libraryItem.icon}
+              alt={libraryItem.name}
+              className="object-contain w-full h-full"
+            />
           </div>
         )}
       </div>

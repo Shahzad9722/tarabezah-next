@@ -60,6 +60,7 @@ export const ElementProperties: React.FC = () => {
     };
 
     if (!selectedElement || !libraryItem) {
+
         return (
             <Card>
                 <CardHeader>
@@ -76,7 +77,12 @@ export const ElementProperties: React.FC = () => {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>
-                    <span className="mr-2">{libraryItem.icon}</span>
+                    <span className=" text-xs mr-2">
+                        <img className='w-50 h-50'
+                            src={libraryItem.icon}
+                            alt={libraryItem.name}
+                        />
+                    </span>
                     {libraryItem.name}
                 </CardTitle>
                 <Button variant="ghost" size="icon" onClick={handleDelete}>
@@ -91,7 +97,7 @@ export const ElementProperties: React.FC = () => {
                             id="name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder={libraryItem.name}
+                            placeholder={libraryItem.name + 'hhhh'}
                         />
                     </div>
 

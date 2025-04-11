@@ -180,7 +180,7 @@ export const Canvas: React.FC = () => {
                 // Directly add decorative items
                 addElement({
                     libraryItemId: libraryItem.id,
-                    type: libraryItem.type,
+                    elementType: libraryItem.type,
                     x,
                     y,
                     width: libraryItem.defaultWidth,
@@ -198,10 +198,9 @@ export const Canvas: React.FC = () => {
         if (!newElementData) return;
 
         const { libraryItem, x, y } = newElementData;
-
         addElement({
             libraryItemId: libraryItem.id,
-            type: libraryItem.type,
+            elementType: libraryItem.type,
             x,
             y,
             width: libraryItem.defaultWidth,

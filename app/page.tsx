@@ -13,12 +13,15 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/app/comp
 import { ElementLibrary } from '@/app/components/ElementLibrary';
 import { FloorplanTabs } from '@/app/components/FloorplanTabs';
 import { Canvas } from '@/app/components/Canvas';
+import { useFloorplan } from '@/app/context/FloorplanContext';
 
 
 import Navigation from '@/app/components/navigation/Navigation';
 
 import { publishCanvas } from '@/app/services/canvasApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { Restaurant, Floorplan } from './types';
+import { table } from 'console';
 
 export interface Floor {
   name: string;
@@ -30,10 +33,17 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState('tables');
   const [floors, setFloors] = useState<Floor[]>([]);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
+  const [activeFloorGuid, setActiveFloorGuid] = useState(floors[0]?.guid || '');
+  const [activeFloorElements, setActiveFloorElements] = useState<FloorplanItem[] | undefined>();
+
+  const {
+    setActiveFloorplanId,
+    setRestaurant,
+    restaurant,
+  } = useFloorplan();
+
 
   const [dragItem, setDragItem] = useState<any>(null);
-
-  const [isPublishing, setIsPublishing] = useState(false);
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -56,6 +66,36 @@ const Home = () => {
 
   useEffect(() => {
     if (floorPlans.length > 0) {
+      const result: Floorplan[] = floorPlans.map((floor: Floor) => ({
+        id: floor.guid,
+        name: floor.name,
+        elements: floor.elements.map((element: any) => ({
+          id: element.guid,
+          libraryItemId: element.elementGuid, // 🔁 use the correct key
+          type: 'reservable', // or decide based on `elementType`
+          name: element.elementName,
+          minCapacity: element?.minCapacity,
+          maxCapacity: element?.maxCapacity,
+          x: element?.x,
+          y: element?.y,
+          tableId: element?.tableId,
+          width: 50,  // Provide a default or map if you have
+          height: 50, // Provide a default or map if you have
+          rotation: element?.rotation,
+        })),
+      }));
+
+
+      // setActiveFloorplanId(result[0].id);
+
+
+      setRestaurant({
+        ...restaurant,
+        floorplans: [...result],
+      });
+
+
+
       setFloors(floorPlans);
     }
   }, [floorPlans]);
@@ -73,7 +113,7 @@ const Home = () => {
     };
     setFloors([...floors, newFloor]);
     setActiveFloorIndex(floors.length);
-    toast.success(`Added ${newFloor.name}`);
+    toast.success(`Addedeee ${newFloor.name}`);
   };
 
   const removeFloor = (index: number) => {
@@ -105,26 +145,7 @@ const Home = () => {
     setDragItem(null);
   };
 
-  // Add a new furniture item to the canvas
-  const handleItemSelect = (itemData: any) => {
-    console.log('itemData', itemData);
-    // const newItem: FloorplanItem = {
-    //   guid: "",
-    //   type: itemData.id,
-    //   category,
-    //   x: 100,
-    //   y: 100,
-    //   width: itemData.width,
-    //   height: itemData.height,
-    //   rotation: 0,
-    // };
 
-    // const updatedFloors = [...floors];
-    // updatedFloors[activeFloorIndex].items = [...items, newItem];
-    // setFloors(updatedFloors);
-
-    toast.success(`Added ${itemData.name}`);
-  };
 
   // Handle canvas drop
   const handleCanvasDrop = (x: number, y: number, item: any) => {
@@ -155,78 +176,49 @@ const Home = () => {
     handleDragEnd();
   };
 
-  // Update items for the current floor
-  const handleItemsChange = (updatedItems: FloorplanItem[]) => {
-    // const updatedFloors = [...floors];
-    // updatedFloors[activeFloorIndex].items = updatedItems;
-    // setFloors(updatedFloors);
-  };
 
   // Publish canvas data to API
   const handlePublish = async () => {
+    const toastId = toast.loading('Publishing floor plan...');
     try {
-      setIsPublishing(true);
-
-      const floorsToPublish = floors.map((floor) => ({
+      const floorsToPublish = restaurant.floorplans.map((floor) => ({
         name: floor.name,
+        restaurantGuid: restaurant.id,
         elements: floor.elements.map((item) => ({
-          elementGuid: item.elementGuid,
-          tableId: item.tableId,
+          elementGuid: item.id,
+          tableId: item.name,
           minCapacity: item.minCapacity,
           maxCapacity: item.maxCapacity,
           x: item.x,
           y: item.y,
-          rotation: item.rotation,
+          rotation: 0
         })),
       }));
-
       await publishFloorPlans(floorsToPublish);
-      // Prepare the data according to the required format
-      // const allItems = floors.flatMap((floor, floorIndex) =>
-      //   floor.items.map((item) => ({
-      //     id: item.id,
-      //     type: item.type,
-      //     x: item.x,
-      //     y: item.y,
-      //     floorId: floorIndex + 1, // Using index+1 as floorId for simplicity
-      //     rotation: item.rotation,
-      //     scale: 1, // Default scale
-      //     label: `${item.category.charAt(0).toUpperCase() + item.category.slice(1)} (${item.type.split('-')[1] || ''})`
-      //       .replace(/-/g, ' ')
-      //       .trim(),
-      //     imagePath: `/images/elements/${item.type}.svg`, // Example path format
-      //     status: 'Upcoming', // Default status
-      //   }))
-      // );
-
-      // const canvasData: any = {
-      //   items: allItems,
-      // };
-
-      // // Post data to API
-      // await publishCanvas(canvasData);
-
       toast.success('Floor plan published successfully!');
-      // console.log('Published canvas data:', canvasData);
     } catch (error) {
       toast.error('Failed to publish floor plan');
       console.error('Publish error:', error);
     } finally {
-      setIsPublishing(false);
+      toast.dismiss(toastId);
     }
   };
 
-  // console.log('items', items);
-  // console.log('dragItem', dragItem);
-  // console.log('floors[active]', floors[activeFloorIndex]);
-  // console.log('floors', floors);
+  // floor plan select handle
+  const handleFloorPlanSelect = (guid: string) => {
+    const selectedFloor = floors.find((floor) => floor.guid === guid);
+    if (selectedFloor) {
+      setActiveFloorplanId(guid)
+    }
+  };
+
   return (
     <div className='wrapper p-6 pb-3 bg-[#121020]' onDragOver={(e) => e.preventDefault()}>
       <Navigation onPublish={handlePublish} />
       <FloorControls
         floors={floors}
         activeFloorIndex={activeFloorIndex}
-        onFloorChange={setActiveFloorIndex}
+        onFloorChange={handleFloorPlanSelect}
         onAddFloor={addNewFloor}
         onRemoveFloor={removeFloor}
         onRenameFloor={renameFloor}
@@ -235,10 +227,10 @@ const Home = () => {
 
       <div className="flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30} className='card-gradient'>
             <div className="h-full flex flex-col p-4 gap-4 overflow-auto">
               <ElementLibrary />
-              <div className="mt-auto">
+              <div className="mt-auto card-gradient">
                 <ElementProperties />
               </div>
             </div>

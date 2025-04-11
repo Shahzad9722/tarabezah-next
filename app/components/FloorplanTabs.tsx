@@ -34,7 +34,7 @@ export const FloorplanTabs: React.FC = () => {
                 onValueChange={setActiveFloorplanId}
                 className="flex-1"
             >
-                <TabsList className="w-full">
+                <TabsList className="w-full bg-color-222036">
                     {restaurant.floorplans.map(floorplan => (
                         <div key={floorplan.id} className="flex items-center">
                             <TabsTrigger

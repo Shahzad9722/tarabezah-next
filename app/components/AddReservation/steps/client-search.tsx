@@ -47,9 +47,10 @@ export default function ClientSearch({
     // console.log('guest', guest);
     setShowResults(false);
     setSelected(guest);
-    reservationForm.setValue('clientId', guest.guidId);
+    reservationForm.setValue('clientId', guest.guid);
   };
 
+  // console.log('selected', selected);
   return (
     <div className='w-full'>
       {/* Search Bar */}
@@ -143,7 +144,7 @@ export default function ClientSearch({
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        Completed: {selected.reservationStatusCounts?.Completed?.count || 0}
+                        Completed: {selected.completedReservationsCurrentRestaurant || 0}
                       </span>
                     </p>
                   </div>
@@ -151,7 +152,7 @@ export default function ClientSearch({
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        Other Places: {selected.reservationStatusCounts?.Completed?.otherPlaces || 0}
+                        Other Places: {selected.completedReservationsOtherRestaurants || 0}
                       </span>
                     </p>
                   </div>
@@ -159,28 +160,28 @@ export default function ClientSearch({
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        No Show: {selected.reservationStatusCounts?.['No Show']?.count || 0}
+                        No Show: {selected.noShowReservationsCurrentRestaurant || 0}
                       </span>
                     </p>
                   </div>
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        Other Places: {selected.reservationStatusCounts?.['No Show']?.otherPlaces || 0}
+                        Other Places: {selected.noShowReservationsOtherRestaurants || 0}
                       </span>
                     </p>
                   </div>
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        Cancel: {selected.reservationStatusCounts?.Cancelled?.count || 0}
+                        Cancel: {selected.cancelledReservationsCurrentRestaurant || 0}
                       </span>
                     </p>
                   </div>
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
-                        Other Places: {selected.reservationStatusCounts?.Cancelled?.otherPlaces || 0}
+                        Other Places: {selected.cancelledReservationsOtherRestaurants || 0}
                       </span>
                     </p>
                   </div>

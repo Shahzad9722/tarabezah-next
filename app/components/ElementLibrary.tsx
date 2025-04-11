@@ -24,7 +24,7 @@ interface LibrarySectionProps {
 
 const LibrarySection: React.FC<LibrarySectionProps> = ({ title, items }) => {
     return (
-        <Card className="shadow-sm">
+        <Card className="shadow-sm bg-gradient-to-br from-[#b98858]/20 to-[#121120]/40 rounded-2xl">
             <CardHeader className="px-4 py-3">
                 <CardTitle className="text-base font-medium">{title}</CardTitle>
             </CardHeader>
@@ -51,11 +51,15 @@ const LibraryItem: React.FC<LibraryItemProps> = ({ item }) => {
 
     return (
         <div
-            className="flex flex-col items-center justify-center p-2 border rounded-md bg-background cursor-grab hover:bg-secondary transition-colors"
+            className="flex flex-col items-center justify-center p-2 rounded-md bg-background cursor-grab hover:bg-secondary transition-colors"
             draggable
             onDragStart={handleDragStart}
         >
-            <div className="text-2xl mb-1">{item.icon}</div>
+            <div className="text-2xl mb-1"> <img
+                src={item.icon}
+                alt={item.name}
+                className="object-contain w-full h-full"
+            /></div>
             <div className="text-xs text-center">{item.name}</div>
         </div>
     );

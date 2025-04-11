@@ -8,6 +8,7 @@
   --font-poppins: 'Poppins', sans-serif;
   --canvas-grid: rgba(250, 245, 245, 0.05);
   --primary: 221 83% 53%;
+  --card-gradient: linear-gradient(119.26deg, rgba(18, 17, 32, 0.23) 45.47%, rgba(185, 136, 88, 0.23) 105.35%)
 }
 
 @media (prefers-color-scheme: dark) {
@@ -239,4 +240,9 @@ abbr:where([title]) {
   bottom: -4px;
   right: -4px;
   cursor: nwse-resize;
+}
+
+.card-gradient {
+  border-radius: 16px;
+  background: var(--card-gradient);
 }

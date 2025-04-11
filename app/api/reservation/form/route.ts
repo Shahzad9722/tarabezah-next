@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { mergeDateAndTime } from '@/app/lib/utils';
 
+const restaurantId = 'a7fa1095-d8c5-4d00-8a44-7ba684eae835';
+
 export async function GET(request: Request) {
   try {
     const res: {
@@ -32,18 +34,20 @@ export async function POST(request: Request) {
     const payload = await request.json();
     // console.log('payload', payload);
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/ReservationService/Save?locale=en`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/Reservations`,
       {
-        guestGuid: payload.clientId,
-        noOfPeople: payload.numberOfGuests,
-        dateTime: mergeDateAndTime(new Date(payload.eventDate), new Date(payload.eventTime)),
-        additionalNotes: payload.additionalNotes,
-        restaurantGuid: payload.restaurantId || 'a1111111-aaaa-1111-1111-111111111111',
+        clientGuid: payload.clientId,
         shiftGuid: payload.shiftId,
+        date: new Date(payload.eventDate),
+        time: new Date(payload.eventTime),
+        partySize: payload.numberOfGuests,
+        tags: payload.tags,
+        notes: payload.additionalNotes,
       },
       {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `${process.env.BACKEND_TOKEN}`,
         },
       }
     );

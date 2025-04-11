@@ -13,7 +13,7 @@ export interface ElementLibraryItem {
 export interface CanvasElement {
     id: string;
     libraryItemId: string;
-    type: ElementType;
+    elementType: ElementType;
     x: number;
     y: number;
     width: number;
@@ -22,6 +22,8 @@ export interface CanvasElement {
     minCapacity?: number;
     maxCapacity?: number;
     rotation?: number;
+    tableId?: string;
+    elementImageUrl?: string;
 }
 
 export interface Floorplan {
