@@ -25,11 +25,10 @@ interface FloorControlsProps {
 export function FloorControls({
   floors,
   activeFloorIndex,
-  onFloorChange,
   onRemoveFloor,
   onRenameFloor,
 }: FloorControlsProps) {
-  const { addFloorplan } = useFloorplan();
+  const { addFloorplan, onFloorPlanChange, activeFloorplanId } = useFloorplan();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [newFloorplanName, setNewFloorplanName] = useState('');
@@ -63,8 +62,8 @@ export function FloorControls({
           <div className="relative w-full md:w-[362px]">
             <select
               className="bg-color-222036 text-color-E9E3D7 pl-4 pr-8 py-2 rounded-[4px] w-full text-xl appearance-none"
-              value={floors[activeFloorIndex]?.guid}
-              onChange={(e) => onFloorChange(e.target.value)}
+              value={activeFloorplanId}
+              onChange={(e) => onFloorPlanChange(e.target.value)}
             >
               {floors.map((floor) => (
                 <option key={floor.guid} value={floor.guid}>

@@ -22,6 +22,7 @@ interface FloorplanContextType {
     updateElement: (id: string, updates: Partial<CanvasElement>) => void;
     deleteElement: (id: string) => void;
     publishFloorplans: () => void;
+    onFloorPlanChange: (floorId: string) => void;
 }
 
 const defaultRestaurant: Restaurant = {
@@ -40,7 +41,7 @@ const FloorplanContext = createContext<FloorplanContextType | undefined>(undefin
 
 export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [restaurant, setRestaurant] = useState<Restaurant>(defaultRestaurant);
-    const [activeFloorplanId, setActiveFloorplanId] = useState<string>(restaurant.floorplans[0].id);
+    const [activeFloorplanId, setActiveFloorplanId] = useState<string>('');
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const { showLoader, hideLoader } = useLoader();
 
@@ -184,6 +185,11 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         toast.success("Floorplans published successfully!");
     };
 
+    const onFloorPlanChange = (floorId: string) => {
+        console.log("Floorplan changed to:", floorId);
+        setActiveFloorplanId(floorId);
+    };
+
     const value = {
         restaurant,
         activeFloorplanId,
@@ -201,6 +207,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateElement,
         deleteElement,
         publishFloorplans,
+        onFloorPlanChange
     };
 
     useEffect(() => {

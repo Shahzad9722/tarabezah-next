@@ -1,26 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SidebarProvider } from '@/app/components/ui/sidebar';
-import { FurnitureLibrary } from '@/app/components/FurnitureLibrary';
+import { FloorplanItem } from '@/app/components/FloorplanCanvas';
 import { FloorControls } from '@/app/components/FloorControls';
-import { FloorplanCanvas, FloorplanItem } from '@/app/components/FloorplanCanvas';
-import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 // Updated code snippet
 import { ElementProperties } from '@/app/components/ElementProperties';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/app/components/ui/resizable';
 import { ElementLibrary } from '@/app/components/ElementLibrary';
-import { FloorplanTabs } from '@/app/components/FloorplanTabs';
 import { Canvas } from '@/app/components/Canvas';
 import { useFloorplan } from '@/app/context/FloorplanContext';
-
 import Navigation from '@/app/components/navigation/Navigation';
-
-import { publishCanvas } from '@/app/services/canvasApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Restaurant, Floorplan } from './types';
-import { table } from 'console';
+import { Floorplan } from './types';
 
 export interface Floor {
   name: string;
@@ -29,15 +21,10 @@ export interface Floor {
 }
 
 const Home = () => {
-  const [activeCategory, setActiveCategory] = useState('tables');
   const [floors, setFloors] = useState<Floor[]>([]);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
-  const [activeFloorGuid, setActiveFloorGuid] = useState(floors[0]?.guid || '');
-  const [activeFloorElements, setActiveFloorElements] = useState<FloorplanItem[] | undefined>();
 
   const { setActiveFloorplanId, setRestaurant, restaurant } = useFloorplan();
-
-  const [dragItem, setDragItem] = useState<any>(null);
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -98,21 +85,6 @@ const Home = () => {
     }
   }, [floorPlans]);
 
-  // Get current floor
-  const activeFloor = floors[activeFloorIndex];
-  const items = activeFloor?.elements || [];
-
-  // Handle floor operations
-  const addNewFloor = () => {
-    const newFloor: Floor = {
-      guid: '',
-      name: `Floor`,
-      elements: [],
-    };
-    setFloors([...floors, newFloor]);
-    setActiveFloorIndex(floors.length);
-    toast.success(`Addedeee ${newFloor.name}`);
-  };
 
   const removeFloor = (index: number) => {
     if (floors.length <= 1) {
@@ -132,60 +104,6 @@ const Home = () => {
     updatedFloors[index] = { ...updatedFloors[index], name: newName };
     setFloors(updatedFloors);
     toast.success('Floor renamed');
-  };
-
-  // Handle drag events
-  const handleDragStart = (item: any) => {
-    setDragItem(item);
-  };
-
-  const handleDragEnd = () => {
-    setDragItem(null);
-  };
-
-  // Add a new furniture item to the canvas
-  const handleItemSelect = (itemData: any) => {
-    // console.log('itemData', itemData);
-    // const newItem: FloorplanItem = {
-    //   guid: "",
-    //   type: itemData.id,
-    //   category,
-    //   x: 100,
-    //   y: 100,
-    //   width: itemData.width,
-    //   height: itemData.height,
-    //   rotation: 0,
-    // };
-  }
-
-
-  // Handle canvas drop
-  const handleCanvasDrop = (x: number, y: number, item: any) => {
-    // console.log('item drop', item);
-    const newId = uuidv4();
-
-    const newItem: FloorplanItem = {
-      guid: newId,
-      elementGuid: item.guid,
-      elementImageUrl: item.imageUrl,
-      elementName: item.name,
-      maxCapacity: item.maxCapacity || 0,
-      minCapacity: item.minCapacity || 0,
-      tableId: item.tableNumber || '',
-      elementType: item.tableType || '',
-      category: '',
-      x,
-      y,
-      width: item.width || 100,
-      height: item.height || 100,
-      rotation: 0,
-    };
-
-    const updatedFloors = [...floors];
-    updatedFloors[activeFloorIndex].elements = [...items, newItem];
-    setFloors(updatedFloors);
-    toast.success(`Added ${dragItem.name}`);
-    handleDragEnd();
   };
 
 
