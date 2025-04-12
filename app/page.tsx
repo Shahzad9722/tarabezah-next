@@ -15,7 +15,6 @@ import { FloorplanTabs } from '@/app/components/FloorplanTabs';
 import { Canvas } from '@/app/components/Canvas';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 
-
 import Navigation from '@/app/components/navigation/Navigation';
 
 import { publishCanvas } from '@/app/services/canvasApi';
@@ -36,28 +35,32 @@ const Home = () => {
   const [activeFloorGuid, setActiveFloorGuid] = useState(floors[0]?.guid || '');
   const [activeFloorElements, setActiveFloorElements] = useState<FloorplanItem[] | undefined>();
 
-  const {
-    setActiveFloorplanId,
-    setRestaurant,
-    restaurant,
-  } = useFloorplan();
-
+  const { setActiveFloorplanId, setRestaurant, restaurant } = useFloorplan();
 
   const [dragItem, setDragItem] = useState<any>(null);
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
     queryFn: async () => {
-      const res = await fetch(`/api/restaurant/floorplans`);
+      const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
+      if (!restaurantId) {
+        throw new Error('No restaurant selected');
+      }
+      const res = await fetch(`/api/restaurant/floorplans?restaurantId=${restaurantId}`);
       if (!res.ok) throw new Error('Failed to fetch filters');
       const data = await res.json();
       return data.floorPlans;
     },
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('selected-restaurant-id'), // Only run the query when we have a restaurantId
   });
 
   const { mutateAsync: publishFloorPlans, isPending: publishingFloorPlans } = useMutation({
     mutationFn: (data: any[]) => {
-      return fetch(`/api/restaurant/floorplans`, {
+      const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
+      if (!restaurantId) {
+        throw new Error('No restaurant selected');
+      }
+      return fetch(`/api/restaurant/floorplans?restaurantId=${restaurantId}`, {
         method: 'post',
         body: JSON.stringify(data),
       });
@@ -74,27 +77,22 @@ const Home = () => {
           libraryItemId: element.elementGuid, // 🔁 use the correct key
           type: 'reservable', // or decide based on `elementType`
           name: element.elementName,
-          minCapacity: element?.minCapacity,
-          maxCapacity: element?.maxCapacity,
-          x: element?.x,
-          y: element?.y,
-          tableId: element?.tableId,
-          width: 50,  // Provide a default or map if you have
+          minCapacity: element.minCapacity,
+          maxCapacity: element.maxCapacity,
+          x: element.x,
+          y: element.y,
+          width: 50, // Provide a default or map if you have
           height: 50, // Provide a default or map if you have
-          rotation: element?.rotation,
+          rotation: element.rotation,
         })),
       }));
 
-
       // setActiveFloorplanId(result[0].id);
-
 
       setRestaurant({
         ...restaurant,
         floorplans: [...result],
       });
-
-
 
       setFloors(floorPlans);
     }
@@ -145,6 +143,20 @@ const Home = () => {
     setDragItem(null);
   };
 
+  // Add a new furniture item to the canvas
+  const handleItemSelect = (itemData: any) => {
+    // console.log('itemData', itemData);
+    // const newItem: FloorplanItem = {
+    //   guid: "",
+    //   type: itemData.id,
+    //   category,
+    //   x: 100,
+    //   y: 100,
+    //   width: itemData.width,
+    //   height: itemData.height,
+    //   rotation: 0,
+    // };
+  }
 
 
   // Handle canvas drop
@@ -189,8 +201,8 @@ const Home = () => {
           tableId: item.name,
           minCapacity: item.minCapacity,
           maxCapacity: item.maxCapacity,
-          x: item.x,
-          y: item.y,
+          x: parseInt(item.x?.toString(), 10),
+          y: parseInt(item.y?.toString(), 10),
           rotation: 0
         })),
       }));
@@ -208,7 +220,7 @@ const Home = () => {
   const handleFloorPlanSelect = (guid: string) => {
     const selectedFloor = floors.find((floor) => floor.guid === guid);
     if (selectedFloor) {
-      setActiveFloorplanId(guid)
+      setActiveFloorplanId(guid);
     }
   };
 
@@ -219,18 +231,16 @@ const Home = () => {
         floors={floors}
         activeFloorIndex={activeFloorIndex}
         onFloorChange={handleFloorPlanSelect}
-        onAddFloor={addNewFloor}
         onRemoveFloor={removeFloor}
         onRenameFloor={renameFloor}
       />
 
-
-      <div className="flex-1 overflow-hidden">
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30} className='card-gradient'>
-            <div className="h-full flex flex-col p-4 gap-4 overflow-auto">
+      <div className='flex-1 overflow-hidden'>
+        <ResizablePanelGroup direction='horizontal'>
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <div className='h-full flex flex-col p-4 gap-4 overflow-auto'>
               <ElementLibrary />
-              <div className="mt-auto card-gradient">
+              <div className='mt-auto card-gradient'>
                 <ElementProperties />
               </div>
             </div>
@@ -239,9 +249,9 @@ const Home = () => {
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize={80}>
-            <div className="h-full flex flex-col p-4 gap-4">
-              <FloorplanTabs />
-              <div className="flex-1">
+            <div className='h-full flex flex-col p-4 gap-4'>
+              {/* <FloorplanTabs /> */}
+              <div className='flex-1'>
                 <Canvas />
               </div>
             </div>

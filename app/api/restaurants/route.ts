@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
 import { cookies } from 'next/headers';
+import axios from 'axios';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Get the auth token from cookies
     const cookieStore = await cookies();
@@ -12,16 +12,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const res: any = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Enums/tableTypes`, {
+    const res: any = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `${process.env.BACKEND_TOKEN}`,
       },
     });
 
-    return NextResponse.json({ tableTypes: res?.data?.data?.result || [] }, { status: 200 });
+    return NextResponse.json({ restaurants: res?.data?.data?.result || [] }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching filters:', error);
-    return NextResponse.json({ error: 'Failed to load filters' }, { status: 500 });
+    console.error('Restaurants fetch error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

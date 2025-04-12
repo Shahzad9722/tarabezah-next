@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { CanvasElement as CanvasElementType } from '@/app/types';
@@ -12,32 +11,23 @@ interface CanvasElementProps {
   panOffset: { x: number; y: number };
 }
 
-export const CanvasElement: React.FC<CanvasElementProps> = ({
-  element,
-  scale,
-  panOffset
-}) => {
-  const {
-    selectedElementId,
-    setSelectedElementId,
-    updateElement,
-    elementLibrary
-  } = useFloorplan();
+export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, panOffset }) => {
+  const { selectedElementId, setSelectedElementId, updateElement, elementLibrary } = useFloorplan();
 
   const elementRef = useRef<HTMLDivElement>(null);
-  const libraryItem = elementLibrary.find(item => item.id === element.libraryItemId);
+  const libraryItem = elementLibrary.find((item) => item.id === element.libraryItemId);
   // console.log("libraryItem", element, elementLibrary)
 
   const { isDragging, startDrag } = useElementDrag({
     element,
     scale,
-    updateElement
+    updateElement,
   });
 
   const { isResizing, startResize } = useElementResize({
     element,
     scale,
-    updateElement
+    updateElement,
   });
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -56,6 +46,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   };
 
   const isSelected = selectedElementId === element.id;
+  // console.log("libraryItem?.icon ", libraryItem?.icon)
 
   return (
     <div
@@ -73,25 +64,18 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className="flex items-center justify-center h-full w-full">
+      <div className='flex items-center justify-center h-full w-full'>
         {libraryItem?.icon && (
           <div
-            className="text-center"
+            className='text-center'
             style={{ fontSize: `${Math.min(element.width, element.height) * 0.5 * scale}px` }}
           >
-            <img
-              src={libraryItem.icon}
-              alt={libraryItem.name}
-              className="object-contain w-full h-full"
-            />
+            <img src={libraryItem.icon} alt={libraryItem.name} className='object-contain w-full h-full' />
           </div>
         )}
       </div>
 
-      <ResizeHandles
-        isSelected={isSelected}
-        onMouseDown={handleResizeStart}
-      />
+      <ResizeHandles isSelected={isSelected} onMouseDown={handleResizeStart} />
     </div>
   );
 };

@@ -1,11 +1,33 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
-const restaurantId = 'a7fa1095-d8c5-4d00-8a44-7ba684eae835';
+interface BackendResponse {
+  data?: {
+    result?: any[];
+  };
+}
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const res: any = await axios.get(
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get restaurant ID from query params
+    const url = new URL(request.url);
+    const restaurantId = url.searchParams.get('restaurantId');
+
+    if (!restaurantId) {
+      return NextResponse.json({ error: 'Restaurant ID is required' }, { status: 400 });
+    }
+
+    // Fetch floorplans from backend
+    const res = await axios.get<BackendResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/floorplans/with-elements`,
       {
         headers: {
@@ -15,18 +37,35 @@ export async function GET() {
       }
     );
 
-    return NextResponse.json({ floorPlans: res?.data?.data?.result || [] }, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching filters:', error);
+    return NextResponse.json({ floorPlans: res.data?.data?.result || [] }, { status: 200 });
+  } catch (error: any) {
+    console.error('Error fetching floorplans:', error.response?.data);
     return NextResponse.json({ error: 'Failed to fetch floorplans' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get restaurant ID from query params
+    const url = new URL(request.url);
+    const restaurantId = url.searchParams.get('restaurantId');
+
+    if (!restaurantId) {
+      return NextResponse.json({ error: 'Restaurant ID is required' }, { status: 400 });
+    }
+
     const payload = await request.json();
-    // console.log('payload', JSON.stringify(payload, null, 2));
-    const res = await axios.post(
+
+    // Save floorplans to backend
+    const res = await axios.post<BackendResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/create-floorplans`,
       payload,
       {
@@ -36,10 +75,10 @@ export async function POST(request: Request) {
         },
       }
     );
-    // console.log('res.data', res.data);
-    return NextResponse.json({ reservation: res.data }, { status: 201 });
+
+    return NextResponse.json({ floorPlans: res.data?.data?.result || [] }, { status: 201 });
   } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ error: 'Failed to publish floorplans' }, { status: 500 });
+    console.error('Error saving floorplans:', error.response?.data);
+    return NextResponse.json({ error: 'Failed to save floorplans' }, { status: 500 });
   }
 }

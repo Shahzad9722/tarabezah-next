@@ -1,14 +1,22 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const floorPlanId = url.searchParams.get('floorPlanId');
 
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const res: any = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Floorplans/${floorPlanId}/combined-tables`,
-
       {
         headers: {
           'Content-Type': 'application/json',
@@ -27,8 +35,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    console.log('payload', payload);
     const { floorPlanId, elementIds, name, minCapacity, maxCapacity } = payload;
+
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Floorplans/${floorPlanId}/combined-tables`,
       {

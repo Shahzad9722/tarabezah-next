@@ -1,18 +1,17 @@
-"use client";
-import { useState } from "react";
-import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import Navigation from "@/app/components/navigation/Navigation";
-import type { FurnitureItem, Floor } from "@/app/types/furniture";
-import FloorPlan from "@/app/components/tabs/FloorPlan";
+'use client';
+import { useState } from 'react';
+import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import Navigation from '@/app/components/navigation/Navigation';
+import type { FurnitureItem, Floor } from '@/app/types/furniture';
+import FloorPlan from '@/app/components/tabs/FloorPlan';
 
 // import AvailabilitySettings from "@/app/components/tabs/AvailabilitySettings";
 // import Schedule from "@/app/components/tabs/Schedule";
 // import SpecialDays from "@/app/components/tabs/SpecialDays";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { fetchElements } from "@/store/features/elements/elementsSlice";
-import type { AppDispatch } from "@/store/store";
-
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchElements } from '@/store/features/elements/elementsSlice';
+import type { AppDispatch } from '@/store/store';
 
 export default function Designer() {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,12 +19,12 @@ export default function Designer() {
   // Helper function to get the label for a furniture item
   function getFurnitureLabel(type: string): string {
     const labels: Record<string, string> = {
-      "round-2": "Round Table (2)",
-      "round-4": "Round Table (4)",
-      "round-6": "Round Table (6)",
-      "rect-4": "Rect Table (4)",
-      "rect-6": "Rect Table (6)",
-      "rect-8": "Rect Table (8)",
+      'round-2': 'Round Table (2)',
+      'round-4': 'Round Table (4)',
+      'round-6': 'Round Table (6)',
+      'rect-4': 'Rect Table (4)',
+      'rect-6': 'Rect Table (6)',
+      'rect-8': 'Rect Table (8)',
     };
 
     return labels[type] || `Table ${type}`;
@@ -33,11 +32,10 @@ export default function Designer() {
 
   const [, setActiveId] = useState<string | null>(null);
   const [placedItems, setPlacedItems] = useState<FurnitureItem[]>([]);
-  
 
   // Load canvas data on mount
   useEffect(() => {
-    fetch("/api/canvas")
+    fetch('/api/canvas')
       .then((res) => res.json())
       .then((data) => {
         if (data.items) {
@@ -48,25 +46,23 @@ export default function Designer() {
 
   // Save canvas data whenever items change
   useEffect(() => {
-    fetch("/api/canvas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    fetch('/api/canvas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: placedItems }),
     });
   }, [placedItems]);
 
-  const [floors, setFloors] = useState<Floor[]>([
-    { id: 1, name: "Ground Floor" },
-  ]);
+  const [floors, setFloors] = useState<Floor[]>([{ id: 1, name: 'Ground Floor' }]);
   const [selectedFloor, setSelectedFloor] = useState<number>(1);
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as string);
   }
 
-  useEffect(() => {
-    dispatch(fetchElements());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchElements());
+  // }, []);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over, delta } = event;
@@ -75,29 +71,27 @@ export default function Designer() {
     const uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Check if this is a sidebar item (starts with sidebar- prefix)
-    const isSidebarItem = active.id.toString().startsWith("sidebar-");
+    const isSidebarItem = active.id.toString().startsWith('sidebar-');
 
     // If it's a sidebar item, extract the actual type
-    const itemType = isSidebarItem
-      ? active.id.toString().replace("sidebar-", "")
-      : (active.id as string);
+    const itemType = isSidebarItem ? active.id.toString().replace('sidebar-', '') : (active.id as string);
 
     // Map item types to their image paths
     const imagePathMap: Record<string, string> = {
-      "round-2": "/images/elements/rt-c2.svg",
-      "round-4": "/images/elements/rt-c4.svg",
-      "round-6": "/images/elements/rt-c6.svg",
-      "rect-4": "/images/elements/st-c4.svg",
-      "rect-6": "/images/elements/st-c6.svg",
-      "rect-8": "/images/elements/st-c8.svg",
+      'round-2': '/images/elements/rt-c2.svg',
+      'round-4': '/images/elements/rt-c4.svg',
+      'round-6': '/images/elements/rt-c6.svg',
+      'rect-4': '/images/elements/st-c4.svg',
+      'rect-6': '/images/elements/st-c6.svg',
+      'rect-8': '/images/elements/st-c8.svg',
     };
 
     // Check if we're dropping a new item from the sidebar
     if (isSidebarItem) {
-      if (over && over.id === "canvas") {
+      if (over && over.id === 'canvas') {
         // Get appropriate label based on item type
         const itemLabel = getFurnitureLabel(itemType);
-        console.log("🚀 ~ handleDragEnd ~ itemType:", itemType);
+        // console.log("🚀 ~ handleDragEnd ~ itemType:", itemType);
 
         const newItem: FurnitureItem = {
           id: `item-${itemType}-${uniqueId}`,
@@ -108,9 +102,8 @@ export default function Designer() {
           rotation: 0,
           scale: 1,
           label: itemLabel,
-          imagePath:
-            imagePathMap[itemType] || `/images/elements/${itemType}.svg`,
-          status: "Upcoming",
+          imagePath: imagePathMap[itemType] || `/images/elements/${itemType}.svg`,
+          status: 'Upcoming',
         };
         setPlacedItems([...placedItems, newItem]);
       }
@@ -145,10 +138,10 @@ export default function Designer() {
   };
 
   return (
-    <div className="flex flex-col bg-background text-foreground overflow-hidden">
+    <div className='flex flex-col bg-background text-foreground overflow-hidden'>
       {/* <Header /> */}
 
-      <div className="wrapper p-6 bg-[#121020]">
+      <div className='wrapper p-6 bg-[#121020]'>
         <Navigation />
 
         {/* {activeTab === "floorplan" && ( */}

@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
 const restaurantId = 'a7fa1095-d8c5-4d00-8a44-7ba684eae835';
 
 export async function GET(request: Request) {
   try {
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const url = new URL(request.url);
     const query = url.searchParams.get('query') || '';
 
@@ -29,6 +38,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Get the auth token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const payload = await request.json();
     // console.log('payload', payload);
     const res: any = await axios.post(
@@ -38,7 +55,7 @@ export async function POST(request: Request) {
         phoneNumber: payload.phone,
         email: payload.email,
         birthday: payload.birthday,
-        tags: payload.tags,
+        tagValues: payload.tags,
         source: payload.sources.length ? payload.sources[0] : null,
         notes: payload.clientNotes,
       },

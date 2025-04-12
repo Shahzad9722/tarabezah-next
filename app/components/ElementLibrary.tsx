@@ -58,7 +58,7 @@ const LibraryItem: React.FC<LibraryItemProps> = ({ item }) => {
             <div className="text-2xl mb-1"> <img
                 src={item.icon}
                 alt={item.name}
-                className="object-contain w-full h-full"
+                className="max-w-[60px] max-h-[100px]"
             /></div>
             <div className="text-xs text-center">{item.name}</div>
         </div>

@@ -21,7 +21,7 @@ export default function ClientSearch({
   setSelected: any;
 }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedQuery = useDebounce(searchQuery, 500);
+  const debouncedQuery = useDebounce(searchQuery, 300);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -115,11 +115,11 @@ export default function ClientSearch({
 
                 <div className='flex flex-wrap gap-2 text-lg'>
                   <p className='font-normal'>Client Tags:</p>
-                  {selected.guestTags?.length > 0 &&
-                    selected.guestTags.map((g: any, index: number) => {
+                  {selected.tags?.length > 0 &&
+                    selected.tags.map((g: any, index: number) => {
                       return (
                         <span key={index} className='inline-flex items-center gap-1'>
-                          {g.name}
+                          {g}
                         </span>
                       );
                     })}

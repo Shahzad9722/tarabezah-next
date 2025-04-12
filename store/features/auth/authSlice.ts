@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { authService } from '@/services/api';
 
 // Define the AuthState interface
 interface AuthState {
@@ -19,7 +18,7 @@ const initialState: AuthState = {
   user: null,
   token: getLocalStorageItem('authToken') || '',
   loading: false,
-  error: null
+  error: null,
 };
 
 // Define the login async thunk
@@ -27,17 +26,26 @@ export const login = createAsyncThunk<
   { user: any; token: string }, // Success return type
   { username: string; password: string }, // Arguments type
   { rejectValue: string } // Error return type
->(
-  'auth/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const data:any = await authService.login(credentials);
-      return { user: data.user, token: data.token };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || 'Login failed');
+>('auth/login', async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Login failed');
   }
-);
+});
 
 // Create authSlice
 const authSlice = createSlice({
@@ -51,7 +59,7 @@ const authSlice = createSlice({
         localStorage.removeItem('authToken');
         localStorage.removeItem('isAuthenticated');
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -72,7 +80,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'An error occurred';
       });
-  }
+  },
 });
 
 // Export actions and reducer

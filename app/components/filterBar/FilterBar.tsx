@@ -65,7 +65,7 @@ const FilterBar = ({
           </div>
 
           {/* Dining Areas Dropdown */}
-          <div className='flex flex-col gap-2.5 md:w-[200px]'>
+          {/* <div className='flex flex-col gap-2.5 md:w-[200px]'>
             <label className='text-xl text-color-E9E3D7 font-medium'>Dining areas</label>
             <div className='relative w-full'>
               <select className='w-full bg-color-222036 text-[#909090] text-xl pl-4 pr-8 py-2 rounded-[4px] focus:outline-none appearance-none'>
@@ -75,7 +75,7 @@ const FilterBar = ({
                 <ChevronDown className='h-4 w-4' />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Table Types Dropdown */}
           <div className='flex flex-col gap-2.5 md:w-[200px]'>

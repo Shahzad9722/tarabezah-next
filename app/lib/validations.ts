@@ -15,7 +15,7 @@ export const addReservationFormSchema = z.object({
   eventDate: z.date().refine((date) => date >= new Date(new Date().setHours(0, 0, 0, 0)), {
     message: 'Date must be today or in the future',
   }),
-  eventTime: z.date(),
+  eventTime: z.string({ message: 'Please select time' }),
   numberOfGuests: z.number({ message: 'Please select number of guests' }),
   shiftId: z.string({ message: 'Shift is required' }),
   tags: z.array(z.number()).optional(),

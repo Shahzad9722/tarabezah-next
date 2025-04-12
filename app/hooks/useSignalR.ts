@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import { useQueryClient } from '@tanstack/react-query';
 
 const useSignalR = (queryKey: any[]) => {
-  console.log('queryKey', queryKey);
+  // console.log('queryKey', queryKey);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
   const queryClient = useQueryClient();
 

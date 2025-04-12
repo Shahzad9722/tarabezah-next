@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
 export async function GET() {
   try {
+    // Get the auth token from cookies
+    // const cookieStore = await cookies();
+    // const token = cookieStore.get('auth-token')?.value;
+
+    // if (!token) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
     const res: any = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Elements`, {
       headers: {
         'Content-Type': 'application/json',

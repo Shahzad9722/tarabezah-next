@@ -66,7 +66,6 @@ export const Canvas: React.FC<CanvasProps> = ({ placedItems, setPlacedItems }) =
           }}
           onClick={handleCanvasClick}
           onMouseDown={handleMouseDown}
-          onWheel={handleWheel}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >

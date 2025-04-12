@@ -7,35 +7,13 @@ import { MultiSelect, type MultiSelectOption } from '../../../components/ui/mult
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
 
-const tags: MultiSelectOption[] = [
-  {
-    id: 1,
-    name: 'VIP',
-    icon: <Crown size={20} />,
-  },
-  {
-    id: 2,
-    name: 'Wine Lover',
-    icon: <Wine />,
-  },
-  {
-    id: 3,
-    name: 'Lounger',
-    icon: <Sofa />,
-  },
-  {
-    id: 4,
-    name: 'BBQ Lover',
-    icon: <Heater />,
-  },
-  {
-    id: 5,
-    name: 'Owners Friends',
-    icon: <Users />,
-  },
-];
-
-export default function GeneralInfoStep({ form }: { form: UseFormReturn<any> }) {
+export default function GeneralInfoStep({
+  form,
+  tags,
+}: {
+  form: UseFormReturn<any>;
+  tags: { name: string; value: number; icon?: string }[];
+}) {
   return (
     <div className='w-full'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>General Information</h2>
@@ -49,7 +27,10 @@ export default function GeneralInfoStep({ form }: { form: UseFormReturn<any> }) 
             <FormItem>
               <FormLabel>Tags</FormLabel>
               <FormControl>
-                <MultiSelect options={tags} {...field} />
+                <MultiSelect
+                  options={tags.map((tag) => ({ id: tag.value, name: tag.name, icon: tag.icon }))}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

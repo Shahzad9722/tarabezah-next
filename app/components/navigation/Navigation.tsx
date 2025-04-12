@@ -1,9 +1,12 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/app/components/ui/button";
 
 export default function Navigation({ onPublish }: { onPublish?: any }) {
+  const pathname = usePathname();
+  const hideButton = pathname === "/table-combination";
   return (
     <div className="w-full flex flex-col md:flex-row md:items-center justify-between mb-4">
       <div className="flex items-center overflow-x-auto mb-4 md:mb-0 md:overflow-x-visible">
@@ -44,10 +47,11 @@ export default function Navigation({ onPublish }: { onPublish?: any }) {
           Table Combinations
         </Link>
       </div>
-
-      <Button onClick={onPublish} className="rounded-lg font-medium">
-        Publish updates
-      </Button>
+      {!hideButton && (
+        <Button onClick={onPublish} className="rounded-lg font-medium">
+          Publish updates
+        </Button>
+      )}
     </div>
   );
 }

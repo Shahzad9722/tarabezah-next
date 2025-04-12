@@ -60,11 +60,16 @@ export default function TableCombinations() {
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
     queryFn: async () => {
-      const res = await fetch(`/api/restaurant/floorplans`);
+      const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
+      if (!restaurantId) {
+        throw new Error('No restaurant selected');
+      }
+      const res = await fetch(`/api/restaurant/floorplans?restaurantId=${restaurantId}`);
       if (!res.ok) throw new Error('Failed to fetch filters');
       const data = await res.json();
       return data.floorPlans;
     },
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('selected-restaurant-id'),
   });
 
   const { isLoading: fetchingTableTypes, data: tableTypes = [] } = useQuery({
