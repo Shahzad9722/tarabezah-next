@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useRef, RefObject } from 'react';
-import { ElementLibraryItem } from '@/app/types';
+import { CanvasElement } from '@/app/types';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
 
@@ -12,7 +12,7 @@ export interface CanvasState {
     spacePressed: boolean;
     isConfigDialogOpen: boolean;
     newElementData: {
-        libraryItem: ElementLibraryItem;
+        libraryItem: CanvasElement;
         x: number;
         y: number;
     } | null;
@@ -43,7 +43,7 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
     const setPanStart = (panStart: { x: number; y: number }) => setState(prev => ({ ...prev, panStart }));
     const setSpacePressed = (spacePressed: boolean) => setState(prev => ({ ...prev, spacePressed }));
     const setIsConfigDialogOpen = (isConfigDialogOpen: boolean) => setState(prev => ({ ...prev, isConfigDialogOpen }));
-    const setNewElementData = (newElementData: { libraryItem: ElementLibraryItem; x: number; y: number } | null) =>
+    const setNewElementData = (newElementData: { libraryItem: CanvasElement; x: number; y: number } | null) =>
         setState(prev => ({ ...prev, newElementData }));
     const setTableName = (tableName: string) => setState(prev => ({ ...prev, tableName }));
     const setMinCapacity = (minCapacity: string) => setState(prev => ({ ...prev, minCapacity }));
@@ -144,7 +144,7 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
 
         try {
             const data = e.dataTransfer.getData('application/json');
-            const libraryItem = JSON.parse(data) as ElementLibraryItem;
+            const libraryItem = JSON.parse(data) as CanvasElement;
 
             // Get canvas-relative drop coordinates, adjusted for scale and pan
             const rect = canvasRef.current?.getBoundingClientRect();
@@ -154,13 +154,13 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
             const dropY = (e.clientY - rect.top) / state.scale - state.panOffset.y;
 
             // Calculate position so the element is centered on the drop point
-            const x = dropX - (libraryItem.defaultWidth / 2);
-            const y = dropY - (libraryItem.defaultHeight / 2);
+            const x = dropX - (libraryItem.width / 2);
+            const y = dropY - (libraryItem.height / 2);
 
-            if (libraryItem.type === 'reservable') {
+            if (libraryItem.elementType === 'reservable') {
                 // Open dialog for reservable items
                 setNewElementData({ libraryItem, x, y });
-                setTableName(libraryItem.name);
+                setTableName(libraryItem.tableId || '');
                 setMinCapacity('');
                 setMaxCapacity('');
                 setIsConfigDialogOpen(true);
@@ -168,11 +168,11 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
                 // Directly add decorative items
                 addElement({
                     libraryItemId: libraryItem.id,
-                    elementType: libraryItem.type,
+                    elementType: libraryItem.elementType,
                     x,
                     y,
-                    width: libraryItem.defaultWidth,
-                    height: libraryItem.defaultHeight,
+                    width: libraryItem.width,
+                    height: libraryItem.height,
                 });
 
                 toast.success(`Added ${libraryItem.name}`);
@@ -189,11 +189,11 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
 
         addElement({
             libraryItemId: libraryItem.id,
-            elementType: libraryItem.type,
+            elementType: libraryItem.elementType,
             x,
             y,
-            width: libraryItem.defaultWidth,
-            height: libraryItem.defaultHeight,
+            width: libraryItem.width,
+            height: libraryItem.height,
             name: state.tableName || libraryItem.name,
             minCapacity: state.minCapacity ? parseInt(state.minCapacity, 10) : undefined,
             maxCapacity: state.maxCapacity ? parseInt(state.maxCapacity, 10) : undefined,
