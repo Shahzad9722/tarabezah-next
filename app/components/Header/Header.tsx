@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "./Navigation";
+import logo from "@/public/images/logo.svg";
 
 const Header = () => {
   return (
@@ -13,7 +14,7 @@ const Header = () => {
       <div className="absolute left-1/2 transform -translate-x-1/2">
         <Link href="/">
           <Image
-            src={"/images/logo.svg"}
+            src={logo}
             height={36.73}
             width={50}
             alt="logo"

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '@/store/features/auth/authSlice';
 import type { AppDispatch, RootState } from '@/store/store';
 import { Button } from '../components/ui/button';
+import Logo from '@/public/images/logo.svg';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,7 +54,8 @@ export default function LoginPage() {
     >
       <div className='w-[400px] p-8 rounded-2xl backdrop-blur-sm bg-[#121120]/80 shadow-xl border border-[#2d2a45]/30'>
         <div className='flex justify-center mb-8'>
-          <Image src='/images/logo.svg' width={120} height={80} alt='Logo' className='mb-4' />
+          <Image src={Logo} width={120} height={80} alt='Logo' className='mb-4' />
+
         </div>
 
         <h2 className='text-2xl font-bold text-white text-center mb-8'>Welcome Back</h2>

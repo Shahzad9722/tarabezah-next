@@ -1,15 +1,6 @@
 
 export type ElementType = 'reservable' | 'decorative';
 
-export interface ElementLibraryItem {
-    id: string;
-    name: string;
-    type: ElementType;
-    icon: string;
-    defaultWidth: number;
-    defaultHeight: number;
-}
-
 export interface CanvasElement {
     id: string;
     libraryItemId: string;

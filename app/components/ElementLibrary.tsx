@@ -2,12 +2,12 @@
 import React from 'react';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { ElementLibraryItem } from '@/app/types';
+import { CanvasElement } from '@/app/types';
 
 export const ElementLibrary: React.FC = () => {
     const { elementLibrary } = useFloorplan();
-    const reservableItems = elementLibrary.filter(item => item.type === 'reservable');
-    const decorativeItems = elementLibrary.filter(item => item.type === 'decorative');
+    const reservableItems = elementLibrary.filter(item => item.elementType === 'reservable');
+    const decorativeItems = elementLibrary.filter(item => item.elementType === 'decorative');
 
     return (
         <div className="space-y-6">
@@ -19,7 +19,7 @@ export const ElementLibrary: React.FC = () => {
 
 interface LibrarySectionProps {
     title: string;
-    items: ElementLibraryItem[];
+    items: CanvasElement[];
 }
 
 const LibrarySection: React.FC<LibrarySectionProps> = ({ title, items }) => {
@@ -40,10 +40,12 @@ const LibrarySection: React.FC<LibrarySectionProps> = ({ title, items }) => {
 };
 
 interface LibraryItemProps {
-    item: ElementLibraryItem;
+    item: CanvasElement;
 }
 
 const LibraryItem: React.FC<LibraryItemProps> = ({ item }) => {
+    // console.log('here is element library item', item);
+    // e.dataTransfer.setData('application/json', JSON.stringify(item));
     const handleDragStart = (e: React.DragEvent) => {
         e.dataTransfer.setData('application/json', JSON.stringify(item));
         e.dataTransfer.effectAllowed = 'copy';
@@ -56,7 +58,7 @@ const LibraryItem: React.FC<LibraryItemProps> = ({ item }) => {
             onDragStart={handleDragStart}
         >
             <div className="text-2xl mb-1"> <img
-                src={item.icon}
+                src={item.elementImageUrl}
                 alt={item.name}
                 className="max-w-[60px] max-h-[100px]"
             /></div>

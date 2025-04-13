@@ -13,6 +13,7 @@ import {
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { useFloorplan } from '@/app/context/FloorplanContext';
+import { toast } from 'sonner';
 
 interface FloorControlsProps {
   floors: Floor[];
@@ -38,10 +39,16 @@ export function FloorControls({
   });
 
   const handleAddFloorplan = () => {
-    if (newFloorplanName.trim() === '') return;
+    if (newFloorplanName.trim() === '') {
+      toast.error("Floorplan name cannot be empty.");
+      return;
+    }
+
+    console.log('Adding new floorplan:', newFloorplanName);
     addFloorplan(newFloorplanName);
     setNewFloorplanName('');
     setIsAddDialogOpen(false);
+    toast.success(`Floorplan "${newFloorplanName}" added successfully`);
   };
 
   const handleRenameClick = (index: number) => {

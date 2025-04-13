@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { CanvasElement, ElementLibraryItem, Floorplan, Restaurant } from '@/app/types';
+import { CanvasElement, Floorplan, Restaurant } from '@/app/types';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { useLoader } from '@/app/context/loaderContext';
@@ -9,7 +9,7 @@ interface FloorplanContextType {
     restaurant: Restaurant;
     activeFloorplanId: string;
     selectedElementId: string | null;
-    elementLibrary: ElementLibraryItem[];
+    elementLibrary: CanvasElement[];
     activeFloorplan: Floorplan | undefined;
 
     setRestaurant: (restaurant: Restaurant) => void;
@@ -51,20 +51,25 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         data: elementLibrary = [],
         isError,
         error,
-    } = useQuery<ElementLibraryItem[]>({
+    } = useQuery<CanvasElement[]>({
         queryKey: ['elements'],
         queryFn: async () => {
             const res = await fetch(`/api/restaurant/elements`);
             if (!res.ok) throw new Error('Failed to fetch elements');
             const data = await res.json();
             // Transform the response
-            return data.elements.map((el: any): ElementLibraryItem => ({
+            return data.elements.map((el: any): CanvasElement => ({
                 id: el.guid,
                 name: el.name,
-                icon: el.imageUrl || '❓', // fallback to emoji or default icon
-                type: el.purpose?.toLowerCase() === 'reservable' ? 'reservable' : 'decorative',
-                defaultWidth: 100,
-                defaultHeight: 100,
+                elementImageUrl: el.imageUrl || '❓', // fallback to emoji or default icon
+                elementType: el.purpose?.toLowerCase() === 'reservable' ? 'reservable' : 'decorative',
+                width: 100,
+                height: 100,
+                x: el.x || 0,
+                y: el.y || 0,
+                rotation: el.rotation || 0,
+                libraryItemId: el.guid,
+                minCapacity: el.minCapacity || 1,
             }));
         },
     });
@@ -129,7 +134,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         setRestaurant(prev => {
             const updatedFloorplans = prev.floorplans.map(fp => {
-                if (fp.id === activeFloorplanId) {
+                if (fp.id === (activeFloorplanId || activeFloorplan?.id)) {
                     // Create a NEW array for elements
                     return {
                         ...fp,
@@ -151,7 +156,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         setRestaurant(prev => ({
             ...prev,
             floorplans: prev.floorplans.map(fp =>
-                fp.id === activeFloorplanId
+                fp.id === activeFloorplan?.id
                     ? {
                         ...fp,
                         elements: fp.elements.map(el =>
@@ -186,7 +191,6 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const onFloorPlanChange = (floorId: string) => {
-        console.log("Floorplan changed to:", floorId);
         setActiveFloorplanId(floorId);
     };
 

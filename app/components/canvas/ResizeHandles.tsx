@@ -11,7 +11,6 @@ export const ResizeHandles: React.FC<ResizeHandlesProps> = ({
   onMouseDown
 }) => {
   if (!isSelected) return null;
-
   return (
     <>
       <div

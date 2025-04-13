@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Button } from '@/app/components/ui/button';
-import { ElementLibraryItem } from '@/app/types';
 
 interface TableConfigDialogProps {
   isOpen: boolean;

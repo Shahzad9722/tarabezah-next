@@ -62,7 +62,7 @@ const Home = () => {
         elements: floor.elements.map((element: any) => ({
           id: element.guid,
           libraryItemId: element.elementGuid, // 🔁 use the correct key
-          type: 'reservable', // or decide based on `elementType`
+          elementType: element.elementType, // or decide based on `elementType`
           name: element.elementName,
           minCapacity: element.minCapacity,
           maxCapacity: element.maxCapacity,

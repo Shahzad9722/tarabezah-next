@@ -6,6 +6,8 @@ import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Button } from '@/app/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 
 export const ElementProperties: React.FC = () => {
     const {
@@ -37,21 +39,40 @@ export const ElementProperties: React.FC = () => {
             setMaxCapacity('');
         }
     }, [selectedElement]);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!selectedElementId) return;
 
+        if (!name.trim()) {
+            toast.error("Name cannot be empty.");
+            return;
+        }
+
         const updates: Record<string, any> = { name };
 
         if (selectedElement?.elementType === 'reservable') {
-            updates.minCapacity = minCapacity ? parseInt(minCapacity, 10) : undefined;
-            updates.maxCapacity = maxCapacity ? parseInt(maxCapacity, 10) : undefined;
+            const min = parseInt(minCapacity, 10);
+            const max = parseInt(maxCapacity, 10);
+
+            if (isNaN(min) || min < 1) {
+                toast.error("Minimum capacity must be a valid number greater than 0.");
+                return;
+            }
+
+            if (isNaN(max) || max < min) {
+                toast.error("Maximum capacity must be a number greater than or equal to minimum.");
+                return;
+            }
+
+            updates.minCapacity = min;
+            updates.maxCapacity = max;
         }
 
         updateElement(selectedElementId, updates);
+        toast.success("Element updated successfully.");
     };
+
 
     const handleDelete = () => {
         if (selectedElementId) {
@@ -75,15 +96,15 @@ export const ElementProperties: React.FC = () => {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className="flex flex-row items-center align justify-between pb-2">
                 <CardTitle>
-                    <span className=" text-xs mr-2">
-                        <img className='w-50 h-50'
-                            src={libraryItem.icon}
+                    <span className=" text-xs pb-1">
+                        <img
+                            src={libraryItem.elementImageUrl}
                             alt={libraryItem.name}
+                            className="max-w-[50px] max-h-[50px]"
                         />
                     </span>
-                    {libraryItem.name}
                 </CardTitle>
                 <Button variant="ghost" size="icon" onClick={handleDelete}>
                     <Trash2 className="h-4 w-4" />
@@ -97,7 +118,7 @@ export const ElementProperties: React.FC = () => {
                             id="name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder={libraryItem.name + 'hhhh'}
+                            placeholder={libraryItem.name}
                         />
                     </div>
 
@@ -110,8 +131,7 @@ export const ElementProperties: React.FC = () => {
                                     type="number"
                                     value={minCapacity}
                                     onChange={(e) => setMinCapacity(e.target.value)}
-                                    placeholder="1"
-                                    min="1"
+                                    min={minCapacity || '1'}
                                 />
                             </div>
 
@@ -122,8 +142,7 @@ export const ElementProperties: React.FC = () => {
                                     type="number"
                                     value={maxCapacity}
                                     onChange={(e) => setMaxCapacity(e.target.value)}
-                                    placeholder="4"
-                                    min={minCapacity || '1'}
+                                    max={minCapacity || '1'}
                                 />
                             </div>
                         </>

@@ -31,6 +31,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
   });
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    console.log("mouse down")
     e.stopPropagation();
     setSelectedElementId(element.id);
 
@@ -42,11 +43,11 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
   };
 
   const handleResizeStart = (handle: string, e: React.MouseEvent) => {
+    console.log("resize start")
     startResize(handle, e);
   };
 
   const isSelected = selectedElementId === element.id;
-  // console.log("libraryItem?.icon ", libraryItem?.icon)
 
   return (
     <div
@@ -65,12 +66,12 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
       onMouseDown={handleMouseDown}
     >
       <div className='flex items-center justify-center h-full w-full'>
-        {libraryItem?.icon && (
+        {libraryItem?.elementImageUrl && (
           <div
             className='text-center'
             style={{ fontSize: `${Math.min(element.width, element.height) * 0.5 * scale}px` }}
           >
-            <img src={libraryItem.icon} alt={libraryItem.name} className='object-contain w-full h-full' />
+            <img src={libraryItem.elementImageUrl} alt={libraryItem.name} className='object-contain w-full h-full select-none' />
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useFloorplan } from '@/app/context/FloorplanContext';
-import { ElementLibraryItem } from '@/app/types';
+import { CanvasElement as CanvasElementType } from '@/app/types';
 import { CanvasElement } from '@/app/components/canvas/CanvasElement';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
@@ -23,7 +23,7 @@ export const Canvas: React.FC = () => {
   // For table configuration modal
   const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
   const [newElementData, setNewElementData] = useState<{
-    libraryItem: ElementLibraryItem;
+    libraryItem: CanvasElementType;
     x: number;
     y: number;
   } | null>(null);
@@ -184,44 +184,57 @@ export const Canvas: React.FC = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
 
+    // First check if there's any data of the expected type
+    if (!e.dataTransfer.types.includes('application/json')) {
+      console.warn('No element data found in drop event');
+      return;
+    }
+
     try {
       const data = e.dataTransfer.getData('application/json');
-      const libraryItem = JSON.parse(data) as ElementLibraryItem;
+      if (!data) {
+        throw new Error('No data received');
+      }
 
-      // Get canvas-relative drop coordinates, adjusted for scale and pan
+      const libraryItem = JSON.parse(data) as CanvasElementType;
+
+      // Validate the parsed data has required fields
+      if (!libraryItem?.id || !libraryItem?.elementType) {
+        throw new Error('Invalid element data');
+      }
+
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      // Adjust for the scaling and panning correctly
       const dropX = (e.clientX - rect.left) / scale - panOffset.x;
       const dropY = (e.clientY - rect.top) / scale - panOffset.y;
 
-      // Center the element at the drop location
-      const x = dropX - (libraryItem.defaultWidth / 2);
-      const y = dropY - (libraryItem.defaultHeight / 2);
+      const x = dropX - (libraryItem.width / 2);
+      const y = dropY - (libraryItem.height / 2);
 
-      if (libraryItem.type === 'reservable') {
-        // Open dialog for reservable items
+      if (libraryItem.elementType === 'reservable') {
+        console.log("i am in if", libraryItem)
         setNewElementData({ libraryItem, x, y });
-        setTableName(libraryItem.name);
+        setTableName(libraryItem?.name || '');
         setMinCapacity('');
         setMaxCapacity('');
         setIsConfigDialogOpen(true);
       } else {
-        // Directly add decorative items
+        console.log("i am in else", libraryItem)
+
         addElement({
           libraryItemId: libraryItem.id,
-          elementType: libraryItem.type,
+          elementType: libraryItem.elementType,
           x,
           y,
-          width: libraryItem.defaultWidth,
-          height: libraryItem.defaultHeight,
+          width: libraryItem.width,
+          height: libraryItem.height,
         });
-
         toast.success(`Added ${libraryItem.name}`);
       }
     } catch (error) {
       console.error('Error handling drop:', error);
+      toast.error('Failed to add element. Please try again.');
     }
   };
 
@@ -229,22 +242,44 @@ export const Canvas: React.FC = () => {
     if (!newElementData) return;
 
     const { libraryItem, x, y } = newElementData;
+
+    // ✅ Basic validation
+    if (!tableName.trim()) {
+      toast.error("Table name is required.");
+      return;
+    }
+
+    const min = parseInt(minCapacity, 10);
+    const max = parseInt(maxCapacity, 10);
+
+    if (isNaN(min) || min < 1) {
+      toast.error("Minimum capacity must be a valid number greater than 0.");
+      return;
+    }
+
+    if (isNaN(max) || max < min) {
+      toast.error("Maximum capacity must be a number greater than or equal to minimum.");
+      return;
+    }
+
+    // ✅ Proceed if all is valid
     addElement({
-      libraryItemId: libraryItem.id,
-      elementType: libraryItem.type,
+      libraryItemId: libraryItem?.id,
+      elementType: libraryItem?.elementType,
       x,
       y,
-      width: libraryItem.defaultWidth,
-      height: libraryItem.defaultHeight,
-      name: tableName || libraryItem.name,
-      minCapacity: minCapacity ? parseInt(minCapacity, 10) : undefined,
-      maxCapacity: maxCapacity ? parseInt(maxCapacity, 10) : undefined,
+      width: libraryItem?.width,
+      height: libraryItem?.height,
+      name: tableName || libraryItem?.name,
+      minCapacity: min,
+      maxCapacity: max,
     });
 
     setIsConfigDialogOpen(false);
     setNewElementData(null);
-    toast.success(`Added ${tableName || libraryItem.name}`);
+    toast.success(`Added ${tableName || libraryItem?.name}`);
   };
+
 
   return (
     <>
@@ -307,8 +342,8 @@ export const Canvas: React.FC = () => {
                 type='number'
                 value={minCapacity}
                 onChange={(e) => setMinCapacity(e.target.value)}
-                placeholder='1'
-                min='1'
+                min={minCapacity || '1'}
+                required
               />
             </div>
 
@@ -319,8 +354,8 @@ export const Canvas: React.FC = () => {
                 type='number'
                 value={maxCapacity}
                 onChange={(e) => setMaxCapacity(e.target.value)}
-                placeholder='4'
-                min={minCapacity || '1'}
+                max={maxCapacity || '1'}
+                required
               />
             </div>
           </div>
