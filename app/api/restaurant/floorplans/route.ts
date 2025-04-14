@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     const payload = await request.json();
-
+    console.log('payload', JSON.stringify(payload, null, 2));
     // Save floorplans to backend
     const res = await axios.post<BackendResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/create-floorplans`,

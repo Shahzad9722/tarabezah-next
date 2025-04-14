@@ -31,7 +31,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
   });
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    console.log("mouse down")
+    // console.log("mouse down")
     e.stopPropagation();
     setSelectedElementId(element.id);
 
@@ -43,7 +43,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
   };
 
   const handleResizeStart = (handle: string, e: React.MouseEvent) => {
-    console.log("resize start")
+    // console.log("resize start")
     startResize(handle, e);
   };
 
@@ -71,7 +71,11 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
             className='text-center'
             style={{ fontSize: `${Math.min(element.width, element.height) * 0.5 * scale}px` }}
           >
-            <img src={libraryItem.elementImageUrl} alt={libraryItem.name} className='object-contain w-full h-full select-none' />
+            <img
+              src={libraryItem.elementImageUrl}
+              alt={libraryItem.name}
+              className='object-contain w-full h-full select-none'
+            />
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Floor } from '@/app/page';
 import { Button } from '@/app/components/ui/button';
 import { Plus, Pencil, Trash2, ChevronDown } from 'lucide-react';
 import {
@@ -13,10 +14,9 @@ import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
-import { Floor } from '../types';
 
 interface FloorControlsProps {
-  floors: Floor[];
+  floors: any[];
   activeFloorIndex: number;
   onFloorChange: (floorId: string) => void;
   onRemoveFloor: (index: number) => void;
@@ -55,13 +55,13 @@ export function FloorControls({ floors, activeFloorIndex, onRemoveFloor, onRenam
     onRenameFloor(floorToRename.index, floorToRename.name);
     setIsRenameDialogOpen(false);
   };
-
+  console.log('floors', floors);
   return (
-    <div className='mb-5'>
-      <div className='flex flex-col md:flex-row md:items-center justify-between gap-2 bg-[#121020]'>
+    <div className=''>
+      <div className='flex flex-col md:flex-row md:items-center  gap-2 bg-[#121020] '>
         {/* Floor Selection Dropdown */}
-        <div className='flex items-center gap-2'>
-          <div className='relative w-full md:w-[362px]'>
+        <div className='flex flex-1 items-center gap-2'>
+          <div className='relative w-full '>
             <select
               className='bg-color-222036 text-color-E9E3D7 pl-4 pr-8 py-2 rounded-[4px] w-full text-xl appearance-none'
               value={activeFloorplanId}
@@ -83,40 +83,40 @@ export function FloorControls({ floors, activeFloorIndex, onRemoveFloor, onRenam
             variant='outline'
             size='icon'
             onClick={() => setIsAddDialogOpen(true)}
-            className='bg-color-222036 h-[46px] w-[46px] backdrop-blur-sm text-color-B98858 rounded-none'
+            className='bg-color-222036 h-[44px] w-[30px] backdrop-blur-sm text-color-B98858 rounded-none'
             title='Add Floorplan'
             aria-label='Add Floorplan'
           >
-            <Plus className='h-5 w-5' />
+            <Plus className='h-4 w-4' />
           </Button>
 
           <Button
             variant='outline'
             size='icon'
             onClick={() => handleRenameClick(activeFloorIndex)}
-            className='bg-color-222036 h-[46px] w-[46px] backdrop-blur-sm text-color-B98858 rounded-none'
+            className='bg-color-222036 h-[44px] w-[30px] backdrop-blur-sm text-color-B98858 rounded-none'
             title='Rename Floor'
             aria-label='Rename Floor'
           >
-            <Pencil className='h-5 w-5' />
+            <Pencil className='h-4 w-4' />
           </Button>
 
           <Button
             variant='outline'
             size='icon'
             onClick={() => onRemoveFloor(activeFloorIndex)}
-            className='bg-color-222036 h-[46px] w-[46px] backdrop-blur-sm text-color-B98858 rounded-none'
+            className='bg-color-222036 h-[44px] w-[30px] backdrop-blur-sm text-color-B98858 rounded-none'
             disabled={floors.length <= 1}
             title='Remove Floor'
             aria-label='Remove Floor'
           >
-            <Trash2 className='h-5 w-5' />
+            <Trash2 className='h-4 w-4' />
           </Button>
         </div>
 
         {/* Add Floorplan Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent>
+          <DialogContent className='bg-color-D0C17'>
             <DialogHeader>
               <DialogTitle>Add New Floorplan</DialogTitle>
             </DialogHeader>
@@ -140,7 +140,7 @@ export function FloorControls({ floors, activeFloorIndex, onRemoveFloor, onRenam
 
         {/* Rename Floor Dialog */}
         <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-          <DialogContent>
+          <DialogContent className='bg-color-D0C17'>
             <DialogHeader>
               <DialogTitle>Rename Floor</DialogTitle>
               <DialogDescription>Enter a new name for this floor.</DialogDescription>

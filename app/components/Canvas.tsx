@@ -138,9 +138,13 @@ export const Canvas: React.FC = () => {
 
     if (canvas) {
       // Use the correct EventListenerOptions type
-      canvas.addEventListener('wheel', wheelHandler as EventListener, {
-        passive: false
-      } as EventListenerOptions);
+      canvas.addEventListener(
+        'wheel',
+        wheelHandler as EventListener,
+        {
+          passive: false,
+        } as EventListenerOptions
+      );
     }
 
     return () => {
@@ -209,18 +213,18 @@ export const Canvas: React.FC = () => {
       const dropX = (e.clientX - rect.left) / scale - panOffset.x;
       const dropY = (e.clientY - rect.top) / scale - panOffset.y;
 
-      const x = dropX - (libraryItem.width / 2);
-      const y = dropY - (libraryItem.height / 2);
+      const x = dropX - libraryItem.width / 2;
+      const y = dropY - libraryItem.height / 2;
 
       if (libraryItem.elementType === 'reservable') {
-        console.log("i am in if", libraryItem)
+        // console.log('i am in if', libraryItem);
         setNewElementData({ libraryItem, x, y });
         setTableName(libraryItem?.name || '');
         setMinCapacity('');
         setMaxCapacity('');
         setIsConfigDialogOpen(true);
       } else {
-        console.log("i am in else", libraryItem)
+        // console.log('i am in else', libraryItem);
 
         addElement({
           libraryItemId: libraryItem.id,
@@ -245,7 +249,7 @@ export const Canvas: React.FC = () => {
 
     // ✅ Basic validation
     if (!tableName.trim()) {
-      toast.error("Table name is required.");
+      toast.error('Table name is required.');
       return;
     }
 
@@ -253,12 +257,12 @@ export const Canvas: React.FC = () => {
     const max = parseInt(maxCapacity, 10);
 
     if (isNaN(min) || min < 1) {
-      toast.error("Minimum capacity must be a valid number greater than 0.");
+      toast.error('Minimum capacity must be a valid number greater than 0.');
       return;
     }
 
     if (isNaN(max) || max < min) {
-      toast.error("Maximum capacity must be a number greater than or equal to minimum.");
+      toast.error('Maximum capacity must be a number greater than or equal to minimum.');
       return;
     }
 
@@ -280,7 +284,6 @@ export const Canvas: React.FC = () => {
     toast.success(`Added ${tableName || libraryItem?.name}`);
   };
 
-
   return (
     <>
       <div className='relative h-full overflow-hidden rounded-lg'>
@@ -298,7 +301,7 @@ export const Canvas: React.FC = () => {
         </div>
         <div
           ref={canvasRef}
-          className='relative w-full h-full overflow-auto h-full bg-canvas'
+          className='relative w-full h-full overflow-auto bg-canvas'
           style={{
             backgroundImage: `
               linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
