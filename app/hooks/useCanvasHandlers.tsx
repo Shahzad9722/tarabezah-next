@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, RefObject } from 'react';
+import { CanvasElement } from '@/app/types';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
 export interface CanvasState {
@@ -9,7 +10,7 @@ export interface CanvasState {
   spacePressed: boolean;
   isConfigDialogOpen: boolean;
   newElementData: {
-    libraryItem: any;
+    libraryItem: CanvasElement;
     x: number;
     y: number;
   } | null;
@@ -193,11 +194,11 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
 
     addElement({
       libraryItemId: libraryItem.id,
-      elementType: libraryItem.type,
+      elementType: libraryItem.elementType,
       x,
       y,
-      width: libraryItem.defaultWidth,
-      height: libraryItem.defaultHeight,
+      width: libraryItem.width,
+      height: libraryItem.height,
       name: state.tableName || libraryItem.name,
       minCapacity: state.minCapacity ? parseInt(state.minCapacity, 10) : undefined,
       maxCapacity: state.maxCapacity ? parseInt(state.maxCapacity, 10) : undefined,

@@ -18,7 +18,7 @@ const FloorPlan: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [newTable, setNewTable] = useState<{ item: any; x: number; y: number }>({ item: {}, x: 0, y: 0 });
-
+  const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
   const [newTableConfig, setNewTableConfig] = useState({
     tableName: '',
@@ -28,12 +28,6 @@ const FloorPlan: React.FC = () => {
 
   const { activeFloorplan, addElement, updateElement } = useFloorplan();
 
-  // Debug logging to monitor tables state
-  // useEffect(() => {
-  //   // console.log('FloorPlan - Current tables:', tables);
-  // }, [tables]);
-
-  // Handle drop of new table types
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ['NEW_TABLE', 'TABLE'],
@@ -108,26 +102,37 @@ const FloorPlan: React.FC = () => {
   );
 
   const handleCompleteReservable = () => {
-    addElement({
-      ...newTable.item,
-      x: newTable.x,
-      y: newTable.y,
-      width: newTable.item.width || 60,
-      height: newTable.item.height || 60,
-      elementType: newTable.item.elementType,
-      elementImageUrl: newTable.item.elementImageUrl,
-      name: newTableConfig.tableName,
-      minCapacity: Number(newTableConfig.minCapacity) || 1,
-      maxCapacity: Number(newTableConfig.maxCapacity) || 1,
-    });
+    if (selectedTable) {
+      updateElement(selectedTable.id, {
+        name: newTableConfig.tableName,
+        minCapacity: Number(newTableConfig.minCapacity) || 1,
+        maxCapacity: Number(newTableConfig.maxCapacity) || 1,
+      });
+
+      toast.success(`Updated ${newTableConfig.tableName}`);
+    } else {
+      addElement({
+        ...newTable.item,
+        x: newTable.x,
+        y: newTable.y,
+        width: newTable.item.width || 60,
+        height: newTable.item.height || 60,
+        elementType: newTable.item.elementType,
+        elementImageUrl: newTable.item.elementImageUrl,
+        name: newTableConfig.tableName,
+        minCapacity: Number(newTableConfig.minCapacity) || 1,
+        maxCapacity: Number(newTableConfig.maxCapacity) || 1,
+      });
+
+      setNewTable({ item: {}, x: 0, y: 0 });
+      toast.success(`Added ${newTableConfig.tableName}`);
+    }
     setIsConfigDialogOpen(false);
     setNewTableConfig({
       tableName: '',
       minCapacity: undefined,
       maxCapacity: undefined,
     });
-    setNewTable({ item: {}, x: 0, y: 0 });
-    toast.success(`Added ${newTableConfig.tableName}`);
   };
   // Handle zoom functionality
   const handleZoomIn = () => {
@@ -145,7 +150,7 @@ const FloorPlan: React.FC = () => {
     setPosition({ x: 0, y: 0 });
   };
 
-  // FIXED: Improved zoom around center to maintain position
+  // zoom around center to maintain position
   const zoomAroundCenter = (newScale: number) => {
     if (!containerRef.current) return;
 
@@ -165,40 +170,44 @@ const FloorPlan: React.FC = () => {
     setPosition({ x: newPositionX, y: newPositionY });
   };
 
-  // Handle mouse wheel zoom - FIXED to zoom around cursor position
+  // Handle mouse wheel zoom
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Only handle zoom if ctrl/cmd is pressed
+    // Handle touchpad gestures (panning)
     if (e.ctrlKey || e.metaKey) {
-      const delta = e.deltaY * -0.01;
-      const newScale = Math.min(Math.max(scale + delta, 0.5), 3);
-
-      // Get mouse position relative to container
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        // Calculate the point in floor plan space under the mouse
-        const floorPlanX = (mouseX - position.x) / scale;
-        const floorPlanY = (mouseY - position.y) / scale;
-
-        // Calculate new position to keep mouse over the same point
-        const newPositionX = mouseX - floorPlanX * newScale;
-        const newPositionY = mouseY - floorPlanY * newScale;
-
-        setScale(newScale);
-        setPosition({ x: newPositionX, y: newPositionY });
-      }
-    } else {
-      // Pan with wheel
       setPosition((prev) => ({
         x: prev.x - e.deltaX,
         y: prev.y - e.deltaY,
       }));
+      return;
     }
+
+    // Handle mouse wheel zooming
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Calculate the point in floor plan space under the mouse
+    const floorPlanX = (mouseX - position.x) / scale;
+    const floorPlanY = (mouseY - position.y) / scale;
+
+    // Calculate zoom factor based on wheel delta
+    const zoomFactor = 1.1; // 10% zoom per wheel tick
+    const newScale =
+      e.deltaY < 0
+        ? Math.min(scale * zoomFactor, 3) // Zoom in
+        : Math.max(scale / zoomFactor, 0.5); // Zoom out
+
+    // Calculate new position to keep mouse over the same point
+    const newPositionX = mouseX - floorPlanX * newScale;
+    const newPositionY = mouseY - floorPlanY * newScale;
+
+    setScale(newScale);
+    setPosition({ x: newPositionX, y: newPositionY });
   };
 
   // Add effect to prevent browser zoom
@@ -255,7 +264,7 @@ const FloorPlan: React.FC = () => {
     setIsDragging(false);
   };
 
-  // Handle touch events for mobile - FIXED zoom behavior
+  // Handle touch events for mobile
   const touchStartDistance = useRef<number | null>(null);
   const touchStartScale = useRef<number>(1);
   const touchStartPosition = useRef({ x: 0, y: 0 });
@@ -325,7 +334,17 @@ const FloorPlan: React.FC = () => {
     touchStartDistance.current = null;
   };
 
-  // console.log('activeFloorplan?.elements', activeFloorplan?.elements);
+  useEffect(() => {
+    if (selectedTable) {
+      setNewTableConfig({
+        tableName: selectedTable.name,
+        minCapacity: selectedTable.minCapacity,
+        maxCapacity: selectedTable.maxCapacity,
+      });
+
+      setIsConfigDialogOpen(true);
+    }
+  }, [selectedTable]);
   return (
     <>
       <div
@@ -342,7 +361,7 @@ const FloorPlan: React.FC = () => {
         <div className='p-4 bg-transparent'>
           <div className='flex flex-wrap gap-1 justify-between items-center bg-transparent'>
             <div className='text-sm text-muted-foreground flex items-center'>
-              <Move size={16} className='mr-1' /> Click and drag to move floor plan
+              <Move size={16} className='mr-1' /> Press Ctrl + Click and drag to move floor plan
             </div>
             <div className='flex items-center gap-1'>
               <Button variant='outline' size='sm' onClick={handleZoomIn}>
@@ -415,19 +434,36 @@ const FloorPlan: React.FC = () => {
             {/* Tables container with higher z-index */}
             <div className='absolute' style={{ zIndex: 10 }}>
               {activeFloorplan?.elements.length > 0 &&
-                activeFloorplan?.elements.map((table) => <TableComponent key={table.id} table={table} scale={scale} />)}
+                activeFloorplan?.elements.map((table) => (
+                  <TableComponent
+                    key={table.id}
+                    table={table}
+                    scale={scale}
+                    selectedTable={selectedTable}
+                    setSelectedTable={setSelectedTable}
+                  />
+                ))}
             </div>
           </div>
         </div>
 
         {/* Debug table count display */}
-        <div className='absolute bottom-2 right-2 bg-white/80 px-2 py-1 text-xs rounded'>
-          Tables: {activeFloorplan?.elements.length ? activeFloorplan?.elements.length : 0}
+        <div className='absolute bottom-2 right-2 bg-color-BE963C text-color-222036 font-bold px-2 py-1 text-xs rounded'>
+          Total Elements: {activeFloorplan?.elements.length ? activeFloorplan?.elements.length : 0}
         </div>
       </div>
 
       {/* Configuration Dialog for Reservable Items */}
-      <Dialog open={isConfigDialogOpen} onOpenChange={setIsConfigDialogOpen}>
+      <Dialog
+        open={isConfigDialogOpen}
+        onOpenChange={(e) => {
+          setIsConfigDialogOpen(e);
+          if (!e) {
+            setNewTableConfig({ tableName: '', minCapacity: undefined, maxCapacity: undefined });
+            setSelectedTable(null);
+          }
+        }}
+      >
         <DialogContent className='bg-color-D0C17'>
           <DialogHeader>
             <DialogTitle>Configure Table</DialogTitle>
@@ -467,10 +503,17 @@ const FloorPlan: React.FC = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant='outline' onClick={() => setIsConfigDialogOpen(false)}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setIsConfigDialogOpen(false);
+                setNewTableConfig({ tableName: '', minCapacity: undefined, maxCapacity: undefined });
+                setSelectedTable(null);
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleCompleteReservable}>Add Table</Button>
+            <Button onClick={handleCompleteReservable}>{selectedTable ? 'Update Table' : 'Add Table'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

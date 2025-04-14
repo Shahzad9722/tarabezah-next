@@ -7,7 +7,7 @@ import logo from '@/public/images/logo.svg';
 
 const Header = () => {
   return (
-    <header className='relative flex items-center bg-[#1c1a2e] p-6 pt-11 pb-6 [box-shadow:0px_4px_4px_0px_#00000040]'>
+    <header className='relative flex items-center bg-[#1c1a2e] p-6 pb-6 [box-shadow:0px_4px_4px_0px_#00000040]'>
       <Navigation />
 
       {/* Center - Logo */}

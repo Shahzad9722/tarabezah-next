@@ -1,24 +1,7 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import { Table2, CircleIcon, Square, RectangleHorizontal } from 'lucide-react';
-import { ElementLibrary } from '../ElementLibrary';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import Image from 'next/image';
-// Define table type templates
-const tableTypes = [
-  { id: 'square', name: 'Square Table', seats: 2, shape: 'square', width: 80, height: 80, icon: Square },
-  {
-    id: 'rectangle',
-    name: 'Rectangle Table',
-    seats: 4,
-    shape: 'rectangle',
-    width: 120,
-    height: 80,
-    icon: RectangleHorizontal,
-  },
-  { id: 'large-rectangle', name: 'Large Table', seats: 6, shape: 'rectangle', width: 150, height: 80, icon: Table2 },
-  { id: 'circle', name: 'Round Table', seats: 2, shape: 'circle', width: 80, height: 80, icon: CircleIcon },
-];
 
 // Component for a draggable table type item
 const TableTypeItem = ({ type }) => {
@@ -53,7 +36,7 @@ const ReservationSidebar: React.FC = () => {
   const { elementLibrary } = useFloorplan();
   return (
     <>
-      <div className='my-4 overflow-y-auto w-full flex-1 border border-gray-800 rounded-lg bg-gradient-to-br from-[#121120]/40 to-[#b98858]/20 p-4'>
+      <div className='mt-4 overflow-y-auto w-full flex-1 border border-gray-800 rounded-lg bg-gradient-to-br from-[#121120]/40 to-[#b98858]/20 p-4'>
         <div className='mb-4'>
           <h2 className='text-xl font-semibold'>Tables</h2>
         </div>

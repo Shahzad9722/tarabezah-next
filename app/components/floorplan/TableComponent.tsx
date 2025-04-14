@@ -9,6 +9,8 @@ import { useFloorplan } from '@/app/context/FloorplanContext';
 interface TableComponentProps {
   table: Table;
   scale: number;
+  selectedTable: Table | null;
+  setSelectedTable: (table: Table | null) => void;
 }
 
 interface DropResult {
@@ -18,7 +20,7 @@ interface DropResult {
   dropEffect: string;
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({ table, scale }) => {
+const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedTable, setSelectedTable }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { removeElement } = useFloorplan();
 
@@ -100,7 +102,6 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale }) => {
 
     return baseStyle;
   };
-  // console.log('table', table);
   return (
     <div
       ref={ref}
@@ -110,11 +111,10 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale }) => {
         top: `${table.y}px`,
         width: `${table.width}px`,
         height: `${table.height}px`,
-        zIndex: 20, // Ensure tables are always above the background
+        zIndex: 20,
       }}
       className={getTableStyle()}
     >
-      <div className='absolute inset-0 cursor-move' />
       {table.elementImageUrl && (
         <Image
           src={table.elementImageUrl}
@@ -122,13 +122,11 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale }) => {
           className='object-contain w-full h-full'
           width={table.width}
           height={table.height}
+          onClick={() => {
+            setSelectedTable(table);
+          }}
         />
       )}
-      {/* <div className='text-center'>
-        <div className='font-bold'>Table {table.number}</div>
-        <div className='text-xs'>Seats: {table.seats}</div>
-        {isOver && canDrop && <div className='text-xs text-green-700 font-semibold mt-1'>Drop to assign</div>}
-      </div> */}
 
       {
         <Button

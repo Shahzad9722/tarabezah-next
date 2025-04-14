@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import FloorPlan from './FloorPlan';
 import { RestaurantProvider } from '@/app/context/RestaurantContext';
 import ReservationSidebar from './ReservationSidebar';
-import Navigation from '../navigation/NewNavigation';
-import { FloorControls } from '../NewFloorControls';
+import Navigation from '../navigation/Navigation';
+import { FloorControls } from '../FloorControls';
 import { toast } from 'sonner';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { useQuery } from '@tanstack/react-query';
@@ -13,12 +13,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Floor, Floorplan } from '@/app/types';
 
 const RestaurantLayout: React.FC = () => {
-  const [activeFloorIndex, setActiveFloorIndex] = useState(0);
-  const [floors, setFloors] = useState<Floor[]>([]);
-  // const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
-  // const [newTable, setNewTable] = useState<{ item: any; x: number; y: number }>({ item: {}, x: 0, y: 0 });
-
-  const { setActiveFloorplanId, setRestaurant, restaurant } = useFloorplan();
+  const { setActiveFloorplanId, restaurant, setRestaurant } = useFloorplan();
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -68,38 +63,48 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      // setActiveFloorplanId(result[0].id);
+      setActiveFloorplanId(result[0].guid);
 
       setRestaurant({
         ...restaurant,
         floorplans: [...result],
       });
-
-      setFloors(floorPlans);
     }
   }, [floorPlans]);
 
-  const removeFloor = (index: number) => {
-    if (floors.length <= 1) {
+  const removeFloor = (id: string) => {
+    if (restaurant.floorplans.length <= 1) {
       toast.error('Cannot remove the last floor');
       return;
     }
-    const updatedFloors = floors.filter((_, i) => i !== index);
-    setFloors(updatedFloors);
-    if (activeFloorIndex >= updatedFloors.length) {
-      setActiveFloorIndex(updatedFloors.length - 1);
+    const floor = restaurant.floorplans.find((floor) => floor.guid === id);
+    if (floor) {
+      setRestaurant({
+        ...restaurant,
+        floorplans: [...restaurant.floorplans.filter((floor) => floor.guid !== id)],
+      });
+
+      setActiveFloorplanId(
+        restaurant.floorplans[0].guid === id ? restaurant.floorplans[1].guid : restaurant.floorplans[0].guid
+      );
     }
     toast.success('Floor removed');
   };
 
-  const renameFloor = (index: number, newName: string) => {
-    const updatedFloors = [...floors];
-    updatedFloors[index] = { ...updatedFloors[index], name: newName };
-    setFloors(updatedFloors);
-    toast.success('Floor renamed');
+  const renameFloor = (id: string, newName: string) => {
+    const floor = restaurant.floorplans.find((floor) => floor.guid === id);
+    if (floor) {
+      setRestaurant({
+        ...restaurant,
+        floorplans: [
+          ...restaurant.floorplans.map((floor) => (floor.guid === id ? { ...floor, name: newName } : floor)),
+        ],
+      });
+
+      toast.success('Floor renamed');
+    }
   };
 
-  // Publish canvas data to API
   const handlePublish = async () => {
     // console.log('restaurant.floorplans', restaurant.floorplans);
     const toastId = toast.loading('Publishing floor plan...');
@@ -130,15 +135,6 @@ const RestaurantLayout: React.FC = () => {
     }
   };
 
-  // floor plan select handle
-  const handleFloorPlanSelect = (guid: string) => {
-    const selectedFloor = floors.find((floor) => floor.guid === guid);
-    if (selectedFloor) {
-      setActiveFloorplanId(guid);
-    }
-  };
-
-  // console.log('restaurant', restaurant.floorplans);
   return (
     <DndProvider backend={HTML5Backend}>
       <RestaurantProvider>
@@ -146,13 +142,7 @@ const RestaurantLayout: React.FC = () => {
           <Navigation onPublish={handlePublish} />
           <div className='flex flex-1 overflow-hidden h-[calc(100vh-188px)]'>
             <div className='w-80 ml-4 h-[calc(100vh-188px)] flex flex-col'>
-              <FloorControls
-                floors={restaurant.floorplans}
-                activeFloorIndex={activeFloorIndex}
-                onFloorChange={handleFloorPlanSelect}
-                onRemoveFloor={removeFloor}
-                onRenameFloor={renameFloor}
-              />
+              <FloorControls onRemoveFloor={removeFloor} onRenameFloor={renameFloor} />
               <ReservationSidebar />
             </div>
             <div className='flex-1 p-4 pt-0 overflow-hidden h-[calc(100vh-188px)]'>

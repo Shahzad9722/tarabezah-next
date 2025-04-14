@@ -214,6 +214,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const onFloorPlanChange = (floorId: string) => {
+    console.log('floorId', floorId);
     setActiveFloorplanId(floorId);
   };
 

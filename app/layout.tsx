@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import Navigation from './components/navigation/Navigation';
-import Header from './components/Header/Header';
 import HeaderWrapper from './components/headerWrapper';
 import { Toaster } from 'sonner';
 
