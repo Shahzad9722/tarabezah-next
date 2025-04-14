@@ -27,6 +27,8 @@ function App({
   };
 
   const generateTimeSlots = (startTimeStr: string, endTimeStr: string): string[] => {
+    console.log('startTimeStr', startTimeStr);
+    console.log('endTimeStr', endTimeStr);
     const slots: string[] = [];
     const now = new Date();
 
@@ -41,17 +43,17 @@ function App({
     endTime.setHours(endH, endM, endS || 0, 0);
 
     // If current time is after end time, return empty array
-    if (now >= endTime) return slots;
+    // if (now >= endTime) return slots;
 
     // Determine the effective start time (max of now and startTimeStr)
-    const effectiveStart = new Date(
-      Math.max(new Date(now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0)).getTime(), startTime.getTime())
-    );
+    // const effectiveStart = new Date(
+    //   Math.max(new Date(now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0)).getTime(), startTime.getTime())
+    // );
 
     // Generate time slots
-    while (effectiveStart <= endTime) {
-      slots.push(effectiveStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      effectiveStart.setMinutes(effectiveStart.getMinutes() + 15);
+    while (startTime <= endTime) {
+      slots.push(startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      startTime.setMinutes(startTime.getMinutes() + 15);
     }
 
     return slots;

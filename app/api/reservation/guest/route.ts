@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { cookies } from 'next/headers';
 
-const restaurantId = 'a7fa1095-d8c5-4d00-8a44-7ba684eae835';
-
 export async function GET(request: Request) {
   try {
     // Get the auth token from cookies
@@ -16,6 +14,7 @@ export async function GET(request: Request) {
 
     const url = new URL(request.url);
     const query = url.searchParams.get('query') || '';
+    const restaurantId = url.searchParams.get('restaurantId');
 
     if (!query) return NextResponse.json({ error: 'query is required' }, { status: 400 });
 
@@ -53,10 +52,10 @@ export async function POST(request: Request) {
       {
         name: payload.name,
         phoneNumber: payload.phone,
-        email: payload.email,
+        email: payload.email || '',
         birthday: payload.birthday,
         tagValues: payload.tags,
-        source: payload.sources.length ? payload.sources[0] : null,
+        source: payload.sources.length ? payload.sources[0] : 0,
         notes: payload.clientNotes,
       },
       {

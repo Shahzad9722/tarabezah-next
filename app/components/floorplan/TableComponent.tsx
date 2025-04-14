@@ -123,6 +123,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
           width={table.width}
           height={table.height}
           onClick={() => {
+            console.log('table', table);
             setSelectedTable(table);
           }}
         />

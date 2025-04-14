@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { cookies } from 'next/headers';
 
-const restaurantId = 'a7fa1095-d8c5-4d00-8a44-7ba684eae835';
-
 export async function GET(request: Request) {
   try {
     // Get the auth token from cookies
@@ -13,6 +11,9 @@ export async function GET(request: Request) {
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const url = new URL(request.url);
+    const restaurantId = url.searchParams.get('restaurantId');
 
     const res: {
       data: {

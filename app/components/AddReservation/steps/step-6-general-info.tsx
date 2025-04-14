@@ -39,10 +39,10 @@ export default function GeneralInfoStep({
       </div>
 
       {/* Reminder */}
-      <div className='flex justify-between items-center gap-4 mb-6'>
+      {/* <div className='flex justify-between items-center gap-4 mb-6'>
         <Label>Reminder</Label>
         <Clock />
-      </div>
+      </div> */}
 
       {/* Client Note */}
       <div className='mb-6'>

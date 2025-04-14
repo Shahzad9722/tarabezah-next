@@ -29,7 +29,11 @@ export default function ClientSearch({
     queryKey: ['guests', { debouncedQuery }],
     queryFn: async () => {
       setLoading(true);
-      const res = await fetch(`/api/reservation/guest?query=${debouncedQuery}`);
+      const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
+      if (!restaurantId) {
+        throw new Error('No restaurant selected');
+      }
+      const res = await fetch(`/api/reservation/guest?query=${debouncedQuery}&restaurantId=${restaurantId}`);
       if (!res.ok) throw new Error('Failed to fetch guest');
       const data = await res.json();
       setLoading(false);
@@ -73,6 +77,7 @@ export default function ClientSearch({
         {showResults && (
           <div className='absolute top-14 bg-color-E9E3D7 w-full p-2 z-10 rounded-md flex flex-col gap-3'>
             <Button
+              type='button'
               onClick={() => {
                 setShowAddNewClient(true);
                 if (isNumeric(searchQuery)) {
