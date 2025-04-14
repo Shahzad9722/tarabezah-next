@@ -32,9 +32,8 @@ function Navigation() {
 
         {/* Menu - Fixed position, full height, sliding from right */}
         <div
-          className={`fixed top-0 left-0 h-screen w-1/3 min-w-[320px] md:min-w-0 bg-color-121020 shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-            isOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed top-0 left-0 h-screen w-1/3 min-w-[320px] md:min-w-0 bg-color-121020 shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="flex justify-end">
             <button
@@ -79,9 +78,8 @@ function Navigation() {
         {/* Overlay */}
         <div
           onClick={closeMenu}
-          className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-40 ${
-            isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-40 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
         />
       </nav>
     </div>
