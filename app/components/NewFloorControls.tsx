@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Floor } from '@/app/page';
 import { Button } from '@/app/components/ui/button';
 import { Plus, Pencil, Trash2, ChevronDown } from 'lucide-react';
 import {
