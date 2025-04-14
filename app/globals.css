@@ -246,3 +246,17 @@ abbr:where([title]) {
   border-radius: 16px;
   background: var(--card-gradient);
 }
+
+/* hide native calender icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+input[type="date"]::-ms-clear {
+  display: none;
+}
+
+input[type="date"]::-ms-expand {
+  display: none;
+}

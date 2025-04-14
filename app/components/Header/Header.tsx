@@ -11,7 +11,7 @@ const Header = () => {
       <Navigation />
 
       {/* Center - Logo */}
-      <div className='absolute left-1/2 transform -translate-x-1/2'>
+      <div className='absolute left-1/2 py-2 transform -translate-x-1/2'>
         <Link href='/'>
           <Image src={logo} height={36.73} width={50} alt='logo' />
         </Link>

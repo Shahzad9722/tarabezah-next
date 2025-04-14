@@ -41,12 +41,22 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder='Enter Name' {...field} />
+                <Input
+                  type='text'
+                  maxLength={30}
+                  placeholder='Enter Name'
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, ''); // allow only letters & spaces
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
 
         <FormField
           control={form.control}
@@ -55,7 +65,16 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input placeholder='Enter Phone Number' {...field} />
+                <Input
+                  type='tel'
+                  maxLength={15}
+                  placeholder='Enter Phone Number'
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,15 +102,36 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Birthday</FormLabel>
               <FormControl>
-                <div className='relative'>
-                  <Input type='date' placeholder='Enter Birthday' {...field} />
-                  <Calendar className='absolute right-4 top-3.5 text-color-E9E3D7 pointer-events-none' size={18} />
+                <div className="relative">
+                  <input
+                    type="date"
+                    name="birthday"
+                    max={new Date().toISOString().split('T')[0]}
+                    {...field}
+                    className="w-full pr-10 bg-transparent text-white border border-gray-300 rounded px-3 py-2 appearance-none"
+                    onClick={() => {
+                      const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
+                      input?.showPicker?.();
+                    }}
+                  />
+                  {/* Custom calendar icon */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
+                      input?.showPicker?.();
+                    }}
+                    className="absolute right-3 top-3.5 text-white"
+                  >
+                    <Calendar size={18} />
+                  </button>
                 </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
 
         <FormField
           control={form.control}

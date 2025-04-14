@@ -2,25 +2,22 @@
 
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 function Navigation() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const openMenu = () => {
-    setIsOpen(true);
-  };
+  // Hide navigation on login page
+  if (pathname === "/login") return null;
 
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
+  const openMenu = () => setIsOpen(true);
+  const closeMenu = () => setIsOpen(false);
 
   return (
-    <div className="">
-      {/* Navigation Bar */}
+    <div>
       <nav className="relative">
-        {/* Menu Button */}
         <div className="flex items-center">
           <button
             onClick={openMenu}
@@ -30,7 +27,6 @@ function Navigation() {
           </button>
         </div>
 
-        {/* Menu - Fixed position, full height, sliding from right */}
         <div
           className={`fixed top-0 left-0 h-screen w-1/3 min-w-[320px] md:min-w-0 bg-color-121020 shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"
             }`}
@@ -57,20 +53,6 @@ function Navigation() {
               className="block py-3 text-color-E9E3D7 hover:text-color-B98858 px-4 rounded-lg transition-colors duration-200"
             >
               Upload Icon
-            </Link>
-            <Link
-              href="/reservation"
-              onClick={closeMenu}
-              className="block py-3 text-color-E9E3D7 hover:text-color-B98858 px-4 rounded-lg transition-colors duration-200"
-            >
-              Reservations
-            </Link>
-            <Link
-              href="/walk-in"
-              onClick={closeMenu}
-              className="block py-3 text-color-E9E3D7 hover:text-color-B98858 px-4 rounded-lg transition-colors duration-200"
-            >
-              Walk In Reservations
             </Link>
           </div>
         </div>
