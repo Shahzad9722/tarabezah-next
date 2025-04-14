@@ -36,9 +36,9 @@ export const FloorplanTabs: React.FC = () => {
             >
                 <TabsList className="w-full bg-color-222036">
                     {restaurant.floorplans.map(floorplan => (
-                        <div key={floorplan.id} className="flex items-center">
+                        <div key={floorplan.guid} className="flex items-center">
                             <TabsTrigger
-                                value={floorplan.id}
+                                value={floorplan.guid}
                                 className="flex-1"
                             >
                                 {floorplan.name}
@@ -50,7 +50,7 @@ export const FloorplanTabs: React.FC = () => {
                                     className="h-8 w-8 ml-1"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        deleteFloorplan(floorplan.id);
+                                        deleteFloorplan(floorplan.guid);
                                     }}
                                 >
                                     <Trash2 className="h-4 w-4" />
