@@ -476,6 +476,8 @@ const FloorPlan: React.FC = () => {
                 value={newTableConfig.tableName}
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, tableName: e.target.value }))}
                 placeholder='Table Name'
+                required
+                type='text'
               />
             </div>
 
@@ -499,6 +501,7 @@ const FloorPlan: React.FC = () => {
                 value={newTableConfig.maxCapacity}
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, maxCapacity: e.target.value }))}
                 required
+                min={1}
               />
             </div>
           </div>
