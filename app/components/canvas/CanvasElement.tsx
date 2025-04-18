@@ -33,7 +33,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
   const handleMouseDown = (e: React.MouseEvent) => {
     // console.log("mouse down")
     e.stopPropagation();
-    setSelectedElementId(element.id);
+    setSelectedElementId(element.localId);
 
     // Only start dragging if not clicking on a resize handle
     const target = e.target as HTMLElement;

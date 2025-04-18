@@ -1,11 +1,12 @@
 import { FloorplanItem } from '../components/FloorplanCanvas';
 
-export type ElementType = 'reservable' | 'decorative';
-
 export interface CanvasElement {
   id: string;
+  localId?: string;
   libraryItemId?: string;
-  elementType: ElementType;
+  floorplanInstanceGuid?: string;
+  purpose: string;
+  elementType: string;
   x: number;
   y: number;
   width: number;

@@ -26,25 +26,22 @@ interface FloorplanContextType {
   onFloorPlanChange: (floorId: string) => void;
 }
 
-const defaultRestaurant: Restaurant = {
-  id: uuidv4(),
-  name: 'My Restaurant',
-  floorplans: [
-    {
-      guid: uuidv4(),
-      name: 'Main Dining Room',
-      elements: [],
-    },
-  ],
-};
-
 const FloorplanContext = createContext<FloorplanContextType | undefined>(undefined);
 
 export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [restaurant, setRestaurant] = useState<Restaurant>(defaultRestaurant);
+  const [restaurant, setRestaurant] = useState<any>({ id: '', name: '', floorplans: [] });
   const [activeFloorplanId, setActiveFloorplanId] = useState<string>('');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const { showLoader, hideLoader } = useLoader();
+
+  // Load restaurant ID from localStorage on initialization
+  useEffect(() => {
+    // console.log('useEffect inside context');
+    const restaurantId = localStorage.getItem('selected-restaurant-id');
+    if (restaurantId) {
+      setRestaurant((prev) => ({ ...prev, id: restaurantId }));
+    }
+  }, []);
 
   // Fetch dynamic elements
   const {
@@ -56,30 +53,35 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     queryKey: ['elements'],
     queryFn: async () => {
       const res = await fetch(`/api/restaurant/elements`);
-      if (!res.ok) throw new Error('Failed to fetch elements');
+
+      if (!res.ok) {
+        window.location.href = '/login';
+        return [];
+      }
+
       const data = await res.json();
 
-      // console.log('data', data);
-      // Transform the response
       return data.elements.map(
         (el: any): CanvasElement => ({
           id: el.guid,
+          localId: '',
+          purpose: el.purpose.toLowerCase() === 'reservable' ? 'reservable' : 'decorative',
           name: el.name,
-          elementImageUrl: el.imageUrl || '❓', // fallback to emoji or default icon
-          elementType: el.purpose?.toLowerCase() === 'reservable' ? 'reservable' : 'decorative',
+          elementImageUrl: el.imageUrl || '❓',
+          elementType: el.tableType?.toLowerCase(),
           width: el.width || 60,
           height: el.height || 60,
-          x: el.x || 0,
-          y: el.y || 0,
-          rotation: el.rotation || 0,
-          libraryItemId: el.guid,
-          minCapacity: el.minCapacity || 1,
+          x: 0,
+          y: 0,
+          rotation: 0,
+          tableId: '',
         })
       );
     },
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('selected-restaurant-id'),
   });
 
-  const activeFloorplan = restaurant.floorplans.find((fp) => fp.guid === activeFloorplanId) ?? restaurant.floorplans[0];
+  const activeFloorplan = restaurant.floorplans?.find((fp) => fp.guid === activeFloorplanId);
 
   const addFloorplan = (name: string) => {
     // console.log('name', name);
@@ -131,19 +133,13 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
   const addElement = (element: Omit<CanvasElement, 'id'>) => {
     if (!activeFloorplan) return;
 
-    const newElement: CanvasElement = {
-      ...element,
-      id: uuidv4(),
-      libraryItemId: element.libraryItemId,
-    };
-
     setRestaurant((prev) => {
       const updatedFloorplans = prev.floorplans.map((fp) => {
         if (fp.guid === (activeFloorplanId || activeFloorplan?.guid)) {
           // Create a NEW array for elements
           return {
             ...fp,
-            elements: [...fp.elements, newElement],
+            elements: [...fp.elements, element],
           };
         }
         return fp;
@@ -152,7 +148,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
       return { ...prev, floorplans: updatedFloorplans };
     });
 
-    setSelectedElementId(newElement.id);
+    setSelectedElementId(element.localId);
   };
 
   const removeElement = (elementId: string) => {
@@ -163,7 +159,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (fp.guid === (activeFloorplanId || activeFloorplan?.guid)) {
           return {
             ...fp,
-            elements: fp.elements.filter((el) => el.id !== elementId),
+            elements: fp.elements.filter((el) => el.localId !== elementId),
           };
         }
         return fp;
@@ -171,10 +167,6 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
 
       return { ...prev, floorplans: updatedFloorplans };
     });
-
-    if (selectedElementId === elementId) {
-      setSelectedElementId(null);
-    }
   };
 
   const updateElement = (id: string, updates: Partial<CanvasElement>) => {
@@ -186,11 +178,13 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
         fp.guid === activeFloorplan?.guid
           ? {
               ...fp,
-              elements: fp.elements.map((el) => (el.id === id ? { ...el, ...updates } : el)),
+              elements: fp.elements.map((el) => (el.localId === id ? { ...el, ...updates } : el)),
             }
           : fp
       ),
     }));
+
+    setSelectedElementId(null);
   };
 
   const deleteElement = (id: string) => {
@@ -199,7 +193,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     setRestaurant((prev) => ({
       ...prev,
       floorplans: prev.floorplans.map((fp) =>
-        fp.guid === activeFloorplanId ? { ...fp, elements: fp.elements.filter((el) => el.id !== id) } : fp
+        fp.guid === activeFloorplanId ? { ...fp, elements: fp.elements.filter((el) => el.localId !== id) } : fp
       ),
     }));
 
@@ -209,12 +203,12 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const publishFloorplans = () => {
-    localStorage.setItem('restaurant', JSON.stringify(restaurant));
+    // localStorage.setItem('restaurant', JSON.stringify(restaurant));
     toast.success('Floorplans published successfully!');
   };
 
   const onFloorPlanChange = (floorId: string) => {
-    console.log('floorId', floorId);
+    // console.log('floorId', floorId);
     setActiveFloorplanId(floorId);
   };
 

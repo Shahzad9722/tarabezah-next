@@ -43,7 +43,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
       type: 'TABLE',
       item: () => {
         // console.log('Drag started for table:', table.id);
-        return { id: table.id, x: table.x, y: table.y };
+        return { tableType: table };
       },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
@@ -118,13 +118,15 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
       {table.elementImageUrl && (
         <Image
           src={table.elementImageUrl}
-          alt={table.name}
+          alt={table.tableId}
           className='object-contain w-full h-full'
           width={table.width}
           height={table.height}
           onClick={() => {
-            console.log('table', table);
-            setSelectedTable(table);
+            // console.log('table', table);
+            if (table.purpose === 'reservable') {
+              setSelectedTable(table);
+            }
           }}
         />
       )}
@@ -134,7 +136,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
           variant='destructive'
           size='icon'
           className='absolute -top-2 -right-2 h-4 w-4 rounded-full bg-red-400 hover:bg-red-600'
-          onClick={() => removeElement(table.id)}
+          onClick={() => removeElement(table.localId)}
         >
           <X className='h-3 w-3' />
         </Button>

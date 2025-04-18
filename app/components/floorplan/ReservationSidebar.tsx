@@ -34,6 +34,7 @@ const TableTypeItem = ({ type }) => {
 
 const ReservationSidebar: React.FC = () => {
   const { elementLibrary } = useFloorplan();
+  // console.log('elementLibrary', elementLibrary);
   return (
     <>
       <div className='mt-4 overflow-y-auto w-full flex-1 border border-gray-800 rounded-lg bg-gradient-to-br from-[#121120]/40 to-[#b98858]/20 p-4'>
@@ -42,7 +43,7 @@ const ReservationSidebar: React.FC = () => {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
           {elementLibrary
-            .filter((item) => item.elementType === 'reservable')
+            .filter((item) => item.purpose === 'reservable')
             .map((type: any) => {
               return <TableTypeItem key={type.id} type={type} />;
             })}
@@ -55,7 +56,7 @@ const ReservationSidebar: React.FC = () => {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
           {elementLibrary
-            .filter((item) => item.elementType === 'decorative')
+            .filter((item) => item.purpose === 'decorative')
             .map((type: any) => {
               return <TableTypeItem key={type.id} type={type} />;
             })}

@@ -9,6 +9,9 @@ export interface Reservation {
 
 export interface Table {
   id: string;
+  localId?: string;
+  tableId?: string;
+  purpose?: string;
   number?: number;
   seats?: number;
   x: number;
@@ -19,6 +22,6 @@ export interface Table {
   height: number;
   reservationId?: string;
   elementImageUrl?: string;
-  elementType: 'decorative' | 'reservable';
+  elementType: string;
   name?: string;
 }

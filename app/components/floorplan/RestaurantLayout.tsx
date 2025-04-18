@@ -11,9 +11,10 @@ import { useFloorplan } from '@/app/context/FloorplanContext';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { Floor, Floorplan } from '@/app/types';
+import { v4 as uuidv4 } from 'uuid';
 
 const RestaurantLayout: React.FC = () => {
-  const { setActiveFloorplanId, restaurant, setRestaurant } = useFloorplan();
+  const { setActiveFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -44,12 +45,17 @@ const RestaurantLayout: React.FC = () => {
   });
 
   useEffect(() => {
+    // console.log('floorplans', floorPlans.length);
     if (floorPlans.length > 0) {
       const result: Floorplan[] = floorPlans.map((floor: Floor) => ({
         guid: floor.guid,
         name: floor.name,
         elements: floor.elements.map((element: any) => ({
+          floorplanInstanceGuid: element.guid,
           id: element.elementGuid,
+          localId: uuidv4(),
+          tableId: element.tableId,
+          purpose: elementLibrary.find((item) => item.id === element.elementGuid)?.purpose,
           elementType: element.elementType,
           name: element.elementName,
           minCapacity: element.minCapacity,
@@ -106,14 +112,15 @@ const RestaurantLayout: React.FC = () => {
   };
 
   const handlePublish = async () => {
-    // console.log('restaurant.floorplans', restaurant.floorplans);
+    // console.log('restaurant.floorplans', restaurant);
     const toastId = toast.loading('Publishing floor plan...');
     try {
       const floorsToPublish = restaurant.floorplans.map((floor) => ({
+        guid: floor.guid || '00000000-0000-0000-0000-000000000000',
         name: floor.name,
-        restaurantGuid: restaurant.id,
         elements: floor.elements.map((item) => ({
-          elementGuid: item.libraryItemId || item.id,
+          guid: item.floorplanInstanceGuid || '00000000-0000-0000-0000-000000000000',
+          elementGuid: item.id,
           tableId: item.name,
           minCapacity: item.minCapacity,
           maxCapacity: item.maxCapacity,
@@ -122,6 +129,9 @@ const RestaurantLayout: React.FC = () => {
           rotation: 0,
         })),
       }));
+
+      console.log('floorsToPublish', floorsToPublish);
+
       const res = await publishFloorPlans(floorsToPublish);
       if (!res.ok) {
         throw new Error('Failed to publish floor plan');
@@ -135,6 +145,7 @@ const RestaurantLayout: React.FC = () => {
     }
   };
 
+  // console.log('restaurant.floorplans', restaurant.floorplans);
   return (
     <DndProvider backend={HTML5Backend}>
       <RestaurantProvider>

@@ -174,6 +174,8 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
         addElement({
           libraryItemId: libraryItem.id,
           elementType: libraryItem.type,
+          purpose: libraryItem.purpose,
+          tableId: libraryItem.tableId,
           x,
           y,
           width: libraryItem.defaultWidth,
@@ -191,10 +193,11 @@ export const useCanvasHandlers = (canvasRef: RefObject<HTMLDivElement | null>) =
     if (!state.newElementData) return;
 
     const { libraryItem, x, y } = state.newElementData;
-
     addElement({
       libraryItemId: libraryItem.id,
       elementType: libraryItem.elementType,
+      purpose: libraryItem.purpose,
+      tableId: libraryItem.tableId,
       x,
       y,
       width: libraryItem.width,

@@ -12,7 +12,7 @@ import CombinationInfoDialog from '../CombinationInfoDialog';
 import { toast } from 'sonner';
 import { setFilters } from '@/store/features/combination-filters/combinationFilterSlice';
 import Image from 'next/image';
-import { ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { ZoomIn, ZoomOut, RefreshCw, Move } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Slider } from '@/app/components/ui/slider';
 
@@ -55,6 +55,8 @@ export default function TableCombinations() {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters) || {};
   const dispatch = useDispatch();
@@ -196,27 +198,177 @@ export default function TableCombinations() {
   // Handle mouse wheel zoom
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
 
+    // Handle panning (both touchpad gestures and mouse movement with Ctrl)
+    if (e.ctrlKey || e.metaKey) {
+      // For touchpad gestures, use deltaX and deltaY
+      if (e.deltaMode === 0) {
+        // DOM_DELTA_PIXEL (touchpad)
+        const newX = position.x - e.deltaX;
+        const newY = position.y - e.deltaY;
+        setPosition({ x: newX, y: newY });
+      }
+      // For mouse wheel, we'll handle it in mouseMove
+      return;
+    }
+
+    // Handle mouse wheel zooming
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Calculate the point in floor plan space under the mouse
     const floorPlanX = (mouseX - position.x) / scale;
     const floorPlanY = (mouseY - position.y) / scale;
 
-    const zoomFactor = 1.1;
-    const newScale = e.deltaY < 0
-      ? Math.min(scale * zoomFactor, 3)
-      : Math.max(scale / zoomFactor, 0.5);
+    // Calculate zoom factor based on wheel delta
+    const zoomFactor = 1.1; // 10% zoom per wheel tick
+    const newScale =
+      e.deltaY < 0
+        ? Math.min(scale * zoomFactor, 3) // Zoom in
+        : Math.max(scale / zoomFactor, 0.5); // Zoom out
 
+    // Calculate new position to keep mouse over the same point
     const newPositionX = mouseX - floorPlanX * newScale;
     const newPositionY = mouseY - floorPlanY * newScale;
 
     setScale(newScale);
     setPosition({ x: newPositionX, y: newPositionY });
   };
+
+  // Handle panning functionality
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      setPosition({
+        x: newX,
+        y: newY,
+      });
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      setIsDragging(false);
+    }
+  };
+
+  // Handle touch events for mobile
+  const touchStartDistance = useRef<number | null>(null);
+  const touchStartScale = useRef<number>(1);
+  const touchStartPosition = useRef({ x: 0, y: 0 });
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Store initial distance between two fingers for pinch zoom
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      touchStartDistance.current = Math.sqrt(dx * dx + dy * dy);
+      touchStartScale.current = scale;
+
+      // Calculate midpoint of the two touches
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+      touchStartPosition.current = { x: midX, y: midY };
+    } else if (e.touches.length === 1) {
+      // Handle pan
+      touchStartPosition.current = {
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent page scrolling
+
+    if (e.touches.length === 2 && touchStartDistance.current !== null) {
+      // Handle pinch zoom
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Calculate new scale based on the change in distance
+      const newScale = Math.min(Math.max(touchStartScale.current * (distance / touchStartDistance.current), 0.5), 3);
+
+      // Calculate midpoint of the two touches
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+      // Get container rect
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        // Calculate the point in floor plan space at the touch midpoint
+        const floorPlanX = (midX - rect.left - position.x) / scale;
+        const floorPlanY = (midY - rect.top - position.y) / scale;
+
+        // Keep the midpoint stationary during zoom
+        const newPositionX = midX - rect.left - floorPlanX * newScale;
+        const newPositionY = midY - rect.top - floorPlanY * newScale;
+
+        setScale(newScale);
+        setPosition({ x: newPositionX, y: newPositionY });
+      }
+    } else if (e.touches.length === 1) {
+      // Handle pan
+      setPosition({
+        x: e.touches[0].clientX - touchStartPosition.current.x,
+        y: e.touches[0].clientY - touchStartPosition.current.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartDistance.current = null;
+  };
+
+  // Add effect to prevent browser zoom
+  useEffect(() => {
+    const preventDefault = (e: Event) => {
+      if (containerRef.current?.contains(e.target as Node)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    const events = [
+      'wheel',
+      'mousewheel',
+      'DOMMouseScroll',
+      'touchmove',
+      'gesturestart',
+      'gesturechange',
+      'gestureend',
+    ];
+
+    events.forEach((event) => {
+      window.addEventListener(event, preventDefault, { passive: false });
+      document.addEventListener(event, preventDefault, { passive: false });
+    });
+
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, preventDefault);
+        document.removeEventListener(event, preventDefault);
+      });
+    };
+  }, []);
 
   // Get table style based on state
   const getTableStyle = (item: Item, isSelected: boolean, isInCombination: boolean) => {
@@ -251,7 +403,7 @@ export default function TableCombinations() {
   };
 
   return (
-    <div className='flex-1'>
+    <div className='flex-1 px-4'>
       <FilterBar
         floorPlans={floorPlans}
         tableTypes={tableTypes}
@@ -261,39 +413,49 @@ export default function TableCombinations() {
         }}
       />
 
-      <div className='flex min-h-[600px] h-[70vh] flex-col md:flex-row gap-6'>
+      <div className='flex h-[calc(100vh-300px)] flex-col md:flex-row gap-6 border-gray-800 rounded-lg'>
         <div
-          className='md:flex-1 bg-color-D0C17 rounded-lg min-h-[300px] md:min-h-auto relative overflow-hidden'
-          onWheel={handleWheel}
+          className='w-full h-full bg-transparent border border-gray-800 overflow-hidden relative flex flex-col rounded-lg'
           ref={containerRef}
           style={{
-            touchAction: 'none',
-            userSelect: 'none',
+            touchAction: 'none' as const,
+            userSelect: 'none' as const,
+            WebkitUserSelect: 'none' as const,
+            msUserSelect: 'none' as const,
           }}
         >
           {/* Zoom controls */}
-          <div className='absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#1C1A2E] p-2 rounded-lg'>
-            <Button variant='outline' size='sm' onClick={handleZoomIn}>
-              <ZoomIn size={16} />
-            </Button>
-            <Button variant='outline' size='sm' onClick={handleZoomOut}>
-              <ZoomOut size={16} />
-            </Button>
-            <Button variant='outline' size='sm' onClick={handleResetView}>
-              <RefreshCw size={16} />
-            </Button>
-            <div className='flex items-center gap-2 ml-2'>
-              <span className='text-sm text-white'>Zoom:</span>
-              <div className='w-24'>
-                <Slider
-                  value={[scale * 100]}
-                  min={50}
-                  max={300}
-                  step={10}
-                  onValueChange={([value]) => zoomAroundCenter(value / 100)}
-                />
+          <div className='p-4 bg-transparent'>
+            <div className='flex flex-wrap gap-1 justify-between items-center bg-transparent'>
+              <div className='text-sm text-muted-foreground flex items-center'>
+                <Move size={16} className='mr-1' /> Press Ctrl + Click and drag to move floor plan
               </div>
-              <span className='text-sm text-muted-foreground'>{Math.round(scale * 100)}%</span>
+              <div className='flex items-center gap-1'>
+                <Button variant='outline' size='sm' onClick={handleZoomIn}>
+                  <ZoomIn size={16} />
+                </Button>
+                <Button variant='outline' size='sm' onClick={handleZoomOut}>
+                  <ZoomOut size={16} />
+                </Button>
+                <Button variant='outline' size='sm' onClick={handleResetView}>
+                  <RefreshCw size={16} />
+                </Button>
+                <div className='ml-2 flex items-center gap-2'>
+                  <span className='text-sm text-white'>Zoom:</span>
+                  <div className='w-24'>
+                    <Slider
+                      value={[scale * 100]}
+                      min={50}
+                      max={300}
+                      step={10}
+                      onValueChange={([value]) => {
+                        zoomAroundCenter(value / 100);
+                      }}
+                    />
+                  </div>
+                  <span className='text-sm text-muted-foreground'>{Math.round(scale * 100)}%</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -302,70 +464,86 @@ export default function TableCombinations() {
             Selected: {selectedItems.length}
           </div>
 
-          <div className='relative w-full h-full'>
-            {/* Background grid */}
+          <div
+            className='relative flex-1 overflow-hidden cursor-move'
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            ref={(node) => {
+              containerRef.current = node;
+              // drop(node);
+            }}
+          >
             <div
-              className='absolute'
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
-                  linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px)
-                `,
-                backgroundSize: '20px 20px',
-                width: '10000px',
-                height: '10000px',
-                left: '-5000px',
-                top: '-5000px',
-                zIndex: 0,
-              }}
-            />
-
-            {/* Tables container */}
-            <div
-              className='absolute'
+              className='absolute inset-0 overflow-visible'
               style={{
                 transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
                 transformOrigin: '0 0',
               }}
             >
-              {floorPlans
-                .find((p) => p.guid === selectedFilters.floorPlanId)
-                ?.elements.filter((e) => {
-                  if (!selectedFilters.tableType) return true;
-                  return e.elementType === selectedFilters.tableType;
-                })
-                ?.map((item) => {
-                  const isSelected = selectedItems.some((sel) => sel.guid === item.guid);
-                  const isInExpandedCombination = expandedCombination?.members.some(
-                    (member) => member.floorplanElementInstanceGuid === item.guid
-                  );
+              {/* Background grid */}
+              <div
+                className='absolute'
+                style={{
+                  backgroundImage: `
+              linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px)
+            `,
+                  backgroundSize: '20px 20px',
+                  width: '10000px',
+                  height: '10000px',
+                  left: '-5000px',
+                  top: '-5000px',
+                  zIndex: 0,
+                }}
+              />
 
-                  return (
-                    <div
-                      key={item.guid}
-                      className={getTableStyle(item, isSelected, isInExpandedCombination)}
-                      style={{
-                        position: 'absolute',
-                        left: `${item.x}px`,
-                        top: `${item.y}px`,
-                        width: `${item.width || 60}px`,
-                        height: `${item.height || 60}px`,
-                        zIndex: 20,
-                      }}
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item.elementImageUrl && (
-                        <Image
-                          src={item.elementImageUrl}
-                          alt={item.elementName}
-                          className='object-contain w-full h-full'
-                          width={item.width || 60}
-                          height={item.height || 60}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
+              {/* Tables container with higher z-index */}
+              <div className='absolute' style={{ zIndex: 10 }}>
+                {floorPlans
+                  .find((p) => p.guid === selectedFilters.floorPlanId)
+                  ?.elements.filter((e) => {
+                    if (!selectedFilters.tableType) return true;
+                    return e.elementType === selectedFilters.tableType;
+                  })
+                  ?.map((item) => {
+                    const isSelected = selectedItems.some((sel) => sel.guid === item.guid);
+                    const isInExpandedCombination = expandedCombination?.members.some(
+                      (member) => member.floorplanElementInstanceGuid === item.guid
+                    );
+
+                    return (
+                      <div
+                        key={item.guid}
+                        className={getTableStyle(item, isSelected, isInExpandedCombination)}
+                        style={{
+                          position: 'absolute',
+                          left: `${item.x}px`,
+                          top: `${item.y}px`,
+                          width: `${item.width || 60}px`,
+                          height: `${item.height || 60}px`,
+                          zIndex: 20,
+                        }}
+                        onClick={() => handleItemClick(item)}
+                      >
+                        {item.elementImageUrl && (
+                          <Image
+                            src={item.elementImageUrl}
+                            alt={item.elementName}
+                            className='object-contain w-full h-full'
+                            width={item.width || 60}
+                            height={item.height || 60}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>

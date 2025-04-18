@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         },
       }
     );
-
+    // console.log('res', res);
     const data = res?.data?.data?.result;
 
     const response = NextResponse.json(
@@ -30,13 +30,17 @@ export async function POST(request: Request) {
       { status: 200 }
     );
 
+    // console.log('data', data);
     // Set the token in an HTTP-only cookie
     response.cookies.set('auth-token', data.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
+      path: '/',
       maxAge: 60 * 60 * 24, // 24 hours
     });
+
+    // await new Promise((resolve) => setTimeout(resolve, 100));
 
     return response;
   } catch (error) {

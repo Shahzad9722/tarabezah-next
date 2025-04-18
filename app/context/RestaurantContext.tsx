@@ -19,7 +19,7 @@ interface RestaurantContextType {
     x: number;
     y: number;
     elementImageUrl: string;
-    elementType: 'reservable' | 'decorative';
+    elementType: string;
     name: string;
     minCapacity?: number;
     maxCapacity?: number;
@@ -141,7 +141,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     x: number;
     y: number;
     elementImageUrl: string;
-    elementType: 'reservable' | 'decorative';
+    elementType: string;
     name: string;
   }) => {
     // Get the next table number by incrementing the current counter

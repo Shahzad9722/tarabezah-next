@@ -27,8 +27,8 @@ function App({
   };
 
   const generateTimeSlots = (startTimeStr: string, endTimeStr: string): string[] => {
-    console.log('startTimeStr', startTimeStr);
-    console.log('endTimeStr', endTimeStr);
+    // console.log('startTimeStr', startTimeStr);
+    // console.log('endTimeStr', endTimeStr);
     const slots: string[] = [];
     const now = new Date();
 

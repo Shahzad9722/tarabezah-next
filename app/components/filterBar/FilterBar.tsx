@@ -38,7 +38,7 @@ const FilterBar = ({
         <div className='flex flex-col md:flex-row md:items-center gap-4'>
           {/* Floorplan Dropdown */}
           <div className='flex flex-col gap-2.5 md:w-[200px]'>
-            <label className='text-xl text-color-E9E3D7 font-medium'>Floorplan</label>
+            <label className='text-lg text-color-E9E3D7 font-medium'>Floorplan</label>
             <div className='relative'>
               <FormSelect
                 value={selectedFilters.floorPlanId || 'all'}
@@ -47,7 +47,6 @@ const FilterBar = ({
                   dispatch(setFilters({ ...selectedFilters, floorPlanId: value === 'all' ? '' : value }))
                 }
                 options={[
-                  { label: 'All', value: 'all' },
                   ...floorPlans.map((fp) => ({
                     label: fp.name,
                     value: fp.guid,
@@ -59,7 +58,7 @@ const FilterBar = ({
 
           {/* Table Types Dropdown */}
           <div className='flex flex-col gap-2.5 md:w-[200px]'>
-            <label className='text-xl text-color-E9E3D7 font-medium'>Table types</label>
+            <label className='text-lg text-color-E9E3D7 font-medium'>Table types</label>
             <div className='relative'>
               <FormSelect
                 value={selectedFilters.tableType || 'all'}
@@ -82,11 +81,7 @@ const FilterBar = ({
         {/* Add Button */}
         <div className='flex items-center gap-6'>
           <span className='text-sm text-color-B98858 cursor-pointer font-semibold hidden'>Change log</span>
-          <Button
-            className='h-9 text-sm'
-            onClick={handleAdd}
-            disabled={!selectedFilters?.floorPlanId}
-          >
+          <Button className='h-9 text-sm' onClick={handleAdd} disabled={!selectedFilters?.floorPlanId}>
             Add
           </Button>
         </div>

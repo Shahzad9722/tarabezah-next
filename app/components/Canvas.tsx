@@ -229,6 +229,8 @@ export const Canvas: React.FC = () => {
         addElement({
           libraryItemId: libraryItem.id,
           elementType: libraryItem.elementType,
+          purpose: libraryItem.purpose,
+          tableId: libraryItem.tableId,
           x,
           y,
           width: libraryItem.width,
@@ -270,6 +272,8 @@ export const Canvas: React.FC = () => {
     addElement({
       libraryItemId: libraryItem?.id,
       elementType: libraryItem?.elementType,
+      purpose: libraryItem?.purpose,
+      tableId: libraryItem?.tableId,
       x,
       y,
       width: libraryItem?.width,

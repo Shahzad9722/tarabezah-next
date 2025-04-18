@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 
 export interface MultiSelectOption {
   id: number;
@@ -13,6 +13,7 @@ interface MultiSelectProps {
   value: number[];
   onChange: (value: number[]) => void;
   className?: string;
+  isMultiSelect?: boolean;
 }
 
 export const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -20,6 +21,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   value,
   className,
   onChange,
+  isMultiSelect = true,
 }) => {
   const isSelected = (id: number) => value.includes(id);
 
@@ -27,20 +29,24 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     if (isSelected(id)) {
       onChange(value.filter((selectedId) => selectedId !== id));
     } else {
-      onChange([...value, id]);
+      if (isMultiSelect) {
+        onChange([...value, id]);
+      } else {
+        onChange([id]);
+      }
     }
   };
 
   return (
-    <div className={`flex flex-wrap gap-5 w-full ${className || ""}`}>
+    <div className={`flex flex-wrap gap-5 w-full ${className || ''}`}>
       {options.map((option) => (
         <button
           key={option.id}
           className={`flex items-center gap-3 rounded-lg font-medium focus:outline-none focus:ring-none focus:ring-primary-none hover:bg-muted ${
-            isSelected(option.id) ? "text-color-B98858" : "text-color-E9E3D7"
+            isSelected(option.id) ? 'text-color-B98858' : 'text-color-E9E3D7'
           }`}
           onClick={() => toggleSelection(option.id)}
-          type="button"
+          type='button'
         >
           {option.icon}
           {option.name}

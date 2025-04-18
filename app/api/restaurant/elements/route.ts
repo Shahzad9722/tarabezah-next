@@ -11,6 +11,7 @@ export async function GET() {
     // if (!token) {
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }
+
     const res: any = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Elements`, {
       headers: {
         'Content-Type': 'application/json',

@@ -52,10 +52,23 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                 <Label>More than 20 guests</Label>
                 <Input
                   type='number'
+                  step={1}
+                  min={1}
+                  onKeyDown={(e) => {
+                    if (e.key === '.' || e.key === 'e' || e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
                   {...field}
                   onChange={(e) => {
-                    field.onChange(e.target.valueAsNumber);
-                    setPartySize(e.target.valueAsNumber);
+                    // Remove any decimal points from the input value
+                    const value = parseInt(e.target.value.replace(/\./g, ''));
+                    // console.log('value', value);
+                    if (isNaN(value)) {
+                      return;
+                    }
+                    field.onChange(value);
+                    setPartySize(value);
                   }}
                 />
               </div>

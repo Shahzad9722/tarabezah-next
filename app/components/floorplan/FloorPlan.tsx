@@ -9,7 +9,7 @@ import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
-
+import { v4 as uuidv4 } from 'uuid';
 const FloorPlan: React.FC = () => {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,18 +31,31 @@ const FloorPlan: React.FC = () => {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ['NEW_TABLE', 'TABLE'],
-      drop: (item: { tableType?: any; id?: string; x?: number; y?: number }, monitor) => {
-        // console.log('Drop event triggered with item:', item);
-
+      drop: (
+        item: {
+          tableType?: {
+            localId?: string;
+            floorplanInstanceGuid?: string;
+            tableId?: string;
+            purpose?: string;
+            elementImageUrl?: string;
+            elementType?: string;
+            name?: string;
+            width?: number;
+            height?: number;
+            x?: number;
+            y?: number;
+          };
+        },
+        monitor
+      ) => {
         const containerRect = containerRef.current?.getBoundingClientRect();
         if (!containerRect) {
-          // console.log('No container rect found');
           return null;
         }
 
         const dropOffset = monitor.getClientOffset();
         if (!dropOffset) {
-          // console.log('No drop offset found');
           return null;
         }
 
@@ -54,45 +67,61 @@ const FloorPlan: React.FC = () => {
         const floorPlanX = (containerX - position.x) / scale;
         const floorPlanY = (containerY - position.y) / scale;
 
-        // console.log('Drop coordinates:', {
-        //   client: { x: dropOffset.x, y: dropOffset.y },
-        //   container: { x: containerX, y: containerY },
-        //   floorPlan: { x: floorPlanX, y: floorPlanY },
-        // });
-
         // If it's a new table being dropped
-        if (item.tableType) {
-          // console.log('Dropping new table:', item.tableType);
-          if (item.tableType.elementType === 'decorative') {
+        if (!item.tableType.floorplanInstanceGuid) {
+          // Get the table's dimensions
+          const tableWidth = item.tableType?.width || 60;
+          const tableHeight = item.tableType?.height || 60;
+
+          // Adjust the position to center the table on the cursor, accounting for scale
+          const adjustedFloorPlanX = floorPlanX - tableWidth / 2 / scale;
+          const adjustedFloorPlanY = floorPlanY - tableHeight / 2 / scale;
+
+          if (item.tableType.purpose === 'decorative') {
             // Add the new decorative item
             addElement({
               ...item.tableType,
-              x: floorPlanX,
-              y: floorPlanY,
+              localId: uuidv4(),
+              floorplanInstanceGuid: '00000000-0000-0000-0000-000000000000',
+              x: adjustedFloorPlanX,
+              y: adjustedFloorPlanY,
               elementImageUrl: item.tableType.elementImageUrl,
-              elementType: item.tableType.elementType,
               name: item.tableType.name,
+              purpose: item.tableType.purpose,
+              elementType: item.tableType.elementType,
+              width: item.tableType.width,
+              height: item.tableType.height,
             });
             toast.success(`Added ${item.tableType.name}`);
           } else {
-            setNewTable({ item: item.tableType, x: floorPlanX, y: floorPlanY });
+            setNewTable({ item: item.tableType, x: adjustedFloorPlanX, y: adjustedFloorPlanY });
             setIsConfigDialogOpen(true);
           }
         } else {
-          // console.log('Dropping existing table:', item.id);
-          if (item.id) {
-            updateElement(item.id, { x: floorPlanX, y: floorPlanY });
+          // For existing tables, get the initial drag position
+          const initialOffset = monitor.getInitialClientOffset();
+          const initialTableRect = monitor.getInitialSourceClientOffset();
+
+          if (initialOffset && initialTableRect) {
+            const cursorOffsetX = initialOffset.x - initialTableRect.x;
+            const cursorOffsetY = initialOffset.y - initialTableRect.y;
+
+            const adjustedFloorPlanX = floorPlanX - cursorOffsetX / scale;
+            const adjustedFloorPlanY = floorPlanY - cursorOffsetY / scale;
+
+            if (item.tableType.localId) {
+              updateElement(item.tableType.localId, { x: adjustedFloorPlanX, y: adjustedFloorPlanY });
+            }
+          } else if (item.tableType.localId) {
+            updateElement(item.tableType.localId, { x: floorPlanX, y: floorPlanY });
           }
         }
 
-        // Return the drop result for both new and existing tables
-        const dropResult = {
-          id: item.id,
+        return {
+          id: item.tableType.localId,
           x: floorPlanX,
           y: floorPlanY,
         };
-        // console.log('Returning drop result:', dropResult);
-        return dropResult;
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
@@ -102,17 +131,38 @@ const FloorPlan: React.FC = () => {
   );
 
   const handleCompleteReservable = () => {
+    if (newTableConfig.maxCapacity < newTableConfig.minCapacity) {
+      toast.error('Maximum capacity cannot be less than minimum capacity');
+      return;
+    }
+
+    const existingTable = activeFloorplan.elements.find((item) => item.tableId === newTableConfig.tableName.trim());
+
+    if (
+      existingTable &&
+      selectedTable.localId != existingTable.localId &&
+      existingTable.tableId === newTableConfig.tableName.trim()
+    ) {
+      toast.error('Another table with this name already exists');
+      return;
+    }
+
     if (selectedTable) {
-      updateElement(selectedTable.id, {
+      updateElement(selectedTable.localId, {
         name: newTableConfig.tableName,
+        tableId: newTableConfig.tableName,
         minCapacity: Number(newTableConfig.minCapacity) || 1,
         maxCapacity: Number(newTableConfig.maxCapacity) || 1,
       });
 
       toast.success(`Updated ${newTableConfig.tableName}`);
     } else {
+      console.log('newTable', newTable);
       addElement({
         ...newTable.item,
+        localId: uuidv4(),
+        floorplanInstanceGuid: '00000000-0000-0000-0000-000000000000',
+        tableId: newTableConfig.tableName,
         x: newTable.x,
         y: newTable.y,
         width: newTable.item.width || 60,
@@ -170,17 +220,49 @@ const FloorPlan: React.FC = () => {
     setPosition({ x: newPositionX, y: newPositionY });
   };
 
-  // Handle mouse wheel zoom
+  // Handle panning functionality
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      setPosition({
+        x: newX,
+        y: newY,
+      });
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      setIsDragging(false);
+    }
+  };
+
+  // Handle mouse wheel zoom and pan
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Handle touchpad gestures (panning)
+    // Handle panning (both touchpad gestures and mouse movement with Ctrl)
     if (e.ctrlKey || e.metaKey) {
-      setPosition((prev) => ({
-        x: prev.x - e.deltaX,
-        y: prev.y - e.deltaY,
-      }));
+      // For touchpad gestures, use deltaX and deltaY
+      if (e.deltaMode === 0) {
+        // DOM_DELTA_PIXEL (touchpad)
+        const newX = position.x - e.deltaX;
+        const newY = position.y - e.deltaY;
+        setPosition({ x: newX, y: newY });
+      }
+      // For mouse wheel, we'll handle it in mouseMove
       return;
     }
 
@@ -242,27 +324,6 @@ const FloorPlan: React.FC = () => {
       });
     };
   }, []);
-
-  // Handle panning functionality
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.target === containerRef.current || (e.target as HTMLElement).classList.contains('floor-background')) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
 
   // Handle touch events for mobile
   const touchStartDistance = useRef<number | null>(null);
@@ -337,7 +398,7 @@ const FloorPlan: React.FC = () => {
   useEffect(() => {
     if (selectedTable) {
       setNewTableConfig({
-        tableName: selectedTable.name,
+        tableName: selectedTable.tableId,
         minCapacity: selectedTable.minCapacity,
         maxCapacity: selectedTable.maxCapacity,
       });
@@ -349,13 +410,12 @@ const FloorPlan: React.FC = () => {
     <>
       <div
         className='w-full h-full bg-transparent border border-gray-800 overflow-hidden relative flex flex-col rounded-lg'
-        onWheel={handleWheel}
         ref={containerRef}
         style={{
-          touchAction: 'none' as const,
-          userSelect: 'none' as const,
-          WebkitUserSelect: 'none' as const,
-          msUserSelect: 'none' as const,
+          touchAction: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          msUserSelect: 'none',
         }}
       >
         <div className='p-4 bg-transparent'>
@@ -394,6 +454,7 @@ const FloorPlan: React.FC = () => {
 
         <div
           className='relative flex-1 overflow-hidden cursor-move'
+          onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -436,7 +497,7 @@ const FloorPlan: React.FC = () => {
               {activeFloorplan?.elements.length > 0 &&
                 activeFloorplan?.elements.map((table) => (
                   <TableComponent
-                    key={table.id}
+                    key={table.localId}
                     table={table}
                     scale={scale}
                     selectedTable={selectedTable}
@@ -477,6 +538,7 @@ const FloorPlan: React.FC = () => {
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, tableName: e.target.value }))}
                 placeholder='Table Name'
                 required
+                min={1}
                 type='text'
               />
             </div>
@@ -516,7 +578,12 @@ const FloorPlan: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button onClick={handleCompleteReservable}>{selectedTable ? 'Update Table' : 'Add Table'}</Button>
+            <Button
+              disabled={!newTableConfig.tableName.trim() || !newTableConfig.minCapacity || !newTableConfig.maxCapacity}
+              onClick={handleCompleteReservable}
+            >
+              {selectedTable ? 'Update Table' : 'Add Table'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

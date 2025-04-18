@@ -57,7 +57,6 @@ export default function AddReservationStep({
           )}
         />
 
-
         <FormField
           control={form.control}
           name='phone'
@@ -102,13 +101,13 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Birthday</FormLabel>
               <FormControl>
-                <div className="relative">
+                <div className='relative'>
                   <input
-                    type="date"
-                    name="birthday"
+                    type='date'
+                    name='birthday'
                     max={new Date().toISOString().split('T')[0]}
                     {...field}
-                    className="w-full pr-10 bg-transparent text-white border border-gray-300 rounded px-3 py-2 appearance-none"
+                    className='w-full pr-10 bg-transparent text-white border border-gray-300 rounded px-3 py-2 appearance-none'
                     onClick={() => {
                       const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
                       input?.showPicker?.();
@@ -116,12 +115,12 @@ export default function AddReservationStep({
                   />
                   {/* Custom calendar icon */}
                   <button
-                    type="button"
+                    type='button'
                     onClick={() => {
                       const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
                       input?.showPicker?.();
                     }}
-                    className="absolute right-3 top-3.5 text-white"
+                    className='absolute right-3 top-3.5 text-white'
                   >
                     <Calendar size={18} />
                   </button>
@@ -132,7 +131,6 @@ export default function AddReservationStep({
           )}
         />
 
-
         <FormField
           control={form.control}
           name='sources'
@@ -140,7 +138,11 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Client Source</FormLabel>
               <FormControl>
-                <MultiSelect options={sources.map((s) => ({ id: s.value, name: s.name }))} {...field} />
+                <MultiSelect
+                  options={sources.map((s) => ({ id: s.value, name: s.name }))}
+                  {...field}
+                  isMultiSelect={false}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

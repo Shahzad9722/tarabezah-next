@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     if (!restaurantId) {
       return NextResponse.json({ error: 'Restaurant ID is required' }, { status: 400 });
     }
-
+    // console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/floorplans/with-elements`);
     // Fetch floorplans from backend
     const res = await axios.get<BackendResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/floorplans/with-elements`,
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
         },
       }
     );
-
+    // console.log(res.data?.data?.result.length);
     return NextResponse.json({ floorPlans: res.data?.data?.result || [] }, { status: 200 });
   } catch (error: any) {
     console.error('Error fetching floorplans:', error.response?.data);
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     const payload = await request.json();
-    console.log('payload', JSON.stringify(payload, null, 2));
+    // console.log('payload', JSON.stringify(payload, null, 2));
     // Save floorplans to backend
     const res = await axios.post<BackendResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Restaurants/${restaurantId}/create-floorplans`,

@@ -67,14 +67,15 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action: PayloadAction<{ user: any; token: string }>) => {
+      .addCase(login.fulfilled, (state, action: any) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('authToken', action.payload.token);
-          localStorage.setItem('isAuthenticated', 'true');
-        }
+        // console.log('action.payload.data', action.payload.data);
+        state.user = action.payload.data.username;
+        state.token = action.payload.data.token;
+        // if (typeof window !== 'undefined') {
+        //   localStorage.setItem('authToken', action.payload.token);
+        //   localStorage.setItem('isAuthenticated', 'true');
+        // }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

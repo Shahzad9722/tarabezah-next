@@ -24,10 +24,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
       </head>
       <body className={`${poppins.variable} font-poppins`}>
-        <HeaderWrapper />
         {/* <Navigation /> */}
         <Toaster />
-        <Providers>{children}</Providers>
+
+        <Providers>
+          <HeaderWrapper />
+          {children}
+        </Providers>
       </body>
     </html>
   );
