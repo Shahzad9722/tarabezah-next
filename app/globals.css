@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121020;
+  --foreground: #ededed;
   --font-poppins: 'Poppins', sans-serif;
   --canvas-grid: rgba(250, 245, 245, 0.05);
   --primary: 221 83% 53%;

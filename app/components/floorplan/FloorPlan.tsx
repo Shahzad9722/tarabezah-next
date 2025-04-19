@@ -131,7 +131,9 @@ const FloorPlan: React.FC = () => {
   );
 
   const handleCompleteReservable = () => {
-    if (newTableConfig.maxCapacity < newTableConfig.minCapacity) {
+    const min = Number(newTableConfig.minCapacity);
+    const max = Number(newTableConfig.maxCapacity);
+    if (max < min) {
       toast.error('Maximum capacity cannot be less than minimum capacity');
       return;
     }

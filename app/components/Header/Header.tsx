@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Navigation from './Navigation';
 import logo from '@/public/images/logo.svg';
 import { Button } from '../ui/button';
@@ -11,6 +11,7 @@ import { useFloorplan } from '@/app/context/FloorplanContext';
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { setRestaurant } = useFloorplan();
 
   const signOut = async () => {
@@ -46,11 +47,12 @@ const Header = () => {
           {/*  <option value="Table 1">Table 1</option>
           <option value="Table 2">Table 2</option> */}
         </select>
-        <Button
+        {pathname !== '/login' && <Button
           onClick={signOut}
         >
           Log out
         </Button>
+        }
       </div>
     </header>
   );

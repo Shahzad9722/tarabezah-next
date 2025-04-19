@@ -119,9 +119,8 @@ export default function Upload() {
 
         <form onSubmit={handleUpload} className='space-y-6'>
           <div
-            className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
-              errors.file ? 'border-red-500' : 'border-[#2d2a45] hover:border-[#b98858]'
-            }`}
+            className={`border-2 border-dashed rounded-lg p-6 transition-colors ${errors.file ? 'border-red-500' : 'border-[#2d2a45] hover:border-[#b98858]'
+              }`}
             onDragOver={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -280,14 +279,13 @@ export default function Upload() {
                     setErrors({ ...errors, tableType: '' });
                   }
                 }}
-                className={`w-full py-3 px-4 rounded-lg bg-[#2d2a45]/50 text-white appearance-none ${
-                  errors.tableType ? 'border-red-500' : 'border-[#2d2a45]'
-                } focus:border-[#b98858] transition-colors focus:outline-none`}
+                className={`w-full py-3 px-4 rounded-lg bg-[#2d2a45]/50 text-white appearance-none ${errors.tableType ? 'border-red-500' : 'border-[#2d2a45]'
+                  } focus:border-[#b98858] transition-colors focus:outline-none`}
               >
                 <option value=''>-- Select table type --</option>
-                <option value='SquareTable'>SquareTable</option>
-                <option value='RoundTable'>RoundTable</option>
-                <option value='RectangleTable'>RectangleTable</option>
+                <option value='Square'>SquareTable</option>
+                <option value='Round'>RoundTable</option>
+                <option value='Rectangle'>RectangleTable</option>
               </select>
               <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2'>
                 <ChevronDown className='h-4 w-4' />
