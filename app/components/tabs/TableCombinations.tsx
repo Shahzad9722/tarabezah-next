@@ -32,6 +32,7 @@ interface Item {
   status?: string;
   width?: number;
   height?: number;
+  purpose?: string;
 }
 
 interface CombinationMember {
@@ -142,13 +143,26 @@ export default function TableCombinations() {
     });
   };
 
+  const { mutate: deleteCombination } = useMutation({
+    mutationFn: async (guid: string) => {
+      const res = await fetch(`/api/combinations/${guid}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete combination');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['combinations'] });
+    },
+  });
+
   // Handle item selection
   const handleItemClick = (item: Item) => {
+    if (item.purpose !== 'Reservable') return;
     setSelectedItems((prevSelected) => {
       const isAlreadySelected = prevSelected.some((sel) => sel.guid === item.guid);
       const selectedItems = isAlreadySelected
         ? prevSelected.filter((sel) => sel.guid !== item.guid)
-        : [...prevSelected, { guid: item.guid, tableName: item.elementName }];
+        : [...prevSelected, { guid: item.guid, tableName: item.tableId }];
       dispatch(addSelectedItems([item]));
       return selectedItems;
     });
@@ -574,6 +588,7 @@ export default function TableCombinations() {
 
           <Accordion
             combinations={combinations}
+            onDelete={(guid) => deleteCombination(guid)}
             onExpand={(combination: Combination | null) => setExpandedCombination(combination)}
           />
         </div>

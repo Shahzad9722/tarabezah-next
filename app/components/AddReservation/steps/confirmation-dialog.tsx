@@ -11,7 +11,7 @@ export default function ConfirmationDialog({ open, onConfirm }: ConfirmationDial
     <Dialog open={open} onOpenChange={onConfirm}>
       <DialogContent className='bg-color-222036 border-0 flex flex-col items-center gap-[82px]'>
         <DialogHeader className=''>
-          <DialogTitle className='text-[26px]'>Confirm Reservation</DialogTitle>
+          <DialogTitle className='text-[26px]'>Reservation Confirmed!</DialogTitle>
         </DialogHeader>
         <DialogFooter>
           <Button type='button' onClick={onConfirm}>

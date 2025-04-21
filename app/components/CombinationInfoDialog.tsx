@@ -12,18 +12,27 @@ interface TableInfoDialogProps {
 
 export default function CombinationInfoDialog({ open, onClose, onSave }: TableInfoDialogProps) {
   const [combinationName, setCombinationName] = useState('');
-  const [minCapacity, setMinCapacity] = useState<number>(1);
-  const [maxCapacity, setMaxCapacity] = useState<number>(2);
+  const [minCapacity, setMinCapacity] = useState<number | ''>(1);
+  const [maxCapacity, setMaxCapacity] = useState<number | ''>(2);
+
+  const isFormValid =
+    combinationName.trim() !== '' &&
+    minCapacity !== '' &&
+    maxCapacity !== '' &&
+    minCapacity >= 0 &&
+    maxCapacity >= 0 &&
+    minCapacity <= maxCapacity;
 
   const handleSave = () => {
-    if (minCapacity > maxCapacity) {
-      toast.error('Minimum capacity cannot exceed maximum capacity');
+    if (!isFormValid) {
+      toast.error('Please fill all fields correctly.');
       return;
     }
+
     onSave({
-      combinationName,
-      minCapacity,
-      maxCapacity,
+      combinationName: combinationName.trim(),
+      minCapacity: Number(minCapacity),
+      maxCapacity: Number(maxCapacity),
     });
     onClose();
   };
@@ -35,6 +44,7 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
           <DialogTitle>Enter Combination Information</DialogTitle>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
+          {/* Name */}
           <div className='grid grid-cols-4 items-center gap-4'>
             <label htmlFor='tableNumber'>Name</label>
             <Input
@@ -44,41 +54,49 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
               className='col-span-3'
             />
           </div>
+
+          {/* Min Capacity */}
           <div className='grid grid-cols-4 items-center gap-4'>
             <label htmlFor='minCapacity'>Min Capacity</label>
             <Input
               id='minCapacity'
               type='number'
-              value={minCapacity}
+              value={minCapacity === 0 ? '' : minCapacity}
               onChange={(e) => {
-                const value = Number(e.target.value);
-                if (value > maxCapacity) {
-                  toast.error('Minimum capacity cannot exceed maximum capacity');
-                  return;
-                }
+                const value = e.target.value === '' ? '' : Number(e.target.value);
                 setMinCapacity(value);
               }}
               className='col-span-3'
             />
           </div>
+
+          {/* Max Capacity */}
           <div className='grid grid-cols-4 items-center gap-4'>
             <label htmlFor='maxCapacity'>Max Capacity</label>
             <Input
               id='maxCapacity'
               type='number'
-              value={maxCapacity}
-              onChange={(e) => setMaxCapacity(Number(e.target.value))}
+              value={maxCapacity === 0 ? '' : maxCapacity}
+              onChange={(e) => {
+                const value = e.target.value === '' ? '' : Number(e.target.value);
+                setMaxCapacity(value);
+              }}
               className='col-span-3'
             />
           </div>
         </div>
+
+        {/* Footer */}
         <DialogFooter>
           <Button variant='outline' onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} disabled={!isFormValid}>
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

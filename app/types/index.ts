@@ -1,5 +1,3 @@
-import { FloorplanItem } from '../components/FloorplanCanvas';
-
 export interface CanvasElement {
   id: string;
   localId?: string;
@@ -17,6 +15,22 @@ export interface CanvasElement {
   rotation?: number;
   tableId?: string;
   elementImageUrl?: string;
+}
+export interface FloorplanItem {
+  elementGuid: string;
+  elementImageUrl: string;
+  elementName: string;
+  elementType: string;
+  guid: string;
+  maxCapacity: number;
+  minCapacity: number;
+  rotation: number;
+  tableId: string;
+  category: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
 }
 
 export interface Floorplan {

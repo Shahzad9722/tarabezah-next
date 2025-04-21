@@ -17,6 +17,8 @@ import { addGuestSchema, addReservationFormSchema } from '@/app/lib/validations'
 import { Form } from '../ui/form';
 import ClientSearch from './steps/client-search';
 import { toast } from 'sonner';
+import ReservationConfirmDialog from './ReservationDetailsConfirmDialog';
+import { format } from 'date-fns';
 
 const AddReservationIcon = () => (
   <svg width='29' height='29' viewBox='0 0 29 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -234,7 +236,15 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const [currentStep, setCurrentStep] = useState(1);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showAddNewClient, setShowAddNewClient] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<any>({});
+  const [selectedClient, setSelectedClient] = useState<{ guid?: string; name?: string; id?: string }>({});
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [reservationData, setReservationData] = useState({
+    clientName: '',
+    date: '',
+    time: '',
+    partySize: 0,
+    notes: '',
+  });
 
   const { isPending: fetchingEntities, data: entities = { sources: [], tags: [], shifts: [], tableTypes: [] } } =
     useQuery({
@@ -377,7 +387,36 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     setSelectedClient({});
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async (e: any) => {
+    e.preventDefault();
+    const formData = reservationForm.getValues();
+    const clientName = selectedClient?.name || 'Walk-in Guest';
+
+    setReservationData({
+      clientName,
+      date: formData.eventDate ? format(new Date(formData.eventDate), 'MMMM d, yyyy') : '',
+      time: formData.eventTime || '',
+      partySize: formData.numberOfGuests || 0,
+      notes: formData.additionalNotes || '',
+    });
+    setShowReviewDialog(true);
+  };
+
+  const handleConfirmReservation = async () => {
+    try {
+      setShowReviewDialog(false);
+      await checkForm(new Event('submit'));
+      setShowConfirmDialog(true);
+    } catch (error) {
+      toast.error('Failed to confirm reservation', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      });
+    }
+  };
+
+  const handleFinalConfirm = () => {
+    console.log("'Final confirm clicked!') // Placeholder for final confirmation action")
+    formReset();
     setCurrentStep(1);
     setShowConfirmDialog(false);
   };
@@ -482,7 +521,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
           </Form>
         )}
         <Form {...reservationForm}>
-          <form onSubmit={checkForm} className='space-y-4'>
+          <form onSubmit={handleConfirm} className='space-y-4'>
             {currentStep === 2 &&
               (walkIn ? <PartySizeStep form={reservationForm} /> : <DateStep form={reservationForm} />)}
             {currentStep === 3 &&
@@ -523,9 +562,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
             {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
               <Button
-                type='button'
+                type='submit'
                 disabled={submittingReservationForm || submittingWalkinForm}
-                onClick={checkForm}
                 className='w-full mt-4'
               >
                 Confirm
@@ -535,7 +573,17 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         </Form>
       </div>
 
-      <ConfirmationDialog open={showConfirmDialog} onConfirm={handleConfirm} />
+      <ReservationConfirmDialog
+        open={showReviewDialog}
+        onClose={() => setShowReviewDialog(false)}
+        onConfirm={handleConfirmReservation}
+        reservationData={reservationData}
+      />
+
+      <ConfirmationDialog
+        open={showConfirmDialog}
+        onConfirm={handleFinalConfirm}
+      />
     </div>
   );
 }

@@ -171,18 +171,22 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const updateElement = (id: string, updates: Partial<CanvasElement>) => {
     if (!activeFloorplan) return;
-
-    setRestaurant((prev) => ({
-      ...prev,
-      floorplans: prev.floorplans.map((fp) =>
-        fp.guid === activeFloorplan?.guid
-          ? {
+    setRestaurant(prev => {
+      const updated = {
+        ...prev,
+        floorplans: prev.floorplans.map(fp =>
+          fp.guid === activeFloorplan?.guid
+            ? {
               ...fp,
-              elements: fp.elements.map((el) => (el.localId === id ? { ...el, ...updates } : el)),
+              elements: fp.elements.map(el =>
+                el.localId === id ? { ...el, ...updates } : el
+              ),
             }
-          : fp
-      ),
-    }));
+            : fp
+        ),
+      };
+      return updated;
+    });
 
     setSelectedElementId(null);
   };

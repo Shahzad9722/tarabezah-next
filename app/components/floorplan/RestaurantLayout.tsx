@@ -112,7 +112,7 @@ const RestaurantLayout: React.FC = () => {
   };
 
   const handlePublish = async () => {
-    // console.log('restaurant.floorplans', restaurant);
+
     const toastId = toast.loading('Publishing floor plan...');
     try {
       const floorsToPublish = restaurant.floorplans.map((floor) => ({
@@ -121,7 +121,8 @@ const RestaurantLayout: React.FC = () => {
         elements: floor.elements.map((item) => ({
           guid: item.floorplanInstanceGuid || '00000000-0000-0000-0000-000000000000',
           elementGuid: item.id,
-          tableId: item.name,
+          tableId: item.tableId,
+          elementName: item.tableId,
           minCapacity: item.minCapacity,
           maxCapacity: item.maxCapacity,
           x: parseInt(item.x?.toString(), 10),
