@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/Elements/upload`;
 
     const payload = new FormData();
-    payload.append('Name', file.name.split('.')[0]);
+    payload.append('Name', name || file.name.split('.')[0]);
     payload.append('ImageFile', file);
     payload.append('Purpose', purpose);
     payload.append('TableType', tableType);
