@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         partySize: payload.numberOfGuests,
         tags: payload.tags,
         notes: payload.additionalNotes,
+        floorplanElementGuid: payload.tableId || null,
       },
       {
         headers: {
@@ -37,6 +38,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ reservation: res.data.data.result }, { status: 201 });
   } catch (error: any) {
     console.log(error?.response?.data);
-    return NextResponse.json({ error: 'Failed to save reservation form' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.response?.data?.errorMessage || 'Failed to save reservation form' },
+      { status: 400 }
+    );
   }
 }

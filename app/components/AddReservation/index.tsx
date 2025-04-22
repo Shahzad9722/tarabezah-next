@@ -19,6 +19,7 @@ import ClientSearch from './steps/client-search';
 import { toast } from 'sonner';
 import ReservationConfirmDialog from './ReservationDetailsConfirmDialog';
 import { format } from 'date-fns';
+import { useSearchParams } from 'next/navigation';
 
 const AddReservationIcon = () => (
   <svg width='29' height='29' viewBox='0 0 29 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -30,8 +31,11 @@ const AddReservationIcon = () => (
 );
 
 const WalkInReservationIcon = () => (
-  <svg width="24" height="29" viewBox="0 0 22 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14.0001 8.5C14.7912 8.5 15.5645 8.26541 16.2223 7.82588C16.8801 7.38635 17.3928 6.76164 17.6956 6.03074C17.9983 5.29983 18.0775 4.49556 17.9232 3.71964C17.7689 2.94372 17.3879 2.23098 16.8285 1.67157C16.2691 1.11216 15.5563 0.731202 14.7804 0.576861C14.0045 0.42252 13.2002 0.501733 12.4693 0.804484C11.7384 1.10723 11.1137 1.61992 10.6742 2.27772C10.2347 2.93552 10.0001 3.70888 10.0001 4.5C10.0001 5.56087 10.4215 6.57828 11.1716 7.32843C11.9218 8.07857 12.9392 8.5 14.0001 8.5ZM14.0001 2.5C14.3956 2.5 14.7823 2.6173 15.1112 2.83706C15.4401 3.05683 15.6964 3.36918 15.8478 3.73463C15.9992 4.10009 16.0388 4.50222 15.9616 4.89018C15.8845 5.27814 15.694 5.63451 15.4143 5.91422C15.1346 6.19392 14.7782 6.3844 14.3902 6.46157C14.0023 6.53874 13.6001 6.49914 13.2347 6.34776C12.8692 6.19639 12.5569 5.94004 12.3371 5.61114C12.1174 5.28224 12.0001 4.89556 12.0001 4.5C12.0001 3.96957 12.2108 3.46086 12.5859 3.08579C12.9609 2.71072 13.4696 2.5 14.0001 2.5ZM22.0001 16.5C22.0001 16.7652 21.8947 17.0196 21.7072 17.2071C21.5196 17.3946 21.2653 17.5 21.0001 17.5C16.5863 17.5 14.3813 15.2738 12.6101 13.485C12.2676 13.1388 11.9401 12.81 11.6101 12.505L9.93131 16.365L14.5813 19.6863C14.7108 19.7788 14.8164 19.9009 14.8892 20.0424C14.9621 20.1839 15.0001 20.3408 15.0001 20.5V27.5C15.0001 27.7652 14.8947 28.0196 14.7072 28.2071C14.5196 28.3946 14.2653 28.5 14.0001 28.5C13.7348 28.5 13.4805 28.3946 13.293 28.2071C13.1054 28.0196 13.0001 27.7652 13.0001 27.5V21.015L9.11631 18.24L4.91756 27.8988C4.83985 28.0775 4.71162 28.2296 4.54861 28.3364C4.38561 28.4432 4.19495 28.5001 4.00006 28.5C3.86273 28.5005 3.72685 28.4719 3.60131 28.4163C3.35822 28.3106 3.16703 28.1127 3.06976 27.8661C2.97248 27.6195 2.97709 27.3444 3.08257 27.1013L9.84256 11.555C8.67881 11.3488 7.22756 11.705 5.50506 12.6275C4.13138 13.3854 2.84924 14.2984 1.68382 15.3488C1.4893 15.523 1.23435 15.6142 0.973451 15.603C0.712555 15.5917 0.466417 15.4788 0.28765 15.2885C0.108883 15.0981 0.0116713 14.8454 0.0167942 14.5843C0.0219172 14.3232 0.128968 14.0745 0.315065 13.8913C0.627565 13.5975 8.02632 6.7375 12.6551 10.7563C13.1338 11.1713 13.5901 11.6313 14.0301 12.0775C15.7738 13.8375 17.4201 15.5 21.0001 15.5C21.2653 15.5 21.5196 15.6054 21.7072 15.7929C21.8947 15.9804 22.0001 16.2348 22.0001 16.5Z" fill="#E9E3D7" />
+  <svg width='24' height='29' viewBox='0 0 22 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <path
+      d='M14.0001 8.5C14.7912 8.5 15.5645 8.26541 16.2223 7.82588C16.8801 7.38635 17.3928 6.76164 17.6956 6.03074C17.9983 5.29983 18.0775 4.49556 17.9232 3.71964C17.7689 2.94372 17.3879 2.23098 16.8285 1.67157C16.2691 1.11216 15.5563 0.731202 14.7804 0.576861C14.0045 0.42252 13.2002 0.501733 12.4693 0.804484C11.7384 1.10723 11.1137 1.61992 10.6742 2.27772C10.2347 2.93552 10.0001 3.70888 10.0001 4.5C10.0001 5.56087 10.4215 6.57828 11.1716 7.32843C11.9218 8.07857 12.9392 8.5 14.0001 8.5ZM14.0001 2.5C14.3956 2.5 14.7823 2.6173 15.1112 2.83706C15.4401 3.05683 15.6964 3.36918 15.8478 3.73463C15.9992 4.10009 16.0388 4.50222 15.9616 4.89018C15.8845 5.27814 15.694 5.63451 15.4143 5.91422C15.1346 6.19392 14.7782 6.3844 14.3902 6.46157C14.0023 6.53874 13.6001 6.49914 13.2347 6.34776C12.8692 6.19639 12.5569 5.94004 12.3371 5.61114C12.1174 5.28224 12.0001 4.89556 12.0001 4.5C12.0001 3.96957 12.2108 3.46086 12.5859 3.08579C12.9609 2.71072 13.4696 2.5 14.0001 2.5ZM22.0001 16.5C22.0001 16.7652 21.8947 17.0196 21.7072 17.2071C21.5196 17.3946 21.2653 17.5 21.0001 17.5C16.5863 17.5 14.3813 15.2738 12.6101 13.485C12.2676 13.1388 11.9401 12.81 11.6101 12.505L9.93131 16.365L14.5813 19.6863C14.7108 19.7788 14.8164 19.9009 14.8892 20.0424C14.9621 20.1839 15.0001 20.3408 15.0001 20.5V27.5C15.0001 27.7652 14.8947 28.0196 14.7072 28.2071C14.5196 28.3946 14.2653 28.5 14.0001 28.5C13.7348 28.5 13.4805 28.3946 13.293 28.2071C13.1054 28.0196 13.0001 27.7652 13.0001 27.5V21.015L9.11631 18.24L4.91756 27.8988C4.83985 28.0775 4.71162 28.2296 4.54861 28.3364C4.38561 28.4432 4.19495 28.5001 4.00006 28.5C3.86273 28.5005 3.72685 28.4719 3.60131 28.4163C3.35822 28.3106 3.16703 28.1127 3.06976 27.8661C2.97248 27.6195 2.97709 27.3444 3.08257 27.1013L9.84256 11.555C8.67881 11.3488 7.22756 11.705 5.50506 12.6275C4.13138 13.3854 2.84924 14.2984 1.68382 15.3488C1.4893 15.523 1.23435 15.6142 0.973451 15.603C0.712555 15.5917 0.466417 15.4788 0.28765 15.2885C0.108883 15.0981 0.0116713 14.8454 0.0167942 14.5843C0.0219172 14.3232 0.128968 14.0745 0.315065 13.8913C0.627565 13.5975 8.02632 6.7375 12.6551 10.7563C13.1338 11.1713 13.5901 11.6313 14.0301 12.0775C15.7738 13.8375 17.4201 15.5 21.0001 15.5C21.2653 15.5 21.5196 15.6054 21.7072 15.7929C21.8947 15.9804 22.0001 16.2348 22.0001 16.5Z'
+      fill='#E9E3D7'
+    />
   </svg>
 );
 
@@ -233,6 +237,9 @@ const stepsWalkIn: Step[] = [
 ];
 
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
+  const searchParams = useSearchParams();
+  const table = searchParams.get('table');
+
   const [currentStep, setCurrentStep] = useState(1);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showAddNewClient, setShowAddNewClient] = useState(false);
@@ -274,7 +281,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     mutationFn: (data: any) => {
       return fetch(`/api/reservation/form`, {
         method: 'post',
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          tableId: table,
+        }),
       });
     },
   });
@@ -283,7 +293,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     mutationFn: (data: any) => {
       return fetch(`/api/reservation/walk-in/form`, {
         method: 'post',
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          tableId: table,
+        }),
       });
     },
   });
@@ -306,7 +319,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     defaultValues: {
       clientId: '',
       eventDate: new Date(),
-      eventTime: undefined,
+      eventTime: walkIn ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : undefined,
       numberOfGuests: 2,
       shiftId: undefined,
       tags: [],
@@ -339,18 +352,24 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     }
   };
 
-  const checkForm = async (e: any) => {
+  const checkAndSubmitForm = async (): Promise<boolean> => {
     const toastId = toast.info('Submitting reservation');
     try {
-      e.preventDefault();
+      // e.preventDefault();
       const isValid = await reservationForm.trigger(undefined, {
         shouldFocus: false,
       });
+
+      if (!isValid) {
+        return false;
+      }
+
       if (!walkIn) {
         if (isValid) {
           const response = await addReservation(reservationForm.getValues());
           if (!response.ok) {
-            throw new Error('Failed to create reservation');
+            const error = await response.json();
+            throw new Error(error.error);
           }
           formReset();
           toast.success('Reservation created successfully!');
@@ -362,16 +381,20 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         const isValid = errorFields.every((field) => !requiredFields.includes(field));
         if (isValid) {
           const response = await addWalkin(reservationForm.getValues());
+
           if (!response.ok) {
-            throw new Error('Failed to create reservation');
+            const error = await response.json();
+            throw new Error(error.error);
           }
           formReset();
           toast.success('Reservation created successfully!');
         }
       }
-    } catch (error) {
+
+      return true;
+    } catch (error: any) {
       console.log('error submitting form', error);
-      toast.error('Failed to create reservation');
+      throw new Error(error instanceof Error ? error.message : 'Failed to create reservation');
     } finally {
       toast.dismiss(toastId);
     }
@@ -405,8 +428,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const handleConfirmReservation = async () => {
     try {
       setShowReviewDialog(false);
-      await checkForm(new Event('submit'));
-      setShowConfirmDialog(true);
+      const isValid = await checkAndSubmitForm();
+      if (isValid) {
+        setShowConfirmDialog(true);
+      }
     } catch (error) {
       toast.error('Failed to confirm reservation', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred',
@@ -415,7 +440,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   };
 
   const handleFinalConfirm = () => {
-    console.log("'Final confirm clicked!') // Placeholder for final confirmation action")
+    // console.log("'Final confirm clicked!') // Placeholder for final confirmation action");
     formReset();
     setCurrentStep(1);
     setShowConfirmDialog(false);
@@ -451,6 +476,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     }
   }, [reservationForm?.formState?.errors]);
 
+  // console.log('reservationForm.getValues()', reservationForm.getValues());
+  // console.log('guestForm.getValues()', guestForm.getValues());
+  // console.log('reservationForm.formState.errors', reservationForm.formState.errors);
+  // console.log('selectedClient', selectedClient);
   return (
     <div className='md:h-screen flex flex-col md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
@@ -481,6 +510,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                   setCurrentStep(2);
                   reservationForm.setValue('clientId', '0');
                 }}
+                disabled={reservationForm.getValues('clientId') === '0'}
                 className='mb-6'
               >
                 Skip Client Information
@@ -498,8 +528,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               selected={selectedClient}
               setSelected={setSelectedClient}
             />
-            {!selectedClient.id && (
+            {!selectedClient.guid && (
               <p className='text-red-500 mb-6'>{reservationForm?.formState?.errors?.clientId?.message}</p>
+            )}
+
+            {reservationForm.getValues('clientId') === '0' && (
+              <p className='text-white mb-6'>client information skipped</p>
             )}
           </>
         )}
@@ -580,10 +614,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         reservationData={reservationData}
       />
 
-      <ConfirmationDialog
-        open={showConfirmDialog}
-        onConfirm={handleFinalConfirm}
-      />
+      <ConfirmationDialog open={showConfirmDialog} onConfirm={handleFinalConfirm} />
     </div>
   );
 }

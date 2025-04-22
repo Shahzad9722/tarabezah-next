@@ -133,6 +133,7 @@ const FloorPlan: React.FC = () => {
   const handleCompleteReservable = () => {
     const min = Number(newTableConfig.minCapacity);
     const max = Number(newTableConfig.maxCapacity);
+
     if (max < min) {
       toast.error('Maximum capacity cannot be less than minimum capacity');
       return;
@@ -142,7 +143,7 @@ const FloorPlan: React.FC = () => {
 
     if (
       existingTable &&
-      selectedTable.localId != existingTable.localId &&
+      selectedTable?.localId != existingTable.localId &&
       existingTable.tableId === newTableConfig.tableName.trim()
     ) {
       toast.error('Another table with this name already exists');

@@ -12,9 +12,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { Floor, Floorplan } from '@/app/types';
 import { v4 as uuidv4 } from 'uuid';
+import { queryClient } from '@/app/lib/queryClient';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 const RestaurantLayout: React.FC = () => {
   const { setActiveFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
+  const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -69,7 +73,7 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      setActiveFloorplanId(result[0].guid);
+      setActiveFloorplanId(selectedFilters.floorPlanId || result[0].guid);
 
       setRestaurant({
         ...restaurant,
@@ -112,7 +116,6 @@ const RestaurantLayout: React.FC = () => {
   };
 
   const handlePublish = async () => {
-
     const toastId = toast.loading('Publishing floor plan...');
     try {
       const floorsToPublish = restaurant.floorplans.map((floor) => ({
@@ -138,6 +141,8 @@ const RestaurantLayout: React.FC = () => {
         throw new Error('Failed to publish floor plan');
       }
       toast.success('Floor plan published successfully!');
+
+      queryClient.invalidateQueries({ queryKey: ['floorPlans'] });
     } catch (error) {
       toast.error('Failed to publish floor plan');
       console.error('Publish error:', error);
@@ -153,7 +158,7 @@ const RestaurantLayout: React.FC = () => {
         <div className='flex flex-col'>
           <Navigation onPublish={handlePublish} />
           <div className='flex flex-1 overflow-hidden h-[calc(100vh-188px)]'>
-            <div className='w-80 ml-4 h-[calc(100vh-188px)] flex flex-col'>
+            <div className='w-[400px] ml-4 h-[calc(100vh-188px)] flex flex-col'>
               <FloorControls onRemoveFloor={removeFloor} onRenameFloor={renameFloor} />
               <ReservationSidebar />
             </div>

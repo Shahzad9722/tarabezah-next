@@ -55,7 +55,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                   step={1}
                   min={1}
                   onKeyDown={(e) => {
-                    if (e.key === '.' || e.key === 'e' || e.key === '-') {
+                    if (e.key === '.' || e.key === 'e' || e.key === '-' || e.key === 'Enter') {
                       e.preventDefault();
                     }
                   }}

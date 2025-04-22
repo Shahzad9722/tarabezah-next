@@ -1,11 +1,6 @@
-import { ChevronDown, XCircle } from 'lucide-react';
+import { ChevronDown, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 interface CombinationMember {
   guid: string;
@@ -38,22 +33,28 @@ const Accordion = ({ combinations, onExpand, onDelete }: AccordionProps) => {
 
   return (
     <TooltipProvider>
-      <div className="w-full mt-10 text-white flex flex-col gap-1.5">
-        <div className="bg-color-222036 py-4 px-3.5 font-bold text-md">
-          All combinations
-        </div>
+      <div className='w-full mt-10 text-white flex flex-col gap-1.5'>
+        <div className='bg-color-222036 py-4 px-3.5 font-bold text-md'>All combinations</div>
 
         {combinations.map((item) => (
-          <div key={item.guid} className="bg-color-D0C17">
+          <div key={item.guid} className='bg-color-D0C17'>
             <button
-              className={`w-full flex justify-between items-center py-2.5 px-4 hover:bg-color-F2C45 transition ${openId === item.guid ? 'bg-color-F2C45' : 'bg-color-D0C17'
-                }`}
+              className={`w-full flex justify-between items-center py-2.5 px-4 hover:bg-color-F2C45 transition ${
+                openId === item.guid ? 'bg-color-F2C45' : 'bg-color-D0C17'
+              }`}
               onClick={() => toggleAccordion(item)}
             >
-              <div className="flex items-center justify-between w-full">
+              <div className='flex items-center justify-between w-full'>
                 {/* Left: Name + Delete Button */}
-                <div className="flex items-center gap-2 text-left truncate">
-                  <span className="truncate">{item.groupName}</span>
+                <div className='flex items-center gap-2 text-left truncate'>
+                  <span className='truncate'>{item.groupName}</span>
+                </div>
+
+                <div className='flex items-center gap-2'>
+                  {/* Right: Chevron */}
+                  <div className={`transition-transform ${openId === item.guid ? 'rotate-180' : ''}`}>
+                    <ChevronDown size={16} />
+                  </div>
                   <Tooltip>
                     <TooltipTrigger
                       asChild
@@ -62,28 +63,21 @@ const Accordion = ({ combinations, onExpand, onDelete }: AccordionProps) => {
                         onDelete(item.guid);
                       }}
                     >
-                      <span className="text-red-500 hover:text-red-700 cursor-pointer">
-                        <XCircle size={18} />
+                      <span className='text-red-500 hover:text-red-700 cursor-pointer'>
+                        <Trash2 size={18} />
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent className="text-xs">Delete combination</TooltipContent>
+                    <TooltipContent className='text-xs'>Delete combination</TooltipContent>
                   </Tooltip>
-                </div>
-
-                {/* Right: Chevron */}
-                <div
-                  className={`transition-transform ${openId === item.guid ? 'rotate-180' : ''
-                    }`}
-                >
-                  <ChevronDown size={16} />
                 </div>
               </div>
             </button>
 
             {/* Accordion Content */}
             <div
-              className={`overflow-hidden transition-all duration-300 px-4 text-[#909090] ${openId === item.guid ? 'max-h-40 py-4' : 'max-h-0 py-0'
-                }`}
+              className={`overflow-hidden transition-all duration-300 px-4 text-[#909090] ${
+                openId === item.guid ? 'max-h-40 py-4' : 'max-h-0 py-0'
+              }`}
             >
               {`Tables: [${item.members.map((m) => m.tableId).join(', ')}]`}
             </div>

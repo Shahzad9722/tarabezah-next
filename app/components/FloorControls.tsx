@@ -14,6 +14,9 @@ import { Label } from '@/app/components/ui/label';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
 import FormSelect from './ui/form-select';
+import { AppDispatch, RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilters } from '@/store/features/combination-filters/combinationFilterSlice';
 interface FloorControlsProps {
   onRemoveFloor: (id: string) => void;
   onRenameFloor: (id: string, newName: string) => void;
@@ -28,6 +31,9 @@ export function FloorControls({ onRemoveFloor, onRenameFloor }: FloorControlsPro
     id: '',
     name: '',
   });
+
+  const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleAddFloorplan = () => {
     if (newFloorplanName.trim() === '') {
@@ -60,13 +66,16 @@ export function FloorControls({ onRemoveFloor, onRenameFloor }: FloorControlsPro
         <div className='flex flex-1 items-center gap-2'>
           <div className='relative w-full '>
             <FormSelect
-              value={activeFloorplanId}
-              onChange={onFloorPlanChange}
+              value={selectedFilters.floorPlanId || activeFloorplanId}
+              onChange={(value) => {
+                dispatch(setFilters({ ...selectedFilters, floorPlanId: value }));
+                onFloorPlanChange(value);
+              }}
               options={restaurant.floorplans.map((floor) => ({
                 label: floor.name,
                 value: floor.guid,
               }))}
-              className="text-xl"
+              className='text-xl'
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { Button } from '@/app/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 interface TableInfoDialogProps {
@@ -12,8 +12,8 @@ interface TableInfoDialogProps {
 
 export default function CombinationInfoDialog({ open, onClose, onSave }: TableInfoDialogProps) {
   const [combinationName, setCombinationName] = useState('');
-  const [minCapacity, setMinCapacity] = useState<number | ''>(1);
-  const [maxCapacity, setMaxCapacity] = useState<number | ''>(2);
+  const [minCapacity, setMinCapacity] = useState<number | ''>('');
+  const [maxCapacity, setMaxCapacity] = useState<number | ''>('');
 
   const isFormValid =
     combinationName.trim() !== '' &&
@@ -22,6 +22,14 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
     minCapacity >= 0 &&
     maxCapacity >= 0 &&
     minCapacity <= maxCapacity;
+
+  useEffect(() => {
+    if (open) {
+      setCombinationName('');
+      setMinCapacity('');
+      setMaxCapacity('');
+    }
+  }, [open]);
 
   const handleSave = () => {
     if (!isFormValid) {
@@ -34,11 +42,17 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
       minCapacity: Number(minCapacity),
       maxCapacity: Number(maxCapacity),
     });
-    onClose();
+    handleClose();
   };
 
+  const handleClose = () => {
+    setCombinationName('');
+    setMinCapacity('');
+    setMaxCapacity('');
+    onClose();
+  };
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Enter Combination Information</DialogTitle>
@@ -99,4 +113,3 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
     </Dialog>
   );
 }
-

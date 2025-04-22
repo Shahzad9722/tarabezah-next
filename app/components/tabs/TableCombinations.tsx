@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { ZoomIn, ZoomOut, RefreshCw, Move } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Slider } from '@/app/components/ui/slider';
+import CombinationDeleteConfirmation from '../accordionData/CombinationDeleteConfirmation';
 
 interface Item {
   guid: string;
@@ -58,6 +59,8 @@ export default function TableCombinations() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [combinationToDelete, setCombinationToDelete] = useState<string | null>(null);
 
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters) || {};
   const dispatch = useDispatch();
@@ -143,7 +146,7 @@ export default function TableCombinations() {
     });
   };
 
-  const { mutate: deleteCombination } = useMutation({
+  const { mutateAsync: deleteCombination } = useMutation({
     mutationFn: async (guid: string) => {
       const res = await fetch(`/api/combinations/${guid}`, {
         method: 'DELETE',
@@ -155,6 +158,10 @@ export default function TableCombinations() {
     },
   });
 
+  const confirmDeleteCombination = (guid: string) => {
+    setShowConfirmDialog(true);
+    setCombinationToDelete(guid);
+  };
   // Handle item selection
   const handleItemClick = (item: Item) => {
     if (item.purpose !== 'Reservable') return;
@@ -175,6 +182,19 @@ export default function TableCombinations() {
       setSelectedItems([]);
     }
   }, [floorPlans]);
+
+  const handleDeleteCombination = async () => {
+    toast.promise(deleteCombination(combinationToDelete), {
+      loading: 'Deleting combination...',
+      success: 'Combination deleted successfully!',
+      error: (err) => {
+        console.error(err);
+        return 'Failed to delete combination';
+      },
+    });
+    setShowConfirmDialog(false);
+    setCombinationToDelete(null);
+  };
 
   // Zoom functionality
   const handleZoomIn = () => {
@@ -518,7 +538,7 @@ export default function TableCombinations() {
               />
 
               {/* Tables container with higher z-index */}
-              <div className='absolute' style={{ zIndex: 10 }}>
+              <div className='relative' style={{ zIndex: 10 }}>
                 {floorPlans
                   .find((p) => p.guid === selectedFilters.floorPlanId)
                   ?.elements.filter((e) => {
@@ -532,19 +552,20 @@ export default function TableCombinations() {
                     );
 
                     return (
-                      <div
-                        key={item.guid}
-                        className={getTableStyle(item, isSelected, isInExpandedCombination)}
-                        style={{
-                          position: 'absolute',
-                          left: `${item.x}px`,
-                          top: `${item.y}px`,
-                          width: `${item.width || 60}px`,
-                          height: `${item.height || 60}px`,
-                          zIndex: 20,
-                        }}
-                        onClick={() => handleItemClick(item)}
-                      >
+                      <div>
+                        <div
+                          key={item.guid}
+                          className={getTableStyle(item, isSelected, isInExpandedCombination)}
+                          style={{
+                            position: 'absolute',
+                            left: `${item.x}px`,
+                            top: `${item.y}px`,
+                            width: `${item.width || 60}px`,
+                            height: `${item.height || 60}px`,
+                            zIndex: 20,
+                          }}
+                          onClick={() => handleItemClick(item)}
+                        ></div>
                         {item.elementImageUrl && (
                           <Image
                             src={item.elementImageUrl}
@@ -552,6 +573,13 @@ export default function TableCombinations() {
                             className='object-contain w-full h-full'
                             width={item.width || 60}
                             height={item.height || 60}
+                            style={{
+                              position: 'absolute',
+                              left: `${item.x}px`,
+                              top: `${item.y}px`,
+                              width: `${item.width || 60}px`,
+                              height: `${item.height || 60}px`,
+                            }}
                           />
                         )}
                       </div>
@@ -588,7 +616,7 @@ export default function TableCombinations() {
 
           <Accordion
             combinations={combinations}
-            onDelete={(guid) => deleteCombination(guid)}
+            onDelete={(guid) => confirmDeleteCombination(guid)}
             onExpand={(combination: Combination | null) => setExpandedCombination(combination)}
           />
         </div>
@@ -598,6 +626,15 @@ export default function TableCombinations() {
         open={showCombinationInfoDialog}
         onClose={() => setShowCombinationInfoDialog(false)}
         onSave={handleCreateCombination}
+      />
+
+      <CombinationDeleteConfirmation
+        open={showConfirmDialog}
+        onClose={() => {
+          setShowConfirmDialog(false);
+          setCombinationToDelete(null);
+        }}
+        onConfirm={handleDeleteCombination}
       />
     </div>
   );
