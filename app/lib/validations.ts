@@ -11,13 +11,12 @@ export const addGuestSchema = z.object({
 });
 
 export const addReservationFormSchema = z.object({
-  clientId: z.string({ message: 'Please select guest first' }).min(1, { message: 'Please select guest first' }),
-  eventDate: z.date().refine((date) => date >= new Date(new Date().setHours(0, 0, 0, 0)), {
-    message: 'Date must be today or in the future',
-  }),
-  eventTime: z.string({ message: 'Please select time' }),
-  numberOfGuests: z.number({ message: 'Please select number of guests' }),
-  shiftId: z.string({ message: 'Shift is required' }),
+  clientId: z.string().min(1, { message: 'Client is required' }),
+  eventDate: z.date().optional(),
+  eventTime: z.string().optional(),
+  numberOfGuests: z.number().min(1, { message: 'Number of guests is required' }),
+  shiftId: z.string().optional(),
   tags: z.array(z.number()).optional(),
   additionalNotes: z.string().optional(),
+  reminderTime: z.string().optional(),
 });

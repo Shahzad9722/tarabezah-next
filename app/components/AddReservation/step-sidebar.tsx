@@ -34,10 +34,10 @@ export default function StepSidebar({
                       ? "bg-color-B98858 text-white"
                       : "bg-color-A4A4A4 text-gray-300"
                     }`}
-                  onClick={() => {
-                    if (index > 0 && index < steps.length - 1)
-                      setCurrentStep(index);
-                  }}
+                // onClick={() => {
+                //   if (index > 0 && index < steps.length - 1)
+                //     setCurrentStep(index);
+                // }}
                 >
                   {step.icon}
                   {/* Vertical Line Connecting Steps */}

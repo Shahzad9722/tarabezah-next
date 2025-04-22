@@ -251,6 +251,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     time: '',
     partySize: 0,
     notes: '',
+    reminderTime: '',
   });
 
   const { isPending: fetchingEntities, data: entities = { sources: [], tags: [], shifts: [], tableTypes: [] } } =
@@ -324,6 +325,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       shiftId: undefined,
       tags: [],
       additionalNotes: '',
+      reminderTime: '',
     },
   });
 
@@ -410,8 +412,49 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     setSelectedClient({});
   };
 
+  const isCurrentStepValid = () => {
+    const currentStepFields = walkIn ? stepsWalkIn[currentStep - 1].fields : steps[currentStep - 1].fields;
+    if (!currentStepFields || currentStepFields.length === 0) return true;
+
+    // Check if all required fields for current step have values
+    return currentStepFields.every(field => {
+      const value = reservationForm.getValues(field as keyof typeof reservationForm.formState.defaultValues);
+      return value !== undefined && value !== '' &&
+        !reservationForm.formState.errors[field];
+    });
+  };
+
+  const nextStep = async () => {
+    // Validate current step fields
+    const valid = await isCurrentStepValid();
+
+    if (!valid) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (walkIn) {
+      if (currentStep < stepsWalkIn.length - 1) {
+        setCurrentStep(currentStep + 1);
+      }
+    } else {
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  };
+
   const handleConfirm = async (e: any) => {
     e.preventDefault();
+
+    // Validate all form fields before showing confirmation
+    const isValid = await reservationForm.trigger();
+
+    if (!isValid) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     const formData = reservationForm.getValues();
     const clientName = selectedClient?.name || 'Walk-in Guest';
 
@@ -421,6 +464,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       time: formData.eventTime || '',
       partySize: formData.numberOfGuests || 0,
       notes: formData.additionalNotes || '',
+      reminderTime: formData.reminderTime ? `${formData.reminderTime} minutes before` : '',
     });
     setShowReviewDialog(true);
   };
@@ -444,18 +488,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     formReset();
     setCurrentStep(1);
     setShowConfirmDialog(false);
-  };
-
-  const nextStep = () => {
-    if (walkIn) {
-      if (currentStep < stepsWalkIn.length - 1) {
-        setCurrentStep(currentStep + 1);
-      }
-    } else {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1);
-      }
-    }
   };
 
   const prevStep = () => {
@@ -587,7 +619,13 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               <Button
                 type='button'
                 onClick={nextStep}
-                disabled={currentStep === 5 || (currentStep === 3 && walkIn)}
+                disabled={
+                  currentStep === 5 ||
+                  (currentStep === 3 && walkIn) ||
+                  !isCurrentStepValid() ||
+                  (currentStep === 1 && !walkIn && !selectedClient.guid) ||
+                  (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
+                }
                 className='w-full'
               >
                 Next
@@ -597,7 +635,11 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
             {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
               <Button
                 type='submit'
-                disabled={submittingReservationForm || submittingWalkinForm}
+                disabled={
+                  submittingReservationForm ||
+                  submittingWalkinForm ||
+                  Object.keys(reservationForm.formState.errors).length > 0
+                }
                 className='w-full mt-4'
               >
                 Confirm

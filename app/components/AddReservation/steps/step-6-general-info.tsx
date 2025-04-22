@@ -6,6 +6,13 @@ import { Crown, Wine, Sofa, Heater, Users, Clock, NotebookTabs } from 'lucide-re
 import { MultiSelect, type MultiSelectOption } from '../../../components/ui/multi-select';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 
 export default function GeneralInfoStep({
   form,
@@ -39,10 +46,60 @@ export default function GeneralInfoStep({
       </div>
 
       {/* Reminder */}
-      {/* <div className='flex justify-between items-center gap-4 mb-6'>
-        <Label>Reminder</Label>
-        <Clock />
-      </div> */}
+      <div className='mb-6'>
+        <FormField
+          control={form.control}
+          name='reminderTime'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reminder</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger className="w-full bg-[#0D0C16] border-none text-color-E9E3D7 ring-offset-background focus:ring-1 focus:ring-color-B98858 focus:ring-offset-0">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-color-E9E3D7" />
+                      <SelectValue placeholder="Select reminder time" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0D0C16] border-color-B98858">
+                    <SelectItem
+                      value="15"
+                      className="text-color-E9E3D7 hover:bg-color-B98858/10 focus:bg-color-B98858/10 focus:text-color-E9E3D7 cursor-pointer"
+                    >
+                      15 minutes before
+                    </SelectItem>
+                    <SelectItem
+                      value="30"
+                      className="text-color-E9E3D7 hover:bg-color-B98858/10 focus:bg-color-B98858/10 focus:text-color-E9E3D7 cursor-pointer"
+                    >
+                      30 minutes before
+                    </SelectItem>
+                    <SelectItem
+                      value="60"
+                      className="text-color-E9E3D7 hover:bg-color-B98858/10 focus:bg-color-B98858/10 focus:text-color-E9E3D7 cursor-pointer"
+                    >
+                      1 hour before
+                    </SelectItem>
+                    <SelectItem
+                      value="120"
+                      className="text-color-E9E3D7 hover:bg-color-B98858/10 focus:bg-color-B98858/10 focus:text-color-E9E3D7 cursor-pointer"
+                    >
+                      2 hours before
+                    </SelectItem>
+                    <SelectItem
+                      value="1440"
+                      className="text-color-E9E3D7 hover:bg-color-B98858/10 focus:bg-color-B98858/10 focus:text-color-E9E3D7 cursor-pointer"
+                    >
+                      1 day before
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       {/* Client Note */}
       <div className='mb-6'>

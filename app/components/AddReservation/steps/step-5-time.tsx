@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Label } from '../../ui/label';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormMessage } from '../../ui/form';
+import { Button } from '../../ui/button';
+import { Minus, Plus } from 'lucide-react';
 
 function App({
   form,
@@ -14,15 +16,65 @@ function App({
 }) {
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
+  const [duration, setDuration] = useState(form.getValues('duration') || 60); // Initialize with form value or default to 60
+
+  // Watch both date and time fields
+  const selectedDate = form.watch('eventDate');
+  const selectedTime = form.watch('eventTime');
+
+  // Debug logs
+  console.log('Selected Date:', selectedDate);
+  console.log('Selected Time:', selectedTime);
+  console.log('Form Values:', form.getValues());
+
+  // Update selectedSlot when time changes in the form
+  React.useEffect(() => {
+    if (selectedTime) {
+      setSelectedSlot(selectedTime);
+      // Ensure duration is set when time is selected
+      if (!form.getValues('duration')) {
+        form.setValue('duration', duration);
+      }
+    }
+  }, [selectedTime, duration, form]);
+
+  const formatDate = (dateString: string | Date | null) => {
+    if (!dateString) return '';
+    try {
+      // Parse the ISO date string
+      const dateObj = typeof dateString === 'string' ? new Date(dateString) : dateString;
+      if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) return '';
+
+      return dateObj.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
 
   const handleTimeSlotSelect = (slot: string) => {
     if (selectedSlot === slot) {
       setSelectedSlot(null);
       form.setValue('eventTime', undefined);
+      form.setValue('duration', undefined);
     } else {
       setSelectedSlot(slot);
       form.setValue('eventTime', slot);
+      form.setValue('duration', duration);
+    }
+  };
+
+  const handleDurationChange = (change: number) => {
+    const newDuration = Math.max(30, Math.min(180, duration + change)); // Min 30 mins, max 180 mins
+    setDuration(newDuration);
+    if (selectedSlot) {
+      form.setValue('duration', newDuration);
     }
   };
 
@@ -80,9 +132,8 @@ function App({
                           setActiveShift(shift.guid);
                           field.onChange(shift.guid);
                         }}
-                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${
-                          activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
-                        }`}
+                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
+                          }`}
                       >
                         {shift.name}
                       </span>
@@ -110,9 +161,8 @@ function App({
                         setActiveTableType('View All');
                         setSelectedSlot(null);
                       }}
-                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${
-                        activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
-                      }`}
+                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
+                        }`}
                     >
                       View All
                     </button>
@@ -126,9 +176,8 @@ function App({
                             setActiveTableType(table.value);
                             // field.onChange(table.value);
                           }}
-                          className={`transition-all text-lg font-medium w-full ${
-                            activeTableType === table.value ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
-                          }`}
+                          className={`transition-all text-lg font-medium w-full ${activeTableType === table.value ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
+                            }`}
                         >
                           {table.name}
                         </button>
@@ -143,11 +192,57 @@ function App({
           />
         </div>
 
+        {/* Duration Selection */}
+        <div className='space-y-2 mb-6'>
+          <FormField
+            control={form.control}
+            name='duration'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className='flex items-center gap-4'>
+                    <div className='flex-1 bg-[#0D0C16] rounded-lg py-3.5 px-4 text-sm'>
+                      {selectedDate && selectedTime ? (
+                        <span className="text-color-E9E3D7 font-medium">{formatDate(selectedDate)} {selectedTime}</span>
+                      ) : (
+                        <span className="text-color-E9E3D7/50">No date/time selected</span>
+                      )}
+                    </div>
+                    <div className='flex items-center gap-2 bg-[#0D0C16] rounded-lg py-2.5 px-3'>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDurationChange(-10)}
+                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10'
+                      >
+                        <Minus className="h-4 w-4 text-color-E9E3D7" />
+                      </Button>
+                      <span className='text-color-E9E3D7 text-sm font-medium min-w-[45px] text-center'>
+                        {duration}:00
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDurationChange(10)}
+                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10'
+                      >
+                        <Plus className="h-4 w-4 text-color-E9E3D7" />
+                      </Button>
+                    </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         {/* Time Slots */}
         <div className='space-y-6 mb-6'>
           <div className='flex justify-between'>
             <Label>Time Slots</Label>
-            {/* <Label>Covers</Label> */}
           </div>
           <FormField
             control={form.control}
@@ -177,9 +272,6 @@ function App({
                               <div>
                                 <span className='text-lg'>{slot}</span>
                               </div>
-                            </div>
-                            <div className={`${selectedSlot === slot ? 'text-[#0B0B0B]' : 'text-color-E9E3D7'}`}>
-                              {/* {slot.available}/{slot.total} */}
                             </div>
                           </div>
                         );
