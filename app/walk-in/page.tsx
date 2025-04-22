@@ -1,9 +1,13 @@
+import { Suspense } from "react";
 import AddReservation from "../components/AddReservation";
 
 const page = () => {
   return (
     <div>
-      <AddReservation walkIn={true} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AddReservation />
+        <AddReservation walkIn={true} />
+      </Suspense>
     </div>
   );
 };
