@@ -552,9 +552,8 @@ export default function TableCombinations() {
                     );
 
                     return (
-                      <div>
+                      <div key={item.guid}>
                         <div
-                          key={item.guid}
                           className={getTableStyle(item, isSelected, isInExpandedCombination)}
                           style={{
                             position: 'absolute',
