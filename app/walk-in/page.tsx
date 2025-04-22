@@ -5,7 +5,6 @@ const page = () => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <AddReservation />
         <AddReservation walkIn={true} />
       </Suspense>
     </div>
