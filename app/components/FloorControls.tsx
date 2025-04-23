@@ -61,7 +61,7 @@ export function FloorControls({ onRemoveFloor, onRenameFloor }: FloorControlsPro
   };
   return (
     <div className=''>
-      <div className='flex flex-col md:flex-row md:items-center  gap-2 bg-[#121020] '>
+      <div className='flex flex-col md:flex-row md:items-center pt-1 gap-2 bg-[#121020] '>
         {/* Floor Selection Dropdown */}
         <div className='flex flex-1 items-center gap-2'>
           <div className='relative w-[300px] '>
