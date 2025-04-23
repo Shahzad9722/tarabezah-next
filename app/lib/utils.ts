@@ -32,3 +32,17 @@ export function groupBy(array, keyGetter) {
     return result;
   }, {});
 }
+export function convertTo24HourTimeString(time12h: string): string | null {
+  const [time, modifier] = time12h.trim().toUpperCase().split(' ');
+
+  if (!time || !modifier) return null;
+
+  let [hours, minutes] = time.split(':').map(Number);
+
+  if (modifier === 'PM' && hours < 12) hours += 12;
+  if (modifier === 'AM' && hours === 12) hours = 0;
+
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+

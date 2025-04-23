@@ -89,15 +89,28 @@ export default function ClientSearch({
             >
               Add New Guest
             </Button>
-            {guests.map((g: any, index: number) => (
-              <p
-                key={index}
-                className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
-                onClick={() => handleSelectGuest(g)}
-              >
-                {g.name}
-              </p>
-            ))}
+            {guests.length > 0 ? (
+              guests.map((g: any, index: number) => (
+                <p
+                  key={index}
+                  className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
+                  onClick={() => handleSelectGuest(g)}
+                >
+                  {g.name}
+                </p>
+              ))
+            ) : (
+              debouncedQuery && !loading && (
+                <div className="text-center py-2 text-gray-600">
+                  No clients found. Please try a different search or add a new guest.
+                </div>
+              )
+            )}
+            {loading && (
+              <div className="text-center py-2 text-gray-600">
+                Searching...
+              </div>
+            )}
           </div>
         )}
 
@@ -190,6 +203,38 @@ export default function ClientSearch({
                       </span>
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+            {/* blacklist */}
+            <div className='space-y-4'>
+              <div className='flex flex-wrap gap-2 text-lg'>
+                <p className='font-medium'>Blacklist:</p>
+              </div>
+
+              <div className='grid lg:grid-cols-3 gap-4'>
+                <div>
+                  <p className='font-medium flex justify-between'>
+                    <span className='text-color-E9E3D7 text-lg'>
+                      Count: {selected?.blackList?.others || 0}
+                    </span>
+                  </p>
+                </div>
+
+                <div>
+                  <p className='font-medium flex justify-between'>
+                    <span className='text-color-E9E3D7 text-lg'>
+                      Other Places: {selected?.blackList?.others || 0}
+                    </span>
+                  </p>
+                </div>
+
+                <div>
+                  <p className='font-medium flex justify-between'>
+                    <span className='text-color-E9E3D7 text-lg'>
+                      Same Place: {selected?.blackList?.same === true ? 'Yes' : 'No'}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
