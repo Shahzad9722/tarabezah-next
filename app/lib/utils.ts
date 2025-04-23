@@ -37,7 +37,7 @@ export function convertTo24HourTimeString(time12h: string): string | null {
 
   if (!time || !modifier) return null;
 
-  let [hoursStr, minutesStr] = time.split(':');
+  const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr);
   const minutes = parseInt(minutesStr);
 
