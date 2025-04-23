@@ -86,7 +86,7 @@ export default function ClientSearch({
                 }
               }}
             >
-              Add New Guestt
+              Add New Guest
             </Button>
             {guests.length > 0 ? (
               guests.map((g: any, index: number) => (
