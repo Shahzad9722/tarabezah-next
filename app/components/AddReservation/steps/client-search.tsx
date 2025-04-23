@@ -65,7 +65,6 @@ export default function ClientSearch({
             className='relative pl-[72px]'
             value={searchQuery}
             onChange={handleSearchChange}
-            onFocus={() => setShowResults(true)}
           />
           <div className='absolute left-3 top-0 flex items-center h-full'>
             <Search className={`text-gray-400 ${loading ? 'opacity-0' : ''}`} size={24} />
@@ -87,7 +86,7 @@ export default function ClientSearch({
                 }
               }}
             >
-              Add New Guest
+              Add New Guestt
             </Button>
             {guests.length > 0 ? (
               guests.map((g: any, index: number) => (

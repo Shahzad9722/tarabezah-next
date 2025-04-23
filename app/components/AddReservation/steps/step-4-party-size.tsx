@@ -25,9 +25,8 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                 {partySizes.map((size, index) => (
                   <p
                     key={index}
-                    className={`p-2 text-center cursor-pointer font-normal text-lg transition-all border-b-[1px] border-[#E9E3D736] ${
-                      partySize === size ? 'text-color-B98858' : 'text-color-E9E3D7'
-                    }`}
+                    className={`p-2 text-center cursor-pointer font-normal text-lg transition-all border-b-[1px] border-[#E9E3D736] ${partySize === size ? 'text-color-B98858' : 'text-color-E9E3D7'
+                      }`}
                     onClick={() => {
                       setPartySize(size);
                       field.onChange(size);
@@ -53,7 +52,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                 <Input
                   type='number'
                   step={1}
-                  min={1}
+                  min={0}
                   onKeyDown={(e) => {
                     if (e.key === '.' || e.key === 'e' || e.key === '-' || e.key === 'Enter') {
                       e.preventDefault();

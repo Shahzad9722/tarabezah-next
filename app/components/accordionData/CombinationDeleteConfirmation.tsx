@@ -37,7 +37,9 @@ export default function CombinationDeleteConfirmation({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className='sm:max-w-[425px] bg-color-222036 border-0'>
         <DialogHeader>
-          <DialogTitle className='mb-4'>Are you sure you want to delete this combination?</DialogTitle>
+          <DialogTitle className='mb-4 text-white text-lg font-semibold leading-normal break-words'>
+            Are you sure you want to delete this combination?
+          </DialogTitle>
           <DialogDescription>This action cannot be undone.</DialogDescription>
         </DialogHeader>
 

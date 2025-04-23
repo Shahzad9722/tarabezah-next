@@ -194,6 +194,8 @@ export default function TableCombinations() {
     });
     setShowConfirmDialog(false);
     setCombinationToDelete(null);
+    setSelectedItems([]);
+    setExpandedCombination(null)
   };
 
   // Zoom functionality

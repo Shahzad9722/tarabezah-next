@@ -616,7 +616,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               >
                 Back
               </Button>
-              <Button
+              {currentStep !== 5 && <Button
                 type='button'
                 onClick={nextStep}
                 disabled={
@@ -629,7 +629,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                 className='w-full'
               >
                 Next
-              </Button>
+              </Button>}
             </div>
 
             {(currentStep === 5 || (currentStep === 3 && walkIn)) && (

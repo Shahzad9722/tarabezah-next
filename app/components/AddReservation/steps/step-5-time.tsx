@@ -17,7 +17,7 @@ function App({
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
-  const [duration, setDuration] = useState(form.getValues('duration') || 60); // Initialize with form value or default to 60
+  const [duration, setDuration] = useState(form.getValues('duration') || 60); // Duration in minutes
 
   // Watch both date and time fields
   const selectedDate = form.watch('eventDate');
@@ -71,16 +71,20 @@ function App({
   };
 
   const handleDurationChange = (change: number) => {
-    const newDuration = Math.max(30, Math.min(180, duration + change)); // Min 30 mins, max 180 mins
+    const newDuration = Math.max(30, Math.min(180, duration + change)); // Min 30 mins, max 180 mins, in 10-min steps
     setDuration(newDuration);
     if (selectedSlot) {
       form.setValue('duration', newDuration);
     }
   };
 
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins.toString().padStart(2, '0')}m`;
+  };
+
   const generateTimeSlots = (startTimeStr: string, endTimeStr: string): string[] => {
-    // console.log('startTimeStr', startTimeStr);
-    // console.log('endTimeStr', endTimeStr);
     const slots: string[] = [];
     const now = new Date();
 
@@ -93,7 +97,6 @@ function App({
 
     const endTime = new Date();
     endTime.setHours(endH, endM, endS || 0, 0);
-
     // If current time is after end time, return empty array
     // if (now >= endTime) return slots;
 
@@ -174,7 +177,6 @@ function App({
                           type='button'
                           onClick={() => {
                             setActiveTableType(table.value);
-                            // field.onChange(table.value);
                           }}
                           className={`transition-all text-lg font-medium w-full ${activeTableType === table.value ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
                             }`}
@@ -200,33 +202,35 @@ function App({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className='flex items-center gap-4'>
-                    <div className='flex-1 bg-[#0D0C16] rounded-lg py-3.5 px-4 text-sm'>
+                  <div className='flex w-100 items-center gap-4'>
+                    <div className='w-1/2 bg-[#0D0C16] text-center rounded-lg py-3.5 px-4 text-sm'>
                       {selectedDate && selectedTime ? (
                         <span className="text-color-E9E3D7 font-medium">{formatDate(selectedDate)} {selectedTime}</span>
                       ) : (
                         <span className="text-color-E9E3D7/50">No date/time selected</span>
                       )}
                     </div>
-                    <div className='flex items-center gap-2 bg-[#0D0C16] rounded-lg py-2.5 px-3'>
+                    <div className='w-1/2 flex items-center justify-center gap-2 bg-[#0D0C16] rounded-lg py-2.5 px-3'>
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
                         onClick={() => handleDurationChange(-10)}
-                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10'
+                        disabled={duration <= 30}
+                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
                         <Minus className="h-4 w-4 text-color-E9E3D7" />
                       </Button>
-                      <span className='text-color-E9E3D7 text-sm font-medium min-w-[45px] text-center'>
-                        {duration}:00
+                      <span className='text-color-E9E3D7 text-sm font-medium min-w-[70px] text-center'>
+                        {formatDuration(duration)}
                       </span>
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
                         onClick={() => handleDurationChange(10)}
-                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10'
+                        disabled={duration >= 180}
+                        className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
                         <Plus className="h-4 w-4 text-color-E9E3D7" />
                       </Button>
@@ -282,7 +286,6 @@ function App({
             )}
           />
         </div>
-
         {/* <div className='space-y-6'>
           <div className='flex justify-between'>
             <Label>All</Label>

@@ -46,7 +46,7 @@ export default function GeneralInfoStep({
       </div>
 
       {/* Reminder */}
-      <div className='mb-6'>
+      {/* <div className='mb-6'>
         <FormField
           control={form.control}
           name='reminderTime'
@@ -99,7 +99,7 @@ export default function GeneralInfoStep({
             </FormItem>
           )}
         />
-      </div>
+      </div> */}
 
       {/* Client Note */}
       <div className='mb-6'>
