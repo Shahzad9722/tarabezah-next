@@ -37,12 +37,15 @@ export function convertTo24HourTimeString(time12h: string): string | null {
 
   if (!time || !modifier) return null;
 
-  let [hours, minutes] = time.split(':').map(Number);
+  let [hoursStr, minutesStr] = time.split(':');
+  let hours = parseInt(hoursStr);
+  const minutes = parseInt(minutesStr);
 
   if (modifier === 'PM' && hours < 12) hours += 12;
   if (modifier === 'AM' && hours === 12) hours = 0;
 
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
+
 
 
