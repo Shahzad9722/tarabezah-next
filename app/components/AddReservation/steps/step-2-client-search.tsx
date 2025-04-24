@@ -27,7 +27,7 @@ export default function AddReservationStep({
       <div className='space-y-6 mb-4'>
         <div className='flex  flex-col-reverse gap-6 md:flex-row justify-between'>
           <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-4'>Add New Client</h2>
-          <div className='flex'>
+          <div className='flex mr-[50px]'>
             <Button type='button' onClick={() => setShowAddNewClient(false)}>
               Client Search
             </Button>
