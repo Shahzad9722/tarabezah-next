@@ -5,7 +5,7 @@ import type React from 'react';
 export interface MultiSelectOption {
   id: number;
   name: string;
-  icon?: React.ReactNode;
+  iconUrl?: string;
 }
 
 interface MultiSelectProps {
@@ -42,13 +42,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
       {options.map((option) => (
         <button
           key={option.id}
-          className={`flex items-center gap-3 rounded-lg font-medium focus:outline-none focus:ring-none focus:ring-primary-none hover:bg-muted ${
-            isSelected(option.id) ? 'text-color-B98858' : 'text-color-E9E3D7'
-          }`}
+          className={`flex items-center gap-3 rounded-lg font-medium focus:outline-none focus:ring-none focus:ring-primary-none hover:bg-muted ${isSelected(option.id) ? 'text-color-B98858' : 'text-color-E9E3D7'
+            }`}
           onClick={() => toggleSelection(option.id)}
           type='button'
         >
-          {option.icon}
+          {option?.iconUrl && <img src={option?.iconUrl} alt={option.name} className='w-5 h-5' />}
           {option.name}
         </button>
       ))}

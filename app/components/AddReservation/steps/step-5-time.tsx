@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label } from '../../ui/label';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormMessage } from '../../ui/form';
 import { Button } from '../../ui/button';
 import { Minus, Plus } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+
+interface TimeSlot {
+  time: string;
+  totalTables: number;
+  availableTables: number;
+  isAvailable: boolean;
+}
 
 function App({
   form,
@@ -18,15 +26,63 @@ function App({
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
   const [duration, setDuration] = useState(form.getValues('duration') || 60); // Duration in minutes
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+
+  const { mutateAsync: fetchTimeSlots, isPending: submittingReservationForm } = useMutation({
+    mutationFn: async (data: any) => {
+      const params = new URLSearchParams({
+        RestaurantGuid: data.RestaurantGuid,
+        PartySize: data.PartySize?.toString(),
+        Date: new Date(form.getValues('eventDate')).toISOString().slice(0, 10),
+        ShiftGuid: data.ShiftGuid || '',
+        TableType: data.TableType?.toString() || '',
+      });
+
+      const response = await fetch(`/api/reservation/shift-time?${params.toString()}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch time slots');
+      return response.json();
+    },
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const restaurantId =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('selected-restaurant-id')
+          : null;
+      if (!restaurantId) return;
+
+      const payload = {
+        RestaurantGuid: restaurantId,
+        PartySize: form.getValues('numberOfGuests'),
+        Date: form.getValues('eventDate'),
+        ShiftGuid: activeShift,
+        TableType: activeTableType,
+      };
+
+      try {
+        const response = await fetchTimeSlots(payload);
+        console.log('Fetched time slots:', response);
+        setTimeSlots(response?.timeSlots || []);
+      } catch (error) {
+        console.error('Failed to fetch time slots:', error);
+      }
+    };
+
+    fetchData();
+  }, [
+    activeShift,
+    activeTableType,
+    form.watch('eventDate'),
+    form.watch('numberOfGuests'),
+  ]);
 
   // Watch both date and time fields
   const selectedDate = form.watch('eventDate');
   const selectedTime = form.watch('eventTime');
-
-  // Debug logs
-  console.log('Selected Date:', selectedDate);
-  console.log('Selected Time:', selectedTime);
-  console.log('Form Values:', form.getValues());
 
   // Update selectedSlot when time changes in the form
   React.useEffect(() => {
@@ -84,34 +140,12 @@ function App({
     return `${hours}h ${mins.toString().padStart(2, '0')}m`;
   };
 
-  const generateTimeSlots = (startTimeStr: string, endTimeStr: string): string[] => {
-    const slots: string[] = [];
-    const now = new Date();
-
-    // Parse start and end time strings into Date objects with today's date
-    const [startH, startM, startS] = startTimeStr.split(':').map(Number);
-    const [endH, endM, endS] = endTimeStr.split(':').map(Number);
-
-    const startTime = new Date();
-    startTime.setHours(startH, startM, startS || 0, 0);
-
-    const endTime = new Date();
-    endTime.setHours(endH, endM, endS || 0, 0);
-    // If current time is after end time, return empty array
-    // if (now >= endTime) return slots;
-
-    // Determine the effective start time (max of now and startTimeStr)
-    // const effectiveStart = new Date(
-    //   Math.max(new Date(now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0)).getTime(), startTime.getTime())
-    // );
-
-    // Generate time slots
-    while (startTime <= endTime) {
-      slots.push(startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      startTime.setMinutes(startTime.getMinutes() + 15);
-    }
-
-    return slots;
+  const formatTime = (timeString: string) => {
+    // Convert "07:00:00" to "7:00 AM"
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
   return (
@@ -176,9 +210,9 @@ function App({
                         <button
                           type='button'
                           onClick={() => {
-                            setActiveTableType(table.value);
+                            setActiveTableType(table.name);
                           }}
-                          className={`transition-all text-lg font-medium w-full ${activeTableType === table.value ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
+                          className={`transition-all text-lg font-medium w-full ${activeTableType === table.name ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
                             }`}
                         >
                           {table.name}
@@ -256,43 +290,54 @@ function App({
                 <FormMessage />
                 <FormControl>
                   <div className='flex flex-col space-y-2'>
-                    {activeShift &&
-                      shifts.find((shift) => shift.guid === activeShift) &&
-                      generateTimeSlots(
-                        shifts.find((shift) => shift.guid === activeShift)?.startTime || '',
-                        shifts.find((shift) => shift.guid === activeShift)?.endTime || ''
-                      ).map((slot, index) => {
+                    {timeSlots.length > 0 ? (
+                      timeSlots.map((slot, index) => {
+                        const isSelected = selectedSlot === formatTime(slot.time);
+                        const formattedTime = formatTime(slot.time);
+                        const isAvailable = slot.isAvailable;
+
                         return (
                           <div
                             key={index}
-                            onClick={() => {
-                              handleTimeSlotSelect(slot);
-                              field.onChange(slot);
-                            }}
-                            className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group cursor-pointer
-              ${selectedSlot === slot ? 'bg-color-B98858 text-[#0B0B0B]' : 'bg-color-F2C45 text-color-E9E3D7'}`}
+                            onClick={
+                              isAvailable
+                                ? () => {
+                                  handleTimeSlotSelect(formattedTime);
+                                  field.onChange(formattedTime);
+                                }
+                                : undefined // disables click completely
+                            }
+                            className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group
+            ${isSelected
+                                ? 'bg-color-B98858 text-[#0B0B0B]'
+                                : isAvailable
+                                  ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
+                                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              }`}
+                            title={isAvailable ? '' : 'Slot not available'} // optional tooltip
                           >
                             <div className='flex items-center gap-3'>
-                              <div>
-                                <span className='text-lg'>{slot}</span>
-                              </div>
+                              <span className='text-lg'>{formattedTime}</span>
+                            </div>
+                            <div className='flex items-center gap-3'>
+                              <span>
+                                {slot.availableTables}/{slot.totalTables}
+                              </span>
                             </div>
                           </div>
                         );
-                      })}
+                      })
+                    ) : (
+                      <div className='text-color-E9E3D7/50 text-center py-4'>
+                        No available time slots
+                      </div>
+                    )}
                   </div>
                 </FormControl>
               </FormItem>
             )}
           />
         </div>
-        {/* <div className='space-y-6'>
-          <div className='flex justify-between'>
-            <Label>All</Label>
-            <Label>Covers</Label>
-          </div>
-          {renderTimeSlots()}
-        </div> */}
       </div>
     </div>
   );

@@ -50,6 +50,18 @@ interface Combination {
   members: CombinationMember[];
 }
 
+// Helper function to generate combination indexes (A, B, C, ..., AA, AB, etc.)
+const getCombinationIndex = (index: number): string => {
+  let result = '';
+  let i = index;
+  do {
+    i--;
+    result = String.fromCharCode(65 + (i % 26)) + result;
+    i = Math.floor(i / 26);
+  } while (i > 0);
+  return result;
+};
+
 export default function TableCombinations() {
   const [selectedItems, setSelectedItems] = useState<{ guid: string; tableName: string }[]>([]);
   const [showCombinationInfoDialog, setShowCombinationInfoDialog] = useState(false);
@@ -102,6 +114,23 @@ export default function TableCombinations() {
       return data.combinations;
     },
     enabled: !!selectedFilters?.floorPlanId,
+  });
+
+  // Add index to each combination
+  const combinationsWithIndex = combinations.map((combination: Combination, index: number) => ({
+    ...combination,
+    index: getCombinationIndex(index + 1),
+  }));
+
+  // Create a map of table GUIDs to their combination indexes
+  const tableCombinationMap: Record<string, string[]> = {};
+  combinationsWithIndex.forEach((combination) => {
+    combination.members.forEach((member) => {
+      if (!tableCombinationMap[member.floorplanElementInstanceGuid]) {
+        tableCombinationMap[member.floorplanElementInstanceGuid] = [];
+      }
+      tableCombinationMap[member.floorplanElementInstanceGuid].push(combination.index);
+    });
   });
 
   // Mutation for adding combinations
@@ -162,6 +191,7 @@ export default function TableCombinations() {
     setShowConfirmDialog(true);
     setCombinationToDelete(guid);
   };
+
   // Handle item selection
   const handleItemClick = (item: Item) => {
     if (item.purpose !== 'Reservable') return;
@@ -195,7 +225,7 @@ export default function TableCombinations() {
     setShowConfirmDialog(false);
     setCombinationToDelete(null);
     setSelectedItems([]);
-    setExpandedCombination(null)
+    setExpandedCombination(null);
   };
 
   // Zoom functionality
@@ -275,7 +305,7 @@ export default function TableCombinations() {
     setPosition({ x: newPositionX, y: newPositionY });
   };
 
-  // Handle panning functionality
+  // Handle mouse down for panning
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
@@ -284,6 +314,7 @@ export default function TableCombinations() {
     }
   };
 
+  // Handle mouse move for panning
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
@@ -296,6 +327,7 @@ export default function TableCombinations() {
     }
   };
 
+  // Handle mouse up for panning
   const handleMouseUp = (e: React.MouseEvent) => {
     if (isDragging) {
       e.preventDefault();
@@ -407,7 +439,7 @@ export default function TableCombinations() {
   }, []);
 
   // Get table style based on state
-  const getTableStyle = (item: Item, isSelected: boolean, isInCombination: boolean) => {
+  const getTableStyle = (item: Item, isSelected: boolean, combinationIndexes: string[] = []) => {
     let baseStyle = 'flex items-center justify-center relative transition-all duration-200 shadow-md ';
 
     // Shape styling
@@ -420,7 +452,7 @@ export default function TableCombinations() {
     // Selection and combination states
     if (isSelected) {
       baseStyle += 'border-2 border-green-500 ';
-    } else if (isInCombination) {
+    } else if (combinationIndexes.length > 0) {
       baseStyle += 'border-2 border-yellow-400 ';
     }
 
@@ -510,10 +542,7 @@ export default function TableCombinations() {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            ref={(node) => {
-              containerRef.current = node;
-              // drop(node);
-            }}
+            ref={containerRef}
           >
             <div
               className='absolute inset-0 overflow-visible'
@@ -549,14 +578,12 @@ export default function TableCombinations() {
                   })
                   ?.map((item) => {
                     const isSelected = selectedItems.some((sel) => sel.guid === item.guid);
-                    const isInExpandedCombination = expandedCombination?.members.some(
-                      (member) => member.floorplanElementInstanceGuid === item.guid
-                    );
+                    const combinationIndexes = tableCombinationMap[item.guid] || [];
 
                     return (
                       <div key={item.guid}>
                         <div
-                          className={getTableStyle(item, isSelected, isInExpandedCombination)}
+                          className={getTableStyle(item, isSelected, combinationIndexes)}
                           style={{
                             position: 'absolute',
                             left: `${item.x}px`,
@@ -566,7 +593,14 @@ export default function TableCombinations() {
                             zIndex: 20,
                           }}
                           onClick={() => handleItemClick(item)}
-                        ></div>
+                        >
+                          {/* Show combination indexes on the table */}
+                          {combinationIndexes.length > 0 && (
+                            <div className="absolute -top-2-right-2 flex items-center justify-center text-[#ff990a] text-xs font-bold rounded-full w-5 h-5">
+                              {combinationIndexes.join(',')}
+                            </div>
+                          )}
+                        </div>
                         {item.elementImageUrl && (
                           <Image
                             src={item.elementImageUrl}
@@ -616,7 +650,7 @@ export default function TableCombinations() {
           </div>
 
           <Accordion
-            combinations={combinations}
+            combinations={combinationsWithIndex}
             onDelete={(guid) => confirmDeleteCombination(guid)}
             onExpand={(combination: Combination | null) => setExpandedCombination(combination)}
           />
