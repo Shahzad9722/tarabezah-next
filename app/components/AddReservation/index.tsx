@@ -242,11 +242,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const token = searchParams.get('token');
   const restaurantId = searchParams.get('restaurantId');
   const screen = searchParams.get('screen');
-
-  if (!token || !restaurantId) {
-    return notFound();
-  }
-
   const [arrangedSteps, setArrangeSteps] = useState(steps);
   const [clientIdx, setClientIdx] = useState<number>(-1);
   const [dateIdx, setDateIdx] = useState<number>(-1);
@@ -263,6 +258,11 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     notes: '',
     reminderTime: '',
   });
+
+  if (!token || !restaurantId) {
+    return notFound();
+  }
+
 
   const { isPending: fetchingEntities, data: entities = { sources: [], tags: [], shifts: [], tableTypes: [] } } =
     useQuery({
