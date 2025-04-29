@@ -242,6 +242,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const token = searchParams.get('token');
   const restaurantId = searchParams.get('restaurantId');
   const screen = searchParams.get('screen');
+
   const [arrangedSteps, setArrangeSteps] = useState(steps);
   const [clientIdx, setClientIdx] = useState<number>(-1);
   const [dateIdx, setDateIdx] = useState<number>(-1);
@@ -258,11 +259,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     notes: '',
     reminderTime: '',
   });
-
-  if (!token || !restaurantId) {
-    return notFound();
-  }
-
 
   const { isPending: fetchingEntities, data: entities = { sources: [], tags: [], shifts: [], tableTypes: [] } } =
     useQuery({
@@ -579,6 +575,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   // console.log('guestForm.getValues()', guestForm.getValues());
   // console.log('reservationForm.formState.errors', reservationForm.formState.errors);
   // console.log('selectedClient', selectedClient);
+
+  if (!token || !restaurantId) {
+    return notFound();
+  }
 
   return (
     <div className='md:h-screen flex flex-col md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
