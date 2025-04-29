@@ -5,13 +5,19 @@ interface StepSidebarProps {
   currentStep: number;
   setCurrentStep: any;
   confirmation: boolean;
+  moveClientSearchAfterDate,
+  moveClientSearchBeforeDate,
+  clientIndex?: number,
+  walkIn?: boolean,
 }
 
 export default function StepSidebar({
   steps,
   currentStep,
-  setCurrentStep,
   confirmation,
+  moveClientSearchAfterDate,
+  moveClientSearchBeforeDate,
+  walkIn
 }: StepSidebarProps) {
   return (
     <div className="w-full md:w-[270px]">
@@ -29,7 +35,7 @@ export default function StepSidebar({
               >
                 {/* Icon with Circle Background */}
                 <div
-                  className={`relative cursor-pointer w-[45px] h-[45px] flex justify-center items-center rounded-full transition-all 
+                  className={`relative cursor-pointer w-[45px] h-[45px] flex justify-center items-center rounded-full shrink-0 transition-all 
                   ${index === 0 || index <= currentStep || confirmation
                       ? "bg-color-B98858 text-white"
                       : "bg-color-A4A4A4 text-gray-300"
@@ -55,6 +61,16 @@ export default function StepSidebar({
                 <div className="flex items-center space-x-2">
                   <span className="text-md md:text-xl font-medium">
                     {step.name}
+                    {step.name === "Client Search" && step.step == 1 && !walkIn && (
+                      <button onClick={moveClientSearchAfterDate} className="ml-2 text-sm text-blue-500 underline">
+                        Move After Date
+                      </button>
+                    )}
+                    {step.name === "Client Search" && step.step == 2 && !walkIn && (
+                      <button onClick={moveClientSearchBeforeDate} className="ml-2 text-sm text-blue-500 underline">
+                        Move Before Date
+                      </button>
+                    )}
                   </span>
                 </div>
               </div>

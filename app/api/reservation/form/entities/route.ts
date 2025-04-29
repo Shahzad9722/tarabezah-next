@@ -4,16 +4,13 @@ import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
   try {
-    // Get the auth token from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    const url = new URL(request.url);
+    const restaurantId = url.searchParams.get('restaurantId');
+    const token = url.searchParams.get('token');
 
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const url = new URL(request.url);
-    const restaurantId = url.searchParams.get('restaurantId');
 
     const res: {
       data: {
@@ -24,7 +21,7 @@ export async function GET(request: Request) {
     } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/Enums/lookupData/${restaurantId}`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `${process.env.BACKEND_TOKEN}`,
+        Authorization: `${token}`,
       },
     });
 

@@ -13,12 +13,16 @@ export default function ClientSearch({
   guestForm,
   selected = {},
   setSelected,
+  token,
+  restaurantId,
 }: {
   reservationForm: UseFormReturn<any>;
   setShowAddNewClient: any;
   guestForm: UseFormReturn<any>;
   selected: any;
   setSelected: any;
+  token: string;
+  restaurantId: string;
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebounce(searchQuery, 300);
@@ -29,11 +33,10 @@ export default function ClientSearch({
     queryKey: ['guests', { debouncedQuery }],
     queryFn: async () => {
       setLoading(true);
-      const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
-      if (!restaurantId) {
-        throw new Error('No restaurant selected');
-      }
-      const res = await fetch(`/api/reservation/guest?query=${debouncedQuery}&restaurantId=${restaurantId}`);
+
+      const res = await fetch(
+        `/api/reservation/guest?query=${debouncedQuery}&restaurantId=${restaurantId}&token=${token}`
+      );
       if (!res.ok) throw new Error('Failed to fetch guest');
       const data = await res.json();
       setLoading(false);
@@ -88,28 +91,23 @@ export default function ClientSearch({
             >
               Add New Guest
             </Button>
-            {guests.length > 0 ? (
-              guests.map((g: any, index: number) => (
-                <p
-                  key={index}
-                  className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
-                  onClick={() => handleSelectGuest(g)}
-                >
-                  {g.name}
-                </p>
-              ))
-            ) : (
-              debouncedQuery && !loading && (
-                <div className="text-center py-2 text-gray-600">
-                  No clients found. Please try a different search or add a new guest.
-                </div>
-              )
-            )}
-            {loading && (
-              <div className="text-center py-2 text-gray-600">
-                Searching...
-              </div>
-            )}
+            {guests.length > 0
+              ? guests.map((g: any, index: number) => (
+                  <p
+                    key={index}
+                    className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
+                    onClick={() => handleSelectGuest(g)}
+                  >
+                    {g.name}
+                  </p>
+                ))
+              : debouncedQuery &&
+                !loading && (
+                  <div className='text-center py-2 text-gray-600'>
+                    No clients found. Please try a different search or add a new guest.
+                  </div>
+                )}
+            {loading && <div className='text-center py-2 text-gray-600'>Searching...</div>}
           </div>
         )}
 
@@ -214,17 +212,13 @@ export default function ClientSearch({
               <div className='grid lg:grid-cols-3 gap-4'>
                 <div>
                   <p className='font-medium flex justify-between'>
-                    <span className='text-color-E9E3D7 text-lg'>
-                      Count: {selected?.blackList?.others || 0}
-                    </span>
+                    <span className='text-color-E9E3D7 text-lg'>Count: {selected?.blackList?.others || 0}</span>
                   </p>
                 </div>
 
                 <div>
                   <p className='font-medium flex justify-between'>
-                    <span className='text-color-E9E3D7 text-lg'>
-                      Other Places: {selected?.blackList?.others || 0}
-                    </span>
+                    <span className='text-color-E9E3D7 text-lg'>Other Places: {selected?.blackList?.others || 0}</span>
                   </p>
                 </div>
 

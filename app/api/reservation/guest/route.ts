@@ -4,17 +4,13 @@ import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
   try {
-    // Get the auth token from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const url = new URL(request.url);
     const query = url.searchParams.get('query') || '';
     const restaurantId = url.searchParams.get('restaurantId');
+    const token = url.searchParams.get('token');
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!query) return NextResponse.json({ error: 'query is required' }, { status: 400 });
 
@@ -23,7 +19,7 @@ export async function GET(request: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${process.env.BACKEND_TOKEN}`,
+          Authorization: `${token}`,
         },
       }
     );
@@ -37,15 +33,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    // Get the auth token from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    const payload = await request.json();
 
-    if (!token) {
+    if (!payload?.token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const payload = await request.json();
     // console.log('payload', payload);
     const res: any = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Clients`,
@@ -61,7 +54,7 @@ export async function POST(request: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${process.env.BACKEND_TOKEN}`,
+          Authorization: `${payload.token}`,
         },
       }
     );

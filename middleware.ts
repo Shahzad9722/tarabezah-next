@@ -3,22 +3,18 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const authToken = request.cookies.get('auth-token')?.value;
-  const pathname = request.nextUrl.pathname;
+  const isLoginPage = request.nextUrl.pathname === '/login';
 
-  const isLoginPage = pathname === '/login';
+  const isPublicPage =
+    request.nextUrl.pathname.startsWith('/reservation') || request.nextUrl.pathname.startsWith('/walk-in');
 
-  // Publicly accessible paths
-  const publicPaths = ['/reservation', '/walk-in'];
-
-  const isPublicPath = publicPaths.includes(pathname);
-
-  // If on login page and already authenticated, redirect to home
+  // If we're on the login page and have a token, redirect to home
   if (authToken && isLoginPage) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // If unauthenticated and not on a public or login page, redirect to login
-  if (!authToken && !isLoginPage && !isPublicPath) {
+  // If we're not on a public page or login page and don't have a token, redirect to login
+  if (!authToken && !isLoginPage && !isPublicPage) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

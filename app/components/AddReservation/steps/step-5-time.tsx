@@ -17,10 +17,14 @@ function App({
   form,
   shifts,
   tableTypes,
+  token,
+  restaurantId,
 }: {
   form: UseFormReturn<any>;
   shifts: { guid: string; name: string; startTime: string; endTime: string }[];
   tableTypes: { name: string; value: number }[];
+  token: string;
+  restaurantId: string;
 }) {
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
@@ -36,6 +40,7 @@ function App({
         Date: new Date(form.getValues('eventDate')).toISOString().slice(0, 10),
         ShiftGuid: data.ShiftGuid || '',
         TableType: data.TableType?.toString() || '',
+        token: token,
       });
 
       const response = await fetch(`/api/reservation/shift-time?${params.toString()}`, {
@@ -49,12 +54,6 @@ function App({
 
   useEffect(() => {
     const fetchData = async () => {
-      const restaurantId =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('selected-restaurant-id')
-          : null;
-      if (!restaurantId) return;
-
       const payload = {
         RestaurantGuid: restaurantId,
         PartySize: form.getValues('numberOfGuests'),
@@ -73,12 +72,7 @@ function App({
     };
 
     fetchData();
-  }, [
-    activeShift,
-    activeTableType,
-    form.watch('eventDate'),
-    form.watch('numberOfGuests'),
-  ]);
+  }, [activeShift, activeTableType, form.watch('eventDate'), form.watch('numberOfGuests')]);
 
   // Watch both date and time fields
   const selectedDate = form.watch('eventDate');
@@ -106,7 +100,7 @@ function App({
         weekday: 'short',
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
       });
     } catch (error) {
       console.error('Error formatting date:', error);
@@ -169,8 +163,9 @@ function App({
                           setActiveShift(shift.guid);
                           field.onChange(shift.guid);
                         }}
-                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
-                          }`}
+                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${
+                          activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
+                        }`}
                       >
                         {shift.name}
                       </span>
@@ -198,8 +193,9 @@ function App({
                         setActiveTableType('View All');
                         setSelectedSlot(null);
                       }}
-                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
-                        }`}
+                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${
+                        activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
+                      }`}
                     >
                       View All
                     </button>
@@ -212,8 +208,9 @@ function App({
                           onClick={() => {
                             setActiveTableType(table.name);
                           }}
-                          className={`transition-all text-lg font-medium w-full ${activeTableType === table.name ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
-                            }`}
+                          className={`transition-all text-lg font-medium w-full ${
+                            activeTableType === table.name ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
+                          }`}
                         >
                           {table.name}
                         </button>
@@ -239,34 +236,36 @@ function App({
                   <div className='flex w-100 items-center gap-4'>
                     <div className='w-1/2 bg-[#0D0C16] text-center rounded-lg py-3.5 px-4 text-sm'>
                       {selectedDate && selectedTime ? (
-                        <span className="text-color-E9E3D7 font-medium">{formatDate(selectedDate)} {selectedTime}</span>
+                        <span className='text-color-E9E3D7 font-medium'>
+                          {formatDate(selectedDate)} {selectedTime}
+                        </span>
                       ) : (
-                        <span className="text-color-E9E3D7/50">No date/time selected</span>
+                        <span className='text-color-E9E3D7/50'>No date/time selected</span>
                       )}
                     </div>
                     <div className='w-1/2 flex items-center justify-center gap-2 bg-[#0D0C16] rounded-lg py-2.5 px-3'>
                       <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
+                        type='button'
+                        variant='outline'
+                        size='icon'
                         onClick={() => handleDurationChange(-10)}
                         disabled={duration <= 30}
                         className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
-                        <Minus className="h-4 w-4 text-color-E9E3D7" />
+                        <Minus className='h-4 w-4 text-color-E9E3D7' />
                       </Button>
                       <span className='text-color-E9E3D7 text-sm font-medium min-w-[70px] text-center'>
                         {formatDuration(duration)}
                       </span>
                       <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
+                        type='button'
+                        variant='outline'
+                        size='icon'
                         onClick={() => handleDurationChange(10)}
                         disabled={duration >= 180}
                         className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
-                        <Plus className="h-4 w-4 text-color-E9E3D7" />
+                        <Plus className='h-4 w-4 text-color-E9E3D7' />
                       </Button>
                     </div>
                   </div>
@@ -302,18 +301,19 @@ function App({
                             onClick={
                               isAvailable
                                 ? () => {
-                                  handleTimeSlotSelect(formattedTime);
-                                  field.onChange(formattedTime);
-                                }
+                                    handleTimeSlotSelect(formattedTime);
+                                    field.onChange(formattedTime);
+                                  }
                                 : undefined // disables click completely
                             }
                             className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group
-            ${isSelected
-                                ? 'bg-color-B98858 text-[#0B0B0B]'
-                                : isAvailable
-                                  ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
-                                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                              }`}
+            ${
+              isSelected
+                ? 'bg-color-B98858 text-[#0B0B0B]'
+                : isAvailable
+                ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
+                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+            }`}
                             title={isAvailable ? '' : 'Slot not available'} // optional tooltip
                           >
                             <div className='flex items-center gap-3'>
@@ -328,9 +328,7 @@ function App({
                         );
                       })
                     ) : (
-                      <div className='text-color-E9E3D7/50 text-center py-4'>
-                        No available time slots
-                      </div>
+                      <div className='text-color-E9E3D7/50 text-center py-4'>No available time slots</div>
                     )}
                   </div>
                 </FormControl>

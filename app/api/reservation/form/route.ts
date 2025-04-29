@@ -6,14 +6,11 @@ import { convertTo24HourTimeString } from '@/app/lib/utils';
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    // console.log('payload', payload);
-    // Get the auth token from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
 
-    if (!token) {
+    if (!payload?.token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
     const res: any = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/Reservations`,
       {
@@ -25,11 +22,12 @@ export async function POST(request: Request) {
         tags: payload.tags,
         notes: payload.additionalNotes,
         floorplanElementGuid: payload.tableId || null,
+        isUpcoming: payload.isUpcoming,
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${process.env.BACKEND_TOKEN}`,
+          Authorization: `${payload.token}`,
         },
       }
     );

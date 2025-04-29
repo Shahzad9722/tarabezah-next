@@ -19,7 +19,7 @@ import ClientSearch from './steps/client-search';
 import { toast } from 'sonner';
 import ReservationConfirmDialog from './ReservationDetailsConfirmDialog';
 import { format } from 'date-fns';
-import { useSearchParams } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 
 const AddReservationIcon = () => (
   <svg width='29' height='29' viewBox='0 0 29 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -239,7 +239,17 @@ const stepsWalkIn: Step[] = [
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
+  const token = searchParams.get('token');
+  const restaurantId = searchParams.get('restaurantId');
+  const screen = searchParams.get('screen');
 
+  if (!token || !restaurantId) {
+    return notFound();
+  }
+
+  const [arrangedSteps, setArrangeSteps] = useState(steps);
+  const [clientIdx, setClientIdx] = useState<number>(-1);
+  const [dateIdx, setDateIdx] = useState<number>(-1);
   const [currentStep, setCurrentStep] = useState(1);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showAddNewClient, setShowAddNewClient] = useState(false);
@@ -258,11 +268,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     useQuery({
       queryKey: ['entities'],
       queryFn: async () => {
-        const restaurantId = typeof window !== 'undefined' ? localStorage.getItem('selected-restaurant-id') : null;
-        if (!restaurantId) {
-          throw new Error('No restaurant selected');
-        }
-        const res = await fetch(`/api/reservation/form/entities?restaurantId=${restaurantId}`);
+        const res = await fetch(`/api/reservation/form/entities?restaurantId=${restaurantId}&token=${token}`);
         if (!res.ok) throw new Error('Failed to fetch guest');
         const reservationFormEntities = await res.json();
         return reservationFormEntities.entities;
@@ -270,10 +276,10 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     });
 
   const { mutateAsync: addGuest, isPending: addingGuest } = useMutation({
-    mutationFn: (data) => {
+    mutationFn: (data: any) => {
       return fetch(`/api/reservation/guest`, {
         method: 'post',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, token }),
       });
     },
   });
@@ -285,6 +291,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         body: JSON.stringify({
           ...data,
           tableId: table,
+          token,
+          isUpcoming: screen === 'floorplan',
         }),
       });
     },
@@ -297,6 +305,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         body: JSON.stringify({
           ...data,
           tableId: table,
+          token,
+          isUpcoming: screen === 'floorplan',
         }),
       });
     },
@@ -412,15 +422,72 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     setSelectedClient({});
   };
 
+  const moveClientSearchAfterDate = () => {
+    const newSteps = [...steps];
+
+    const clientIndex = newSteps.findIndex((step) => step.name === 'Client Search');
+    const dateIndex = newSteps.findIndex((step) => step.name === 'Date');
+
+    if (clientIndex > -1 && dateIndex > -1) {
+      const [clientStep] = newSteps.splice(clientIndex, 1); // Remove Client Search
+
+      let newDateIndex = dateIndex;
+      // Adjust dateIndex if Client Search was before Date
+      if (clientIndex < dateIndex) {
+        newDateIndex -= 1;
+      }
+
+      newSteps.splice(newDateIndex + 1, 0, clientStep); // Correct position after Date
+
+      // Reassign step numbers correctly
+      newSteps.forEach((step, index) => {
+        step.step = index;
+      });
+
+      setArrangeSteps(newSteps);
+    }
+  };
+
+  useEffect(() => {
+    if (arrangedSteps.length > 0) {
+      setClientIdx(arrangedSteps.findIndex((s) => s.name === 'Client Search'));
+      setDateIdx(arrangedSteps.findIndex((s) => s.name === 'Date'));
+    }
+  }, [arrangedSteps]);
+
+  const moveClientSearchBeforeDate = () => {
+    const newSteps = [...steps];
+    const clientIndex = newSteps.findIndex((step) => step.name === 'Client Search');
+    const dateIndex = newSteps.findIndex((step) => step.name === 'Date');
+
+    if (clientIndex > -1 && dateIndex > -1) {
+      const [clientStep] = newSteps.splice(clientIndex, 1); // Remove Client Search
+
+      let newDateIndex = dateIndex;
+      // Adjust dateIndex if Client Search was before Date
+      if (clientIndex < dateIndex) {
+        newDateIndex -= 1;
+      }
+
+      newSteps.splice(newDateIndex, 0, clientStep); // Insert before Date
+
+      // Reassign step numbers correctly
+      newSteps.forEach((step, index) => {
+        step.step = index;
+      });
+
+      setArrangeSteps(newSteps);
+    }
+  };
+
   const isCurrentStepValid = () => {
-    const currentStepFields = walkIn ? stepsWalkIn[currentStep - 1].fields : steps[currentStep - 1].fields;
+    const currentStepFields = walkIn ? stepsWalkIn[currentStep - 1].fields : arrangedSteps[currentStep - 1].fields;
     if (!currentStepFields || currentStepFields.length === 0) return true;
 
     // Check if all required fields for current step have values
-    return currentStepFields.every(field => {
+    return currentStepFields.every((field) => {
       const value = reservationForm.getValues(field as keyof typeof reservationForm.formState.defaultValues);
-      return value !== undefined && value !== '' &&
-        !reservationForm.formState.errors[field];
+      return value !== undefined && value !== '' && !reservationForm.formState.errors[field];
     });
   };
 
@@ -438,7 +505,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         setCurrentStep(currentStep + 1);
       }
     } else {
-      if (currentStep < steps.length - 1) {
+      if (currentStep < arrangedSteps.length - 1) {
         setCurrentStep(currentStep + 1);
       }
     }
@@ -498,7 +565,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
   useEffect(() => {
     if (Object.keys(reservationForm?.formState?.errors).length) {
-      const step = (walkIn ? stepsWalkIn : steps)
+      const step = (walkIn ? stepsWalkIn : arrangedSteps)
         .filter((s) => s.hasPage && s.fields?.length)
         .find((s) => s.fields.includes(Object.keys(reservationForm?.formState?.errors)[0]));
       if (step) {
@@ -512,13 +579,18 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   // console.log('guestForm.getValues()', guestForm.getValues());
   // console.log('reservationForm.formState.errors', reservationForm.formState.errors);
   // console.log('selectedClient', selectedClient);
+
   return (
     <div className='md:h-screen flex flex-col md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
-        steps={walkIn ? stepsWalkIn : steps}
+        steps={walkIn ? stepsWalkIn : arrangedSteps}
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}
         confirmation={showConfirmDialog}
+        moveClientSearchAfterDate={moveClientSearchAfterDate}
+        moveClientSearchBeforeDate={moveClientSearchBeforeDate}
+        clientIndex={clientIdx}
+        walkIn={walkIn}
       />
 
       <div className='w-full flex-1 p-6 overflow-x-auto'>
@@ -551,7 +623,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
           </>
         )}
 
-        {currentStep === 1 && !showAddNewClient && (
+        {currentStep === clientIdx && !showAddNewClient && (
           <>
             <ClientSearch
               reservationForm={reservationForm}
@@ -559,6 +631,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               setShowAddNewClient={setShowAddNewClient}
               selected={selectedClient}
               setSelected={setSelectedClient}
+              token={token}
+              restaurantId={restaurantId}
             />
             {!selectedClient.guid && (
               <p className='text-red-500 mb-6'>{reservationForm?.formState?.errors?.clientId?.message}</p>
@@ -573,7 +647,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         {showAddNewClient && (
           <Form {...guestForm}>
             <form onSubmit={guestForm.handleSubmit(createGuest)} className='space-y-4'>
-              {!fetchingEntities && currentStep === 1 && (
+              {!fetchingEntities && clientIdx && (
                 <ClientSearchStep
                   form={guestForm}
                   sources={entities.sources}
@@ -588,7 +662,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         )}
         <Form {...reservationForm}>
           <form onSubmit={handleConfirm} className='space-y-4'>
-            {currentStep === 2 &&
+            {currentStep === dateIdx &&
               (walkIn ? <PartySizeStep form={reservationForm} /> : <DateStep form={reservationForm} />)}
             {currentStep === 3 &&
               (walkIn ? (
@@ -602,7 +676,13 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               (walkIn ? (
                 <GeneralInfoStep form={reservationForm} tags={entities.tags} />
               ) : (
-                <TimeStep form={reservationForm} shifts={entities.shifts} tableTypes={entities.tableTypes} />
+                <TimeStep
+                  form={reservationForm}
+                  shifts={entities.shifts}
+                  tableTypes={entities.tableTypes}
+                  token={token}
+                  restaurantId={restaurantId}
+                />
               ))}
             {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
 
@@ -616,20 +696,25 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               >
                 Back
               </Button>
-              {currentStep !== 5 && <Button
-                type='button'
-                onClick={nextStep}
-                disabled={
-                  currentStep === 5 ||
-                  (currentStep === 3 && walkIn) ||
-                  !isCurrentStepValid() ||
-                  (currentStep === 1 && !walkIn && !selectedClient.guid) ||
-                  (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
-                }
-                className='w-full'
-              >
-                Next
-              </Button>}
+              {currentStep !== 5 && (
+                <Button
+                  type='button'
+                  onClick={nextStep}
+                  disabled={
+                    currentStep === 5 ||
+                    (currentStep === 3 && walkIn) ||
+                    !isCurrentStepValid() ||
+                    (currentStep === 1 && !walkIn && !selectedClient.guid) ||
+                    (currentStep === 1 &&
+                      walkIn &&
+                      !selectedClient.guid &&
+                      reservationForm.getValues('clientId') !== '0')
+                  }
+                  className='w-full'
+                >
+                  Next
+                </Button>
+              )}
             </div>
 
             {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
