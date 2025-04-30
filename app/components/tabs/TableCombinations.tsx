@@ -596,7 +596,7 @@ export default function TableCombinations() {
                         >
                           {/* Show combination indexes on the table */}
                           {combinationIndexes.length > 0 && (
-                            <div className="absolute -top-2-right-2 flex items-center justify-center text-[#ff990a] text-xs font-bold rounded-full w-5 h-5">
+                            <div className="absolute -top-5 left-1/2 -translate-x-1/2 flex items-center justify-center text-[#fffff] text-xs font-bold rounded-full w-5 h-5">
                               {combinationIndexes.join(',')}
                             </div>
                           )}
