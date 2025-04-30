@@ -15,8 +15,8 @@ export default function AddReservationStep({
   walkIn,
 }: {
   form: UseFormReturn<any>;
-  sources: { name: string; value: number, iconUrl: string }[];
-  tags: { name: string; value: number, iconUrl: string }[];
+  sources: { name: string; value: number, iconUrlGold: string, iconUrlWhite: string, }[];
+  tags: { name: string; value: number, iconUrlWhite: string, iconUrlGold: string }[];
   submittingForm: boolean;
   setShowAddNewClient: any;
   walkIn?: boolean;
@@ -139,7 +139,7 @@ export default function AddReservationStep({
               <FormLabel>Client Source</FormLabel>
               <FormControl>
                 <MultiSelect
-                  options={sources.map((s) => ({ id: s.value, name: s.name, iconUrl: s.iconUrl }))}
+                  options={sources.map((s) => ({ id: s.value, name: s.name, iconUrlGold: s.iconUrlGold, iconUrlWhite: s.iconUrlWhite, }))}
                   {...field}
                   isMultiSelect={false}
                 />
@@ -156,7 +156,7 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Tags</FormLabel>
               <FormControl>
-                <MultiSelect options={tags.map((t) => ({ id: t.value, name: t.name, iconUrl: t.iconUrl }))} {...field} />
+                <MultiSelect options={tags.map((t) => ({ id: t.value, name: t.name, iconUrlWhite: t.iconUrlWhite, iconUrlGold: t.iconUrlGold }))} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

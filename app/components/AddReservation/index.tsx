@@ -631,6 +631,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               setShowAddNewClient={setShowAddNewClient}
               selected={selectedClient}
               setSelected={setSelectedClient}
+              tags={entities.tags}
               token={token}
               restaurantId={restaurantId}
             />

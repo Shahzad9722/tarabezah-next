@@ -14,6 +14,7 @@ export default function ClientSearch({
   selected = {},
   setSelected,
   token,
+  tags,
   restaurantId,
 }: {
   reservationForm: UseFormReturn<any>;
@@ -22,6 +23,7 @@ export default function ClientSearch({
   selected: any;
   setSelected: any;
   token: string;
+  tags: any;
   restaurantId: string;
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -93,20 +95,20 @@ export default function ClientSearch({
             </Button>
             {guests.length > 0
               ? guests.map((g: any, index: number) => (
-                  <p
-                    key={index}
-                    className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
-                    onClick={() => handleSelectGuest(g)}
-                  >
-                    {g.name}
-                  </p>
-                ))
+                <p
+                  key={index}
+                  className='cursor-pointer capitalize text-color-222036 hover:text-color-B98858'
+                  onClick={() => handleSelectGuest(g)}
+                >
+                  {g.name}
+                </p>
+              ))
               : debouncedQuery &&
-                !loading && (
-                  <div className='text-center py-2 text-gray-600'>
-                    No clients found. Please try a different search or add a new guest.
-                  </div>
-                )}
+              !loading && (
+                <div className='text-center py-2 text-gray-600'>
+                  No clients found. Please try a different search or add a new guest.
+                </div>
+              )}
             {loading && <div className='text-center py-2 text-gray-600'>Searching...</div>}
           </div>
         )}
@@ -131,10 +133,19 @@ export default function ClientSearch({
                 <div className='flex flex-wrap gap-2 text-lg'>
                   <p className='font-normal'>Client Tags:</p>
                   {selected.tags?.length > 0 &&
-                    selected.tags.map((g: any, index: number) => {
+                    selected.tags.map((tag: string, index: number) => {
+                      const matchedIcon = tags.find((icon) => icon.name === tag);
+
                       return (
-                        <span key={index} className='inline-flex items-center gap-1'>
-                          {g}
+                        <span key={index} className="inline-flex items-center gap-1">
+                          {matchedIcon && (
+                            <img
+                              src={matchedIcon.iconUrlWhite}
+                              alt={tag}
+                              className="w-4 h-4"
+                            />
+                          )}
+                          {tag}
                         </span>
                       );
                     })}
