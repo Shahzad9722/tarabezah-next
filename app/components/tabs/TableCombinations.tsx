@@ -453,7 +453,7 @@ export default function TableCombinations() {
     if (isSelected) {
       baseStyle += 'border-2 border-green-500 ';
     } else if (combinationIndexes.length > 0) {
-      baseStyle += 'border-2 border-yellow-400 ';
+      baseStyle += 'border-2 border-white ';
     }
 
     // Status colors
