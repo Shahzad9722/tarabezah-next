@@ -10,6 +10,8 @@ import { Label } from '@/app/components/ui/label';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
+import CustomDragLayer from './CustomDragLayer';
+
 const FloorPlan: React.FC = () => {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -411,6 +413,7 @@ const FloorPlan: React.FC = () => {
   }, [selectedTable]);
   return (
     <>
+      <CustomDragLayer />
       <div
         className='w-full h-full bg-transparent border border-gray-800 overflow-hidden relative flex flex-col rounded-lg'
         ref={containerRef}

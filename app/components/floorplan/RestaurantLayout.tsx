@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
+import { MultiBackend } from 'react-dnd-multi-backend';
+import { TouchTransition, MouseTransition } from 'react-dnd-multi-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import FloorPlan from './FloorPlan';
 import { RestaurantProvider } from '@/app/context/RestaurantContext';
@@ -151,9 +154,25 @@ const RestaurantLayout: React.FC = () => {
     }
   };
 
+  const HTML5toTouch = {
+    backends: [
+      {
+        backend: HTML5Backend,
+        transition: MouseTransition,
+      },
+      {
+        backend: TouchBackend,
+        options: { enableMouseEvents: true },
+        preview: true,
+        transition: TouchTransition,
+      },
+    ],
+  };
+
   // console.log('restaurant.floorplans', restaurant.floorplans);
   return (
-    <DndProvider backend={HTML5Backend}>
+
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <RestaurantProvider>
         <div className='flex flex-col'>
           <Navigation onPublish={handlePublish} />

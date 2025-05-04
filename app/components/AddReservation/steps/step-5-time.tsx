@@ -163,9 +163,8 @@ function App({
                           setActiveShift(shift.guid);
                           field.onChange(shift.guid);
                         }}
-                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${
-                          activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
-                        }`}
+                        className={`whitespace-nowrap flex-1 text-center cursor-pointer py-1 px-4 rounded-lg transition-all ${activeShift === shift.guid ? 'bg-color-B98858 text-[#0B0B0B]' : 'text-color-E9E3D7'
+                          }`}
                       >
                         {shift.name}
                       </span>
@@ -193,9 +192,8 @@ function App({
                         setActiveTableType('View All');
                         setSelectedSlot(null);
                       }}
-                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${
-                        activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
-                      }`}
+                      className={`transition-all text-lg font-medium w-full whitespace-nowrap ${activeTableType === 'View All' ? ' text-color-B98858 underline' : 'text-color-E9E3D7'
+                        }`}
                     >
                       View All
                     </button>
@@ -208,9 +206,8 @@ function App({
                           onClick={() => {
                             setActiveTableType(table.name);
                           }}
-                          className={`transition-all text-lg font-medium w-full ${
-                            activeTableType === table.name ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
-                          }`}
+                          className={`transition-all text-lg font-medium w-full ${activeTableType === table.name ? 'text-color-B98858 underline' : 'text-color-E9E3D7'
+                            }`}
                         >
                           {table.name}
                         </button>
@@ -301,19 +298,18 @@ function App({
                             onClick={
                               isAvailable
                                 ? () => {
-                                    handleTimeSlotSelect(formattedTime);
-                                    field.onChange(formattedTime);
-                                  }
+                                  handleTimeSlotSelect(formattedTime);
+                                  field.onChange(formattedTime);
+                                }
                                 : undefined // disables click completely
                             }
                             className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group
-            ${
-              isSelected
-                ? 'bg-color-B98858 text-[#0B0B0B]'
-                : isAvailable
-                ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-            }`}
+            ${isSelected
+                                ? 'bg-color-B98858 text-[#0B0B0B]'
+                                : isAvailable
+                                  ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
+                                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              }`}
                             title={isAvailable ? '' : 'Slot not available'} // optional tooltip
                           >
                             <div className='flex items-center gap-3'>
