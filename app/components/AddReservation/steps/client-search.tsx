@@ -221,11 +221,6 @@ export default function ClientSearch({
               </div>
 
               <div className='grid lg:grid-cols-3 gap-4'>
-                <div>
-                  <p className='font-medium flex justify-between'>
-                    <span className='text-color-E9E3D7 text-lg'>Count: {selected?.blackList?.others || 0}</span>
-                  </p>
-                </div>
 
                 <div>
                   <p className='font-medium flex justify-between'>

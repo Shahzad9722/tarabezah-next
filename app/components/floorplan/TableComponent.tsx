@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDrop, useDrag } from 'react-dnd';
 import { Button } from '@/app/components/ui/button';
 import { X } from 'lucide-react';
 import { Table } from '@/app/types/restaurant';
 import Image from 'next/image';
 import { useFloorplan } from '@/app/context/FloorplanContext';
+import { useElementResize } from '@/app/hooks/useElementResize';
 
 interface TableComponentProps {
   table: Table;
@@ -36,6 +37,15 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
     }),
     canDrop: () => table.status === 'available',
   }));
+
+  useEffect(() => {
+  }), [table];
+
+  const { startResize } = useElementResize({
+    element: table,
+    scale,
+    // updateElement
+  });
 
   // Handle table dragging
   const [{ isDragging }, drag] = useDrag(
@@ -141,6 +151,44 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
           <X className='h-3 w-3' />
         </Button>
       }
+
+      {/* Resize Handles */}
+      <div
+        className="resize-handle top-left"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startResize('top-left', e)
+        }
+        }
+      />
+      <div
+        className="resize-handle top-right"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startResize('top-right', e)
+        }
+        }
+      />
+      <div
+        className="resize-handle bottom-left"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startResize('bottom-left', e)
+        }
+        }
+      />
+      <div
+        className="resize-handle bottom-right"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startResize('bottom-right', e)
+        }
+        }
+      />
     </div>
   );
 };

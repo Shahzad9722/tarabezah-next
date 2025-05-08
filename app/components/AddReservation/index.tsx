@@ -477,8 +477,16 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   };
 
   const isCurrentStepValid = () => {
-    const currentStepFields = walkIn ? stepsWalkIn[currentStep - 1].fields : arrangedSteps[currentStep - 1].fields;
+    const currentStepFields = walkIn ? stepsWalkIn[currentStep].fields : arrangedSteps[currentStep].fields;
     if (!currentStepFields || currentStepFields.length === 0) return true;
+    // Special handling for party size validation
+    if (currentStepFields.includes('numberOfGuests')) {
+      const partySize = reservationForm.getValues('numberOfGuests');
+      console.log('partySize', partySize);
+      if (partySize === null || partySize === undefined || partySize < 1) {
+        return false;
+      }
+    }
 
     // Check if all required fields for current step have values
     return currentStepFields.every((field) => {
@@ -706,10 +714,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                     (currentStep === 3 && walkIn) ||
                     !isCurrentStepValid() ||
                     (currentStep === 1 && !walkIn && !selectedClient.guid) ||
-                    (currentStep === 1 &&
-                      walkIn &&
-                      !selectedClient.guid &&
-                      reservationForm.getValues('clientId') !== '0')
+                    (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
                   }
                   className='w-full'
                 >

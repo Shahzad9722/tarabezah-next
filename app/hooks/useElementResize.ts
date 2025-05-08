@@ -1,89 +1,66 @@
-
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { CanvasElement } from '@/app/types';
+import { useFloorplan } from '@/app/context/FloorplanContext';
 
 interface ResizeOptions {
     element: CanvasElement;
     scale: number;
-    updateElement: (id: string, updates: Partial<CanvasElement>) => void;
 }
 
-export const useElementResize = ({ element, scale, updateElement }: ResizeOptions) => {
-    const [isResizing, setIsResizing] = useState(false);
-    const [resizeHandle, setResizeHandle] = useState<string | null>(null);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    const [startDims, setStartDims] = useState({ width: 0, height: 0 });
-    const [startElemPos, setStartElemPos] = useState({ x: 0, y: 0 });
+export function useElementResize({ element, scale }: ResizeOptions) {
+    const { updateElement } = useFloorplan();
+    const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    const startResize = (handle: string, e: React.MouseEvent) => {
-        setIsResizing(true);
-        setResizeHandle(handle);
-        setStartPos({ x: e.clientX, y: e.clientY });
-        setStartDims({ width: element.width, height: element.height });
-        setStartElemPos({ x: element.x, y: element.y });
-    };
+    const startResize = (direction: string, e: React.MouseEvent) => {
+        const initialX = e.clientX;
+        const initialY = e.clientY;
+        const initialWidth = element.width;
+        const initialHeight = element.height;
 
-    const handleMouseMove = (e: MouseEvent) => {
-        if (!isResizing || !resizeHandle) return;
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            const dx = moveEvent.clientX - initialX;
+            const dy = moveEvent.clientY - initialY;
 
-        const dx = (e.clientX - startPos.x) / scale;
-        const dy = (e.clientY - startPos.y) / scale;
+            let newWidth = initialWidth;
+            let newHeight = initialHeight;
 
-        let newWidth = startDims.width;
-        let newHeight = startDims.height;
-        let newX = startElemPos.x;
-        let newY = startElemPos.y;
+            if (direction === 'top-left') {
+                newWidth = initialWidth - dx;
+                newHeight = initialHeight - dy;
+            } else if (direction === 'top-right') {
+                newWidth = initialWidth + dx;
+                newHeight = initialHeight - dy;
+            } else if (direction === 'bottom-left') {
+                newWidth = initialWidth - dx;
+                newHeight = initialHeight + dy;
+            } else if (direction === 'bottom-right') {
+                newWidth = initialWidth + dx;
+                newHeight = initialHeight + dy;
+            }
 
-        switch (resizeHandle) {
-            case 'top-left':
-                newWidth = Math.max(20, startDims.width - dx);
-                newHeight = Math.max(20, startDims.height - dy);
-                newX = startElemPos.x + (startDims.width - newWidth);
-                newY = startElemPos.y + (startDims.height - newHeight);
-                break;
-            case 'top-right':
-                newWidth = Math.max(20, startDims.width + dx);
-                newHeight = Math.max(20, startDims.height - dy);
-                newY = startElemPos.y + (startDims.height - newHeight);
-                break;
-            case 'bottom-left':
-                newWidth = Math.max(20, startDims.width - dx);
-                newHeight = Math.max(20, startDims.height + dy);
-                newX = startElemPos.x + (startDims.width - newWidth);
-                break;
-            case 'bottom-right':
-                newWidth = Math.max(20, startDims.width + dx);
-                newHeight = Math.max(20, startDims.height + dy);
-                break;
-        }
+            if (resizeTimeout.current) clearTimeout(resizeTimeout.current);
+            resizeTimeout.current = setTimeout(() => {
+                updateElement(element.localId, {
+                    width: Math.max(newWidth, 10),  // Prevent too small widths/heights
+                    height: Math.max(newHeight, 10),
+                });
+            }, 100);
+        };
 
-        updateElement(element.id, {
-            x: newX,
-            y: newY,
-            width: newWidth,
-            height: newHeight,
-        });
-    };
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
 
-    const handleMouseUp = () => {
-        setIsResizing(false);
-        setResizeHandle(null);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
     };
 
     useEffect(() => {
-        if (isResizing) {
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            if (resizeTimeout.current) clearTimeout(resizeTimeout.current);
+        };
+    }, []);
 
-            return () => {
-                window.removeEventListener('mousemove', handleMouseMove);
-                window.removeEventListener('mouseup', handleMouseUp);
-            };
-        }
-    }, [isResizing, startPos, startDims, resizeHandle, scale, startElemPos]);
-
-    return {
-        isResizing,
-        startResize
-    };
-};
+    return { startResize };
+}

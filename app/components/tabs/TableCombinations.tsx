@@ -213,6 +213,11 @@ export default function TableCombinations() {
     }
   }, [floorPlans]);
 
+  // update selected items array when floor plan changes
+  useEffect(() => {
+    setSelectedItems([]);
+  }, [selectedFilters.floorPlanId]);
+
   const handleDeleteCombination = async () => {
     toast.promise(deleteCombination(combinationToDelete), {
       loading: 'Deleting combination...',

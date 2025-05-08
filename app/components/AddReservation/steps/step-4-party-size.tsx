@@ -1,14 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormMessage } from '../../ui/form';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 
 export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
-  const [partySize, setPartySize] = useState(form.getValues('numberOfGuests'));
-
   const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
   return (
@@ -25,12 +22,8 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                 {partySizes.map((size, index) => (
                   <p
                     key={index}
-                    className={`p-2 text-center cursor-pointer font-normal text-lg transition-all border-b-[1px] border-[#E9E3D736] ${partySize === size ? 'text-color-B98858' : 'text-color-E9E3D7'
-                      }`}
-                    onClick={() => {
-                      setPartySize(size);
-                      field.onChange(size);
-                    }}
+                    className={`p-2 text-center cursor-pointer font-normal text-lg transition-all border-b-[1px] border-[#E9E3D736] ${field.value === size ? 'text-color-B98858' : 'text-color-E9E3D7'}`}
+                    onClick={() => field.onChange(size)}
                   >
                     {size} guests
                   </p>
@@ -53,21 +46,22 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                   type='number'
                   step={1}
                   min={1}
+                  value={field.value ?? ''}
                   onKeyDown={(e) => {
-                    if (e.key === '.' || e.key === 'e' || e.key === '-' || e.key === 'Enter') {
+                    if (['.', 'e', '-', 'Enter'].includes(e.key)) {
                       e.preventDefault();
                     }
                   }}
-                  {...field}
                   onChange={(e) => {
-                    // Remove any decimal points from the input value
-                    const value = parseInt(e.target.value.replace(/\./g, ''));
-                    // console.log('value', value);
-                    if (isNaN(value)) {
-                      return;
+                    const value = e.target.value;
+                    if (value === '') {
+                      field.onChange(null); // Clear the form field
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue) && numValue > 0) {
+                        field.onChange(numValue);
+                      }
                     }
-                    field.onChange(value);
-                    setPartySize(value);
                   }}
                 />
               </div>

@@ -3,7 +3,7 @@ export interface CanvasElement {
   localId?: string;
   libraryItemId?: string;
   floorplanInstanceGuid?: string;
-  purpose: string;
+  purpose?: string;
   elementType: string;
   x: number;
   y: number;

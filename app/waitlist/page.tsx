@@ -1,14 +1,12 @@
+"use client"
 import React, { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
-import { MultiBackend } from 'react-dnd-multi-backend';
-import { TouchTransition, MouseTransition } from 'react-dnd-multi-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import FloorPlan from './FloorPlan';
+import FloorPlan from '../components/floorplan/FloorPlan';
 import { RestaurantProvider } from '@/app/context/RestaurantContext';
-import ReservationSidebar from './ReservationSidebar';
-import Navigation from '../navigation/Navigation';
-import { FloorControls } from '../FloorControls';
+import ReservationSidebar from '../components/floorplan/ReservationSidebar';
+import Navigation from '../components/navigation/Navigation';
+import { FloorControls } from '../components/FloorControls';
 import { toast } from 'sonner';
 import { useFloorplan } from '@/app/context/FloorplanContext';
 import { useQuery } from '@tanstack/react-query';
@@ -18,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { queryClient } from '@/app/lib/queryClient';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import Waitlist from '../components/waitlist/Waitlist';
 
 const RestaurantLayout: React.FC = () => {
   const { setActiveFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
@@ -131,8 +130,6 @@ const RestaurantLayout: React.FC = () => {
           elementName: item.tableId,
           minCapacity: item.minCapacity,
           maxCapacity: item.maxCapacity,
-          width: item.width || 60,
-          height: item.height || 60,
           x: parseInt(item.x?.toString(), 10),
           y: parseInt(item.y?.toString(), 10),
           rotation: 0,
@@ -156,32 +153,17 @@ const RestaurantLayout: React.FC = () => {
     }
   };
 
-  const HTML5toTouch = {
-    backends: [
-      {
-        backend: HTML5Backend,
-        transition: MouseTransition,
-      },
-      {
-        backend: TouchBackend,
-        options: { enableMouseEvents: true },
-        preview: true,
-        transition: TouchTransition,
-      },
-    ],
-  };
-
   // console.log('restaurant.floorplans', restaurant.floorplans);
   return (
-
-    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+    <DndProvider backend={HTML5Backend}>
       <RestaurantProvider>
         <div className='flex flex-col'>
           <Navigation onPublish={handlePublish} />
           <div className='flex flex-1 overflow-hidden h-[calc(100vh-188px)]'>
             <div className='w-[400px] ml-4 h-[calc(100vh-188px)] flex flex-col'>
               <FloorControls onRemoveFloor={removeFloor} onRenameFloor={renameFloor} />
-              <ReservationSidebar />
+              {/* <ReservationSidebar /> */}
+              <Waitlist/>
             </div>
             <div className='flex-1 p-4 pt-0 overflow-hidden h-[calc(100vh-188px)]'>
               <FloorPlan />
