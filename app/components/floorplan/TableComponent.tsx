@@ -142,7 +142,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
         <Button
           variant='destructive'
           size='icon'
-          className='absolute -top-2 -right-2 h-4 w-4 rounded-full bg-red-400 hover:bg-red-600'
+          className='absolute -top-6 -right-4 h-4 w-4 rounded-full bg-red-400 hover:bg-red-600'
           onClick={() => removeElement(table.localId)}
         >
           <X className='h-3 w-3' />
