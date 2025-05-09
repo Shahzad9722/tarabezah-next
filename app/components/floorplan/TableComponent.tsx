@@ -38,9 +38,6 @@ const TableComponent: React.FC<TableComponentProps> = ({ table, scale, selectedT
     canDrop: () => table.status === 'available',
   }));
 
-  useEffect(() => {
-  }), [table];
-
   const { startResize } = useElementResize({
     element: table,
     scale,
