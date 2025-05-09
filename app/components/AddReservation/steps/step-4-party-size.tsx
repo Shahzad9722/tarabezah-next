@@ -23,7 +23,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                   <p
                     key={index}
                     className={`p-2 text-center cursor-pointer font-normal text-lg transition-all border-b-[1px] border-[#E9E3D736] ${field.value === size ? 'text-color-B98858' : 'text-color-E9E3D7'}`}
-                    onClick={() => field.onChange(size)}
+                    onClick={() => form.setValue('numberOfGuests', size)}
                   >
                     {size} guests
                   </p>
@@ -55,11 +55,11 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === '') {
-                      field.onChange(null); // Clear the form field
+                      form.setValue('numberOfGuests', null);
                     } else {
                       const numValue = parseInt(value);
                       if (!isNaN(numValue) && numValue > 0) {
-                        field.onChange(numValue);
+                        form.setValue('numberOfGuests', numValue);
                       }
                     }
                   }}

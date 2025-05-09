@@ -5,6 +5,7 @@ import { FormControl, FormField, FormItem, FormMessage } from '../../ui/form';
 import { Button } from '../../ui/button';
 import { Minus, Plus } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
+import { useLoader } from '@/app/context/loaderContext';
 
 interface TimeSlot {
   time: string;
@@ -26,6 +27,7 @@ function App({
   token: string;
   restaurantId: string;
 }) {
+  const { showLoader, hideLoader } = useLoader();
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
@@ -54,6 +56,7 @@ function App({
 
   useEffect(() => {
     const fetchData = async () => {
+      showLoader();
       const payload = {
         RestaurantGuid: restaurantId,
         PartySize: form.getValues('numberOfGuests'),
@@ -68,6 +71,8 @@ function App({
         setTimeSlots(response?.timeSlots || []);
       } catch (error) {
         console.error('Failed to fetch time slots:', error);
+      } finally {
+        hideLoader();
       }
     };
 

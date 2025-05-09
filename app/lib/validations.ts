@@ -14,7 +14,10 @@ export const addReservationFormSchema = z.object({
   clientId: z.string().min(1, { message: 'Client is required' }),
   eventDate: z.date().optional(),
   eventTime: z.string().optional(),
-  numberOfGuests: z.number().min(1, { message: 'Number of guests is required' }),
+  numberOfGuests: z.number({
+    required_error: "Number of guests is required",
+    invalid_type_error: "Please enter a valid number",
+  }).min(1, { message: 'Must have at least 1 guest' }),
   shiftId: z.string().optional(),
   tags: z.array(z.number()).optional(),
   additionalNotes: z.string().optional(),
