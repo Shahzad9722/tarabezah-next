@@ -24,11 +24,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
     updateElement,
   });
 
-  const { isResizing, startResize } = useElementResize({
-    element,
-    scale,
-    updateElement,
-  });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     // console.log("mouse down")
@@ -44,7 +39,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, scale, pa
 
   const handleResizeStart = (handle: string, e: React.MouseEvent) => {
     // console.log("resize start")
-    startResize(handle, e);
+    // startResize(handle, e);
   };
 
   const isSelected = selectedElementId === element.id;
