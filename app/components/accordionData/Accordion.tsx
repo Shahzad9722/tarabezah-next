@@ -49,6 +49,12 @@ const Accordion = ({ combinations, onExpand, onDelete }: AccordionProps) => {
                 <div className='flex items-center gap-4 text-left truncate'>
                   <span className='truncate'>{item?.index}</span>
                   <span className='truncate'>{item.groupName}</span>
+                  {openId === item.guid && (
+                    <>
+                      <span className='truncate'>min</span>
+                      <span className='truncate'>max</span>
+                    </>
+                  )}
                 </div>
 
                 <div className='flex items-center gap-2'>
@@ -76,10 +82,16 @@ const Accordion = ({ combinations, onExpand, onDelete }: AccordionProps) => {
 
             {/* Accordion Content */}
             <div
-              className={`overflow-hidden transition-all duration-300 px-4 text-[#909090] ${openId === item.guid ? 'max-h-40 py-4' : 'max-h-0 py-0'
+              className={`overflow-hidden flex gap-4 transition-all duration-300 px-4 text-[#909090] ${openId === item.guid ? 'max-h-40 py-4' : 'max-h-0 py-0'
                 }`}
             >
-              {`Tables: [${item.members.map((m) => m.tableId).join(', ')}]`}
+              <div>
+                {`Tables: [${item.members.map((m) => m.tableId).join(', ')}]`}
+              </div>
+              <div className='flex items-center gap-7'>
+                <span>{item.minCapacity}</span>
+                <span>{item.maxCapacity}</span>
+              </div>
             </div>
           </div>
         ))}
