@@ -235,8 +235,9 @@ function App({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className='flex w-100 items-center gap-4'>
-                    <div className='w-1/2 bg-[#0D0C16] text-center rounded-lg py-3.5 px-4 text-sm'>
+                  <div className='flex w-full items-center gap-4 flex-wrap sm:flex-nowrap'>
+                    {/* Date/Time Box */}
+                    <div className='w-full sm:w-1/2 bg-[#0D0C16] text-center rounded-lg py-3.5 px-4 text-sm min-h-[64px] flex items-center justify-center'>
                       {selectedDate && selectedTime ? (
                         <span className='text-color-E9E3D7 font-medium'>
                           {formatDate(selectedDate)} {selectedTime}
@@ -245,7 +246,9 @@ function App({
                         <span className='text-color-E9E3D7/50'>No date/time selected</span>
                       )}
                     </div>
-                    <div className='w-1/2 flex items-center justify-center gap-2 bg-[#0D0C16] rounded-lg py-2.5 px-3'>
+
+                    {/* Duration Box */}
+                    <div className='w-full sm:w-1/2 flex items-center justify-center gap-2 bg-[#0D0C16] rounded-lg py-3.5 px-4 min-h-[64px]'>
                       <Button
                         type='button'
                         variant='outline'
