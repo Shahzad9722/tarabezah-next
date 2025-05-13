@@ -589,7 +589,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   }
 
   return (
-    <div className='md:h-screen flex flex-col md:flex-row pt-8 bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
+    <div className='md:h-screen flex flex-col md:flex-row pt-12  md:pt-8 bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
         steps={walkIn ? stepsWalkIn : arrangedSteps}
         currentStep={currentStep}

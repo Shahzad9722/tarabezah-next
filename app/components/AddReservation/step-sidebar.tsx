@@ -61,13 +61,19 @@ export default function StepSidebar({
                 <div className="flex items-center space-x-2">
                   <span className="text-md md:text-xl font-medium">
                     {step.name}
-                    {step.name === "Client Search" && step.step == 1 && !walkIn && (
-                      <button onClick={moveClientSearchAfterDate} className="ml-2 text-sm text-blue-500 underline">
+                    {step.name === "Client Search" && step.step === 1 && !walkIn && (
+                      <button
+                        onClick={moveClientSearchAfterDate}
+                        className="ml-2 text-sm text-blue-500 underline hidden md:inline"
+                      >
                         Move After Date
                       </button>
                     )}
-                    {step.name === "Client Search" && step.step == 2 && !walkIn && (
-                      <button onClick={moveClientSearchBeforeDate} className="ml-2 text-sm text-blue-500 underline">
+                    {step.name === "Client Search" && step.step === 2 && !walkIn && (
+                      <button
+                        onClick={moveClientSearchBeforeDate}
+                        className="ml-2 text-sm text-blue-500 underline hidden md:inline"
+                      >
                         Move Before Date
                       </button>
                     )}

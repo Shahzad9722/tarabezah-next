@@ -64,7 +64,7 @@ export default function ClientSearch({
     <div className='w-full'>
       {/* Search Bar */}
       <div className='relative mb-8'>
-        <div className='relative mb-8 mr-[100px]'>
+        <div className='relative mb-8 mr-0 md:mr-[100px]'>
           <Input
             placeholder='Search...'
             className='relative pl-[72px]'
