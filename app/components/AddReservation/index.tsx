@@ -325,7 +325,13 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     resolver: zodResolver(addReservationFormSchema),
     defaultValues: {
       clientId: '',
-      eventDate: new Date(),
+      eventDate: (() => {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })(),
       eventTime: walkIn ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : undefined,
       numberOfGuests: 2,
       shiftId: undefined,
@@ -589,7 +595,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   }
 
   return (
-    <div className='md:h-screen flex flex-col md:flex-row pt-12  md:pt-8 bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
+    <div className='md:h-screen flex flex-col pt-12  md:pt-8 md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
         steps={walkIn ? stepsWalkIn : arrangedSteps}
         currentStep={currentStep}
@@ -601,7 +607,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         walkIn={walkIn}
       />
 
-      <div className='w-full flex-1 p-6 pb-[120px] sm:pb-6 overflow-x-auto'>
+      <div className='w-full flex-1 p-6 pb-[80px] sm:pb-6 overflow-x-auto'>
         {/* <div className='w-full flex justify-end mb-8'>
           <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
             <path

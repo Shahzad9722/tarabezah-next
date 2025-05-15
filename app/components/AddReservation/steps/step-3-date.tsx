@@ -5,7 +5,25 @@ import "react-calendar/dist/Calendar.css";
 import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormMessage } from "../../ui/form";
 
+// Utility to format a Date as YYYY-MM-DD in local time
+function toLocalDateString(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export default function DateStep({ form }: { form: UseFormReturn<any> }) {
+  // Handler for react-calendar's value type
+  const handleDateChange = (value: any) => {
+    if (value instanceof Date) {
+      form.setValue('eventDate', toLocalDateString(value));
+    } else if (Array.isArray(value) && value[0] instanceof Date) {
+      // If range, just use the first date
+      form.setValue('eventDate', toLocalDateString(value[0]));
+    }
+  };
+
   return (
     <div className="w-full">
       <h2 className="text-color-E9E3D7 text-[22px] font-semibold mb-6">
@@ -25,7 +43,9 @@ export default function DateStep({ form }: { form: UseFormReturn<any> }) {
                   }
                   tileClassName={"title-test"}
                   minDate={new Date()}
-                  {...field}
+                  selectRange={false}
+                  onChange={handleDateChange}
+                  value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
                 />
               </FormControl>
               <FormMessage />

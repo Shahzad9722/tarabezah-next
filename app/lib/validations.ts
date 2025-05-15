@@ -12,7 +12,7 @@ export const addGuestSchema = z.object({
 
 export const addReservationFormSchema = z.object({
   clientId: z.string().min(1, { message: 'Client is required' }),
-  eventDate: z.date().optional(),
+  eventDate: z.string().optional(),
   eventTime: z.string().optional(),
   numberOfGuests: z.number({
     required_error: "Number of guests is required",
