@@ -76,8 +76,7 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      setActiveFloorplanId(selectedFilters.floorPlanId || result[0].guid);
-
+      setActiveFloorplanId(result[0].guid);
       setRestaurant({
         ...restaurant,
         floorplans: [...result],

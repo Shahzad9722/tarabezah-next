@@ -91,9 +91,10 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
       elements: [],
     };
 
+    setActiveFloorplanId(newFloorplan.guid);
     setRestaurant((prev) => ({
       ...prev,
-      floorplans: [...prev.floorplans, newFloorplan],
+      floorplans: [newFloorplan, ...prev.floorplans],
     }));
 
     setActiveFloorplanId(newFloorplan.guid);

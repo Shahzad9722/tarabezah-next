@@ -17,6 +17,7 @@ import FormSelect from './ui/form-select';
 import { AppDispatch, RootState } from '@/store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilters } from '@/store/features/combination-filters/combinationFilterSlice';
+
 interface FloorControlsProps {
   onRemoveFloor: (id: string) => void;
   onRenameFloor: (id: string, newName: string) => void;
@@ -65,8 +66,9 @@ export function FloorControls({ onRemoveFloor, onRenameFloor }: FloorControlsPro
         {/* Floor Selection Dropdown */}
         <div className='flex flex-1 items-center gap-2'>
           <div className='relative w-[300px] '>
+
             <FormSelect
-              value={selectedFilters.floorPlanId || activeFloorplanId}
+              value={activeFloorplanId}
               onChange={(value) => {
                 dispatch(setFilters({ ...selectedFilters, floorPlanId: value }));
                 onFloorPlanChange(value);
