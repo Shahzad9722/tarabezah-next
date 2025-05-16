@@ -25,7 +25,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${poppins.variable} font-poppins`}>
         {/* <Navigation /> */}
-        <Toaster />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              bottom: '80px', // Adjust based on your nav height
+            },
+          }}
+        />
 
         <Providers>
           <HeaderWrapper />

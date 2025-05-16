@@ -544,6 +544,7 @@ const FloorPlan: React.FC = () => {
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, tableName: e.target.value }))}
                 placeholder='Table Name'
                 required
+                maxLength={10}
                 min={1}
                 type='text'
               />
@@ -554,6 +555,8 @@ const FloorPlan: React.FC = () => {
               <Input
                 id='minCapacity'
                 type='number'
+                isNumeric={true}
+                maxLength={10}
                 value={newTableConfig.minCapacity}
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, minCapacity: e.target.value }))}
                 min={1}
@@ -566,10 +569,12 @@ const FloorPlan: React.FC = () => {
               <Input
                 id='maxCapacity'
                 type='number'
+                isNumeric={true}
                 value={newTableConfig.maxCapacity}
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, maxCapacity: e.target.value }))}
                 required
                 min={1}
+                maxLength={10}
               />
             </div>
           </div>

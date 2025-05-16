@@ -119,25 +119,25 @@ export default function ClientSearch({
             <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Current Client</h2>
 
             <div className='relative grid md:grid-cols-2 mb-6 pb-6 gap-4 md:gap-[60px] lg:gap-[120px] border-b border-[#FFFFFF30]'>
+              {/* Left Column */}
               <div className='space-y-4'>
-                <div className='flex flex-wrap gap-2 text-lg'>
-                  <p className='font-medium'>Client Name:</p>
-                  <p className='font-normal'>{selected.name}</p>
+                <div className='flex flex-nowrap gap-2 text-lg'>
+                  <p className='font-medium shrink-0'>Client Name:</p>
+                  <p className='font-normal truncate'>{selected.name}</p>
+                </div>
+
+                <div className='flex flex-nowrap gap-2 text-lg'>
+                  <p className='font-medium shrink-0'>Client Phone Number:</p>
+                  <p className='font-normal truncate'>{selected.phoneNumber}</p>
                 </div>
 
                 <div className='flex flex-wrap gap-2 text-lg'>
-                  <p className='font-medium'>Client Phone Number:</p>
-                  <p className='font-normal'>{selected.phoneNumber}</p>
-                </div>
-
-                <div className='flex flex-wrap gap-2 text-lg'>
-                  <p className='font-normal'>Client Tags:</p>
+                  <p className='font-normal shrink-0'>Client Tags:</p>
                   {selected.tags?.length > 0 &&
                     selected.tags.map((tag: string, index: number) => {
                       const matchedIcon = tags.find((icon) => icon.name === tag);
-
                       return (
-                        <span key={index} className="inline-flex items-center gap-1">
+                        <span key={index} className="inline-flex items-center gap-1 shrink-0">
                           {matchedIcon && (
                             <img
                               src={matchedIcon.iconUrlWhite}
@@ -151,15 +151,19 @@ export default function ClientSearch({
                     })}
                 </div>
 
-                <div className='flex flex-wrap gap-2 text-lg'>
+                {/* Fixed Client Note Section */}
+                <div className='text-lg'>
                   <p className='font-medium'>Client Note:</p>
-                  <p className='font-normal'>{selected.notes}</p>
+                  <div className='mt-1 p-2 max-w-[380px] sm:max-w-none rounded-md  break-words whitespace-pre-wrap overflow-hidden'>
+                    {selected.notes || 'No notes'}
+                  </div>
                 </div>
               </div>
 
               {/* Vertical Separator */}
-              <div className='hidden md:block h-[calc(100%-24px)] absolute left-1/2 top-0 w-[3px] bg-[#FFFFFF30] mr-[60px]' />
+              <div className='hidden md:block h-[calc(100%-24px)] absolute left-1/2 top-0 w-[3px] bg-[#FFFFFF30]' />
 
+              {/* Right Column - unchanged from original */}
               <div className='space-y-4'>
                 <div className='flex flex-wrap gap-2 text-lg'>
                   <p className='font-medium'>Last Visit:</p>
@@ -190,6 +194,7 @@ export default function ClientSearch({
                       </span>
                     </p>
                   </div>
+
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
@@ -197,6 +202,7 @@ export default function ClientSearch({
                       </span>
                     </p>
                   </div>
+
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
@@ -204,6 +210,7 @@ export default function ClientSearch({
                       </span>
                     </p>
                   </div>
+
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>
@@ -214,14 +221,14 @@ export default function ClientSearch({
                 </div>
               </div>
             </div>
-            {/* blacklist */}
+
+            {/* Blacklist section - unchanged from original */}
             <div className='space-y-4'>
               <div className='flex flex-wrap gap-2 text-lg'>
                 <p className='font-medium'>Blacklist:</p>
               </div>
 
               <div className='grid lg:grid-cols-3 gap-4'>
-
                 <div>
                   <p className='font-medium flex justify-between'>
                     <span className='text-color-E9E3D7 text-lg'>Other Places: {selected?.blackList?.others || 0}</span>

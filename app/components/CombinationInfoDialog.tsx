@@ -53,7 +53,7 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
   };
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[425px] bg-color-D0C17'>
         <DialogHeader>
           <DialogTitle>Enter Combination Information</DialogTitle>
         </DialogHeader>
@@ -75,6 +75,8 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
             <Input
               id='minCapacity'
               type='number'
+              isNumeric={true}
+              maxLength={10}
               value={minCapacity === 0 ? '' : minCapacity}
               onChange={(e) => {
                 const value = e.target.value === '' ? '' : Number(e.target.value);
@@ -90,6 +92,8 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
             <Input
               id='maxCapacity'
               type='number'
+              isNumeric={true}
+              maxLength={10}
               value={maxCapacity === 0 ? '' : maxCapacity}
               onChange={(e) => {
                 const value = e.target.value === '' ? '' : Number(e.target.value);

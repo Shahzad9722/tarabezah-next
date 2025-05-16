@@ -700,7 +700,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                 />
               ))}
             {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
-
+            {currentStep}
             <div className='flex justify-between gap-4'>
               <Button
                 type='button'
@@ -711,7 +711,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
               >
                 Back
               </Button>
-              {currentStep !== 5 && (
+              {((!walkIn && currentStep !== 5) || (walkIn && currentStep !== 3)) && (
                 <Button
                   type='button'
                   onClick={nextStep}
@@ -727,21 +727,21 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                   Next
                 </Button>
               )}
-            </div>
 
-            {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
-              <Button
-                type='submit'
-                disabled={
-                  submittingReservationForm ||
-                  submittingWalkinForm ||
-                  Object.keys(reservationForm.formState.errors).length > 0
-                }
-                className='w-full mt-4'
-              >
-                Confirm
-              </Button>
-            )}
+              {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
+                <Button
+                  type='submit'
+                  disabled={
+                    submittingReservationForm ||
+                    submittingWalkinForm ||
+                    Object.keys(reservationForm.formState.errors).length > 0
+                  }
+                  className='w-full'
+                >
+                  Confirm
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       </div>

@@ -44,6 +44,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
                 <Label>More than 20 guests</Label>
                 <Input
                   type='number'
+                  isNumeric={true}
                   step={1}
                   min={1}
                   value={field.value ?? ''}
