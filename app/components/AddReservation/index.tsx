@@ -700,7 +700,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                 />
               ))}
             {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
-            {currentStep}
             <div className='flex justify-between gap-4'>
               <Button
                 type='button'
