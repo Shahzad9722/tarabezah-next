@@ -138,22 +138,22 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      console.log('floorsToPublish', floorsToPublish);
-
       const res = await publishFloorPlans(floorsToPublish);
       if (!res.ok) {
         throw new Error('Failed to publish floor plan');
       }
-      toast.success('Floor plan published successfully!');
+
+      toast.dismiss(toastId); // Remove loading
+      toast.success('Floor plan published successfully!'); // Show success
 
       queryClient.invalidateQueries({ queryKey: ['floorPlans'] });
     } catch (error) {
-      toast.error('Failed to publish floor plan');
+      toast.dismiss(toastId); // Remove loading
+      toast.error('Failed to publish floor plan'); // Show error
       console.error('Publish error:', error);
-    } finally {
-      toast.dismiss(toastId);
     }
   };
+
 
   const HTML5toTouch = {
     backends: [

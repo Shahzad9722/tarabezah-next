@@ -147,7 +147,10 @@ export default function TableCombinations() {
           maxCapacity: payload.maxCapacity,
         }),
       });
-      if (!res.ok) throw new Error('Failed to save combination');
+      if (!res.ok) {
+        const response = await res.json();
+        throw new Error(response.error || 'Failed to save combination');
+      }
       return res.json();
     },
     onSuccess() {
@@ -169,8 +172,8 @@ export default function TableCombinations() {
       loading: 'Creating combination...',
       success: 'Combination created successfully!',
       error: (err) => {
-        console.error(err);
-        return 'Failed to create combination';
+        console.log("hello", err);
+        return err.message || 'Failed to create combination';
       },
     });
   };

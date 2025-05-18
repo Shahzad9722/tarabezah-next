@@ -98,7 +98,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
     }));
 
     setActiveFloorplanId(newFloorplan.guid);
-    toast.success(`Created new floorplan: ${name}`);
+    // toast.success(`Created new floorplan: ${name}`);
   };
 
   const updateFloorplanName = (id: string, name: string) => {

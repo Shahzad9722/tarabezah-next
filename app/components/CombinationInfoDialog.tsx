@@ -63,6 +63,7 @@ export default function CombinationInfoDialog({ open, onClose, onSave }: TableIn
             <label htmlFor='tableNumber'>Name</label>
             <Input
               id='tableNumber'
+              type='text'
               value={combinationName}
               onChange={(e) => setCombinationName(e.target.value)}
               className='col-span-3'

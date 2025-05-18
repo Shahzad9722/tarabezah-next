@@ -5,6 +5,7 @@ import { Providers } from './providers';
 import HeaderWrapper from './components/headerWrapper';
 import { Toaster } from 'sonner';
 
+
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
@@ -26,10 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${poppins.variable} font-poppins`}>
         {/* <Navigation /> */}
         <Toaster
-          position="bottom-center"
           toastOptions={{
             style: {
-              bottom: '80px', // Adjust based on your nav height
+              bottom: '80px',
             },
           }}
         />

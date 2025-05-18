@@ -63,7 +63,6 @@ export async function POST(request: Request) {
     );
     return NextResponse.json({ combination: res.data }, { status: 201 });
   } catch (error: any) {
-    console.error('Error saving combination:', error.response.data);
-    return NextResponse.json({ error: 'Failed to save floor element combination' }, { status: 500 });
+    return NextResponse.json({ error: error.response.data.errorMessage }, { status: 500 });
   }
 }

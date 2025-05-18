@@ -31,7 +31,7 @@ function App({
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
-  const [duration, setDuration] = useState(form.getValues('duration') || 60); // Duration in minutes
+  const [duration, setDuration] = useState(form.getValues('duration') || 300); // Duration in minutes
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
 
   const { mutateAsync: fetchTimeSlots, isPending: submittingReservationForm } = useMutation({
