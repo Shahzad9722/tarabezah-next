@@ -126,7 +126,7 @@ function App({
   };
 
   const handleDurationChange = (change: number) => {
-    const newDuration = Math.max(30, Math.min(180, duration + change)); // Min 30 mins, max 180 mins, in 10-min steps
+    const newDuration = Math.max(30, Math.min(500, duration + change)); // Min 30 mins, max 180 mins, in 10-min steps
     setDuration(newDuration);
     if (selectedSlot) {
       form.setValue('duration', newDuration);
