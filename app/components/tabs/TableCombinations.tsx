@@ -484,8 +484,21 @@ export default function TableCombinations() {
         floorPlans={floorPlans}
         tableTypes={tableTypes}
         onCreateNew={() => {
-          if (selectedItems.length > 1) setShowCombinationInfoDialog(true);
-          else toast.info('Please select at least two tables to create a combination');
+          if (selectedItems.length <= 1) {
+            toast.info('Please select at least two tables to create a combination');
+            return;
+          }
+          // Check if a combination with the same set of table GUIDs already exists
+          const selectedGuids = selectedItems.map(i => i.guid).sort().join(',');
+          const existing = combinations.some((comb: any) => {
+            const combGuids = (comb.members || []).map((m: any) => m.floorplanElementInstanceGuid).sort().join(',');
+            return combGuids === selectedGuids;
+          });
+          if (existing) {
+            toast.error('A combination with these tables already exists!');
+            return;
+          }
+          setShowCombinationInfoDialog(true);
         }}
       />
 

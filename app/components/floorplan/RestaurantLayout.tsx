@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { MultiBackend } from 'react-dnd-multi-backend';
 import { TouchTransition, MouseTransition } from 'react-dnd-multi-backend';
@@ -22,6 +22,14 @@ import { RootState } from '@/store/store';
 const RestaurantLayout: React.FC = () => {
   const { setActiveFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
+
+  // Track last published floorplans for change detection
+  const [lastPublishedFloorplans, setLastPublishedFloorplans] = useState<Floorplan[]>([]);
+  // Helper: deep compare two floorplan arrays
+  function deepEqual(a: any, b: any) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+  const hasUnsavedChanges = !deepEqual(restaurant.floorplans, lastPublishedFloorplans);
 
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
     queryKey: ['floorPlans'],
@@ -81,6 +89,7 @@ const RestaurantLayout: React.FC = () => {
         ...restaurant,
         floorplans: [...result],
       });
+      setLastPublishedFloorplans(result);
     }
   }, [floorPlans]);
 
@@ -147,6 +156,7 @@ const RestaurantLayout: React.FC = () => {
       toast.success('Floor plan published successfully!'); // Show success
 
       queryClient.invalidateQueries({ queryKey: ['floorPlans'] });
+      setLastPublishedFloorplans(JSON.parse(JSON.stringify(restaurant.floorplans)));
     } catch (error) {
       toast.dismiss(toastId); // Remove loading
       toast.error('Failed to publish floor plan'); // Show error
@@ -176,7 +186,7 @@ const RestaurantLayout: React.FC = () => {
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <RestaurantProvider>
         <div className='flex flex-col'>
-          <Navigation onPublish={handlePublish} />
+          <Navigation onPublish={handlePublish} disabled={!hasUnsavedChanges || publishingFloorPlans} />
           <div className='flex flex-1 overflow-hidden h-[calc(100vh-188px)]'>
             <div className='w-[400px] ml-4 h-[calc(100vh-188px)] flex flex-col'>
               <FloorControls onRemoveFloor={removeFloor} onRenameFloor={renameFloor} />

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import { Button } from '@/app/components/ui/button';
 
-export default function Navigation({ onPublish }: { onPublish?: any }) {
+export default function Navigation({ onPublish, disabled }: { onPublish?: any, disabled?: boolean }) {
   const pathname = usePathname();
   const hideButton = pathname === '/table-combination';
 
@@ -46,7 +46,7 @@ export default function Navigation({ onPublish }: { onPublish?: any }) {
       </div>
 
       {!hideButton && (
-        <Button onClick={onPublish} className='rounded-lg text-md'>
+        <Button onClick={onPublish} className='rounded-lg text-md' disabled={disabled}>
           Publish updates
         </Button>
       )}
