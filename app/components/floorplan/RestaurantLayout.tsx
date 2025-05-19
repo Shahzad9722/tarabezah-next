@@ -100,7 +100,7 @@ const RestaurantLayout: React.FC = () => {
         restaurant.floorplans[0].guid === id ? restaurant.floorplans[1].guid : restaurant.floorplans[0].guid
       );
     }
-    toast.success('Floor deleted successfully');
+    toast.success('Floor deleted');
   };
 
   const renameFloor = (id: string, newName: string) => {
