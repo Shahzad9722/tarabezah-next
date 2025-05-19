@@ -157,7 +157,7 @@ export default function TableCombinations() {
       queryClient.invalidateQueries({
         queryKey: ['combinations', { floorPlanId: selectedFilters.floorPlanId }],
       });
-      toast.success('Combination created successfully!');
+      // toast.success('Combination created successfully!');
       setSelectedItems([]);
     },
   });
