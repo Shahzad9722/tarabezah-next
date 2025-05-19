@@ -267,7 +267,7 @@ function App({
                         variant='outline'
                         size='icon'
                         onClick={() => handleDurationChange(10)}
-                        disabled={duration >= 180}
+                        disabled={duration >= 500}
                         className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
                         <Plus className='h-4 w-4 text-color-E9E3D7' />
