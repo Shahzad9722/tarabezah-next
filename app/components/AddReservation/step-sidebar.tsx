@@ -35,7 +35,7 @@ export default function StepSidebar({
 
   return (
     <div className="w-full md:w-[270px]">
-      <div className="flex mt-4 md:mt-0 relative md:border-r-[1px] border-[#B9885859]">
+      <div className="flex mt-2 md:mt-0 relative md:border-r-[1px] border-[#B9885859]">
         <div className="w-full relative flex md:flex-col overflow-x-auto md:h-[calc(100dvh-46px)] md:p-5 md:min-h-[600px] md:max-h-[1200px] justify-between">
           {steps.map((step, index) => (
             <div key={index} className="relative flex items-center">
