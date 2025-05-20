@@ -37,16 +37,19 @@ export default function DateStep({ form }: { form: UseFormReturn<any> }) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Calendar
-                  className={
-                    "!w-full !bg-transparent !bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] border border-[#E9E3D736] rounded"
-                  }
-                  tileClassName={"title-test"}
-                  minDate={new Date()}
-                  selectRange={false}
-                  onChange={handleDateChange}
-                  value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
-                />
+                <div className="calendar-container">
+                  <Calendar
+                    className={
+                      "!w-full !bg-transparent !bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] border border-[#E9E3D736] rounded"
+                    }
+                    tileClassName={"title-test"}
+                    minDate={new Date()}
+                    selectRange={false}
+                    onChange={handleDateChange}
+                    value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
+                    formatShortWeekday={(locale, date) => window.innerWidth < 768 ? date.toLocaleDateString(locale, { weekday: 'narrow' }) : date.toLocaleDateString(locale, { weekday: 'short' })}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

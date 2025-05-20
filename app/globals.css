@@ -264,21 +264,49 @@ input[type="date"]::-ms-expand {
 
 @media (max-width: 768px) {
   .between-area {
-        height: calc(100dvh - 45dvh);
-        overflow: hidden;
-        padding-bottom: 10px;
-        overflow: auto;
+    height: calc(100dvh - 45dvh);
+    overflow: hidden;
+    padding-bottom: 10px;
+    overflow: auto;
   }
+
   .between-area-2 {
-        height: calc(100dvh - 55dvh);
-        overflow: hidden;
-        padding-bottom: 10px;
-        overflow: auto;
+    height: calc(100dvh - 55dvh);
+    overflow: hidden;
+    padding-bottom: 10px;
+    overflow: auto;
   }
+
   .between-area-3 {
-        height: calc(100dvh - 84dvh);
-        overflow: hidden;
-        padding-bottom: 10px;
-        overflow: auto;
+    height: calc(100dvh - 84dvh);
+    overflow: hidden;
+    padding-bottom: 10px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .calendar-container .react-calendar__month-view__weekdays {
+    display: flex !important;
+    flex-direction: row !important;
+    /* Default (can be omitted) */
+    justify-content: space-around !important;
+    /* Now works horizontally */
+    width: 100% !important;
+    /* Ensure full width */
+  }
+
+  .calendar-container .react-calendar__month-view__weekdays__weekday {
+    flex: 1 !important;
+    /* Distribute space evenly */
+    text-align: center !important;
+    min-width: auto !important;
+    /* Remove fixed width constraints */
+    max-width: none !important;
+  }
+
+  .calendar-container .react-calendar__month-view__weekdays__weekday abbr {
+    font-size: 14px !important;
+    text-decoration: none !important;
   }
 }
