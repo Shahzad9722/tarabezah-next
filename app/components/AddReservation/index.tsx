@@ -239,8 +239,10 @@ const stepsWalkIn: Step[] = [
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
-  const token = searchParams.get('token');
-  const restaurantId = searchParams.get('restaurantId');
+  // const token = searchParams.get('token');
+  // const restaurantId = searchParams.get('restaurantId');
+  const token = "St4g1ng-4P1-K3y-V4lu3-S3cur3!";
+  const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
 
   const [arrangedSteps, setArrangeSteps] = useState(steps);
