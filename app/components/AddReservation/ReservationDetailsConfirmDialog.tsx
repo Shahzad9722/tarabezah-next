@@ -75,10 +75,10 @@ export default function ReservationConfirmDialog({
               </div>
             )}
             {reservationData.notes && (
-              <div className='flex items-start gap-2'>
+              <div className='flex w-full items-start gap-4'>
                 <span className='font-medium whitespace-nowrap'>Notes:</span>
                 <span
-                  className='block max-w-[320px] break-words whitespace-pre-wrap text-right'
+                  className='rounded-md break-words whitespace-pre-wrap flex-1'
                   style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
                 >
                   {reservationData.notes}

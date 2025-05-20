@@ -18,7 +18,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <div className='flex flex-col gap-4 my-8'>
+              <div className='flex flex-col gap-4 my-8 between-area-2'>
                 {partySizes.map((size, index) => (
                   <p
                     key={index}

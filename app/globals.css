@@ -260,3 +260,25 @@ input[type="date"]::-ms-clear {
 input[type="date"]::-ms-expand {
   display: none;
 }
+
+
+@media (max-width: 768px) {
+  .between-area {
+        height: calc(100dvh - 45dvh);
+        overflow: hidden;
+        padding-bottom: 10px;
+        overflow: auto;
+  }
+  .between-area-2 {
+        height: calc(100dvh - 55dvh);
+        overflow: hidden;
+        padding-bottom: 10px;
+        overflow: auto;
+  }
+  .between-area-3 {
+        height: calc(100dvh - 84dvh);
+        overflow: hidden;
+        padding-bottom: 10px;
+        overflow: auto;
+  }
+}

@@ -115,7 +115,7 @@ export default function ClientSearch({
 
         {/* Current Client Details */}
         {Object.keys(selected).length > 0 && (
-          <div className='w-full text-color-E9E3D7'>
+          <div className='w-full text-color-E9E3D7 between-area'>
             <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Current Client</h2>
 
             <div className='relative grid md:grid-cols-2 mb-6 pb-6 gap-4 md:gap-[60px] lg:gap-[120px] border-b border-[#FFFFFF30]'>
@@ -152,9 +152,9 @@ export default function ClientSearch({
                 </div>
 
                 {/* Fixed Client Note Section */}
-                <div className='text-lg'>
-                  <p className='font-medium'>Client Note:</p>
-                  <div className='mt-1 p-2 max-w-[380px] sm:max-w-none rounded-md  break-words whitespace-pre-wrap overflow-hidden'>
+                <div className="flex text-lg w-full items-start gap-4">
+                  <p className="font-medium whitespace-nowrap">Client Note:</p>
+                  <div className=" rounded-md break-words whitespace-pre-wrap flex-1">
                     {selected.notes || 'No notes'}
                   </div>
                 </div>
@@ -165,10 +165,12 @@ export default function ClientSearch({
 
               {/* Right Column - unchanged from original */}
               <div className='space-y-4'>
-                <div className='flex flex-wrap gap-2 text-lg'>
-                  <p className='font-medium'>Last Visit:</p>
-                  <p className='font-normal'>{selected?.lastVisit}</p>
-                </div>
+                {selected?.lastVisit && (
+                  <div className='flex flex-wrap gap-2 text-lg'>
+                    <p className='font-medium'>Last Visit:</p>
+                    <p className='font-normal'>{selected.lastVisit}</p>
+                  </div>
+                )}
 
                 <div className='grid lg:grid-cols-2 gap-4'>
                   <div>

@@ -293,7 +293,7 @@ function App({
               <FormItem>
                 <FormMessage />
                 <FormControl>
-                  <div className='flex flex-col space-y-2'>
+                  <div className='flex flex-col space-y-2 between-area-3'>
                     {timeSlots.length > 0 ? (
                       timeSlots.map((slot, index) => {
                         const isSelected = selectedSlot === formatTime(slot.time);

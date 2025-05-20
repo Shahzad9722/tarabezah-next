@@ -618,18 +618,19 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       />
 
       <div className='w-full flex-1 flex flex-col relative'>
-        <div className='flex-1 p-6 pb-[120px] md:pb-6 overflow-y-auto overflow-x-hidden'>
+        {/* pb-[120px] */}
+        <div className='flex-1 p-6 md:pb-6 overflow-y-auto overflow-x-hidden'>
           {/* <div className='w-full flex justify-end mb-8'>
-            <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M1.01074 14.9911L8.00141 8.00043L14.9921 14.9911M14.9921 1.00977L8.00008 8.00043L1.01074 1.00977'
-                stroke='#F5F5F5'
-                strokeWidth='1.5'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg>
-          </div> */}
+          <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path
+              d='M1.01074 14.9911L8.00141 8.00043L14.9921 14.9911M14.9921 1.00977L8.00008 8.00043L1.01074 1.00977'
+              stroke='#F5F5F5'
+              strokeWidth='1.5'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+        </div> */}
 
           {currentStep === 1 && (
             <>
