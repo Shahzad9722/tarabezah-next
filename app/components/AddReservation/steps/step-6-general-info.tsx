@@ -1,25 +1,16 @@
 'use client';
 
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Crown, Wine, Sofa, Heater, Users, Clock, NotebookTabs } from 'lucide-react';
+import { NotebookTabs } from 'lucide-react';
 import { MultiSelect, type MultiSelectOption } from '../../../components/ui/multi-select';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
 
 export default function GeneralInfoStep({
   form,
   tags,
 }: {
   form: UseFormReturn<any>;
-  tags: { name: string; value: number; icon?: string }[];
+  tags: { name: string; value: number; iconUrlWhite: string, iconUrlGold: string }[];
 }) {
   return (
     <div className='w-full'>
@@ -35,7 +26,7 @@ export default function GeneralInfoStep({
               <FormLabel>Tags</FormLabel>
               <FormControl>
                 <MultiSelect
-                  options={tags.map((tag) => ({ id: tag.value, name: tag.name, icon: tag.icon }))}
+                  options={tags.map((tag) => ({ id: tag.value, name: tag.name, iconUrlGold: tag.iconUrlGold, iconUrlWhite: tag.iconUrlWhite, }))}
                   {...field}
                 />
               </FormControl>
@@ -113,9 +104,14 @@ export default function GeneralInfoStep({
                 <FormLabel>Notes</FormLabel>
                 <FormControl>
                   <div className='relative'>
+                    <NotebookTabs
+                      className='absolute left-3 top-3 text-color-E9E3D7 pointer-events-none'
+                      size={24}
+                    />
                     <textarea
                       placeholder='Add Note...'
-                      className='pl-11 h-24 min-h-[40px]  bg-color-222036 max-h-20 w-full resize-vertical rounded border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 text-color-E9E3D7 pr-3 overflow-y-auto break-words whitespace-pre-wrap'
+                      className='w-full resize-vertical rounded border border-input bg-color-222036 px-10 py-2 text-sm text-color-E9E3D7 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 overflow-y-auto break-words whitespace-pre-wrap'
+                      rows={2}
                       style={{
                         boxSizing: 'border-box',
                         width: '100%',
@@ -127,15 +123,14 @@ export default function GeneralInfoStep({
                       value={field.value || ''}
                       onChange={e => field.onChange(e.target.value.slice(0, maxLength))}
                     />
-                    <NotebookTabs
-                      className='absolute left-3 top-[18px] text-color-E9E3D7 pointer-events-none'
-                      size={24}
-                    />
                   </div>
                 </FormControl>
-                <div className='text-xs text-right text-color-E9E3D7 mt-1'>{(field.value || '').length}/{maxLength} characters</div>
+                <div className='text-xs text-right text-color-E9E3D7 mt-1'>
+                  {(field.value || '').length}/{maxLength} characters
+                </div>
                 <FormMessage />
               </FormItem>
+
             );
           }}
         />

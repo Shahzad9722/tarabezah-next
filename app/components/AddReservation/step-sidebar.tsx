@@ -1,4 +1,5 @@
 import type { Step } from "../AddReservation/types";
+import { useEffect, useRef } from "react";
 
 interface StepSidebarProps {
   steps: Step[];
@@ -19,6 +20,19 @@ export default function StepSidebar({
   moveClientSearchBeforeDate,
   walkIn
 }: StepSidebarProps) {
+  // Refs for each step icon
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    // Only scroll on mobile (horizontal stepper)
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      const activeRef = stepRefs.current[currentStep];
+      if (activeRef) {
+        activeRef.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+  }, [currentStep]);
+
   return (
     <div className="w-full md:w-[270px]">
       <div className="flex mt-10 md:mt-0 relative md:border-r-[1px] border-[#B9885859]">
@@ -32,6 +46,7 @@ export default function StepSidebar({
                     ? "text-color-B98858"
                     : "text-gray-300"
                   }`}
+                ref={el => { stepRefs.current[index] = el; }}
               >
                 {/* Icon with Circle Background */}
                 <div

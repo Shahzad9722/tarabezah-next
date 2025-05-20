@@ -260,6 +260,11 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     reminderTime: '',
   });
 
+  // Function to scroll to top of the page
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const { isPending: fetchingEntities, data: entities = { sources: [], tags: [], shifts: [], tableTypes: [] } } =
     useQuery({
       queryKey: ['entities'],
@@ -513,10 +518,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     if (walkIn) {
       if (currentStep < stepsWalkIn.length - 1) {
         setCurrentStep(currentStep + 1);
+        scrollToTop();
       }
     } else {
       if (currentStep < arrangedSteps.length - 1) {
         setCurrentStep(currentStep + 1);
+        scrollToTop();
       }
     }
   };
@@ -570,6 +577,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      scrollToTop();
     }
   };
 
@@ -595,7 +603,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   }
 
   return (
-    <div className='md:h-screen flex flex-col pt-12  md:pt-8 md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
+    <div className='md:h-screen flex flex-col pt-12 md:pt-8 md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
         steps={walkIn ? stepsWalkIn : arrangedSteps}
         currentStep={currentStep}
@@ -607,142 +615,144 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         walkIn={walkIn}
       />
 
-      <div className='w-full flex-1 p-6 pb-[80px] sm:pb-6 overflow-x-auto'>
-        {/* <div className='w-full flex justify-end mb-8'>
-          <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-            <path
-              d='M1.01074 14.9911L8.00141 8.00043L14.9921 14.9911M14.9921 1.00977L8.00008 8.00043L1.01074 1.00977'
-              stroke='#F5F5F5'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            />
-          </svg>
-        </div> */}
+      <div className='w-full flex-1 flex flex-col relative'>
+        <div className='flex-1 p-6 pb-[120px] md:pb-6 overflow-y-auto overflow-x-hidden'>
+          {/* <div className='w-full flex justify-end mb-8'>
+            <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                d='M1.01074 14.9911L8.00141 8.00043L14.9921 14.9911M14.9921 1.00977L8.00008 8.00043L1.01074 1.00977'
+                stroke='#F5F5F5'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </div> */}
 
-        {currentStep === 1 && (
-          <>
-            {walkIn && (
-              <Button
-                onClick={() => {
-                  setCurrentStep(2);
-                  reservationForm.setValue('clientId', '0');
-                }}
-                disabled={reservationForm.getValues('clientId') === '0'}
-                className='mb-6'
-              >
-                Skip Client Information
-              </Button>
-            )}
-          </>
-        )}
-
-        {currentStep === clientIdx && !showAddNewClient && (
-          <>
-            <ClientSearch
-              reservationForm={reservationForm}
-              guestForm={guestForm}
-              setShowAddNewClient={setShowAddNewClient}
-              selected={selectedClient}
-              setSelected={setSelectedClient}
-              tags={entities.tags}
-              token={token}
-              restaurantId={restaurantId}
-            />
-            {!selectedClient.guid && (
-              <p className='text-red-500 mb-6'>{reservationForm?.formState?.errors?.clientId?.message}</p>
-            )}
-
-            {reservationForm.getValues('clientId') === '0' && (
-              <p className='text-white mb-6'>client information skipped</p>
-            )}
-          </>
-        )}
-
-        {showAddNewClient && (
-          <Form {...guestForm}>
-            <form onSubmit={guestForm.handleSubmit(createGuest)} className='space-y-4'>
-              {!fetchingEntities && clientIdx && (
-                <ClientSearchStep
-                  form={guestForm}
-                  sources={entities.sources}
-                  tags={entities.tags}
-                  submittingForm={addingGuest}
-                  setShowAddNewClient={setShowAddNewClient}
-                  walkIn={walkIn}
-                />
+          {currentStep === 1 && (
+            <>
+              {walkIn && (
+                <Button
+                  onClick={() => {
+                    setCurrentStep(2);
+                    reservationForm.setValue('clientId', '0');
+                  }}
+                  disabled={reservationForm.getValues('clientId') === '0'}
+                  className='mb-6'
+                >
+                  Skip Client Information
+                </Button>
               )}
-            </form>
-          </Form>
-        )}
-        <Form {...reservationForm}>
-          <form onSubmit={handleConfirm} className='space-y-4'>
-            {currentStep === dateIdx &&
-              (walkIn ? <PartySizeStep form={reservationForm} /> : <DateStep form={reservationForm} />)}
-            {currentStep === 3 &&
-              (walkIn ? (
-                <GeneralInfoStep form={reservationForm} tags={entities.tags} />
-              ) : (
-                <PartySizeStep form={reservationForm} />
-              ))}
+            </>
+          )}
 
-            {!fetchingEntities &&
-              currentStep === 4 &&
-              (walkIn ? (
-                <GeneralInfoStep form={reservationForm} tags={entities.tags} />
-              ) : (
-                <TimeStep
-                  form={reservationForm}
-                  shifts={entities.shifts}
-                  tableTypes={entities.tableTypes}
-                  token={token}
-                  restaurantId={restaurantId}
-                />
-              ))}
-            {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
-            <div className='flex justify-between gap-4'>
-              <Button
-                type='button'
-                variant='secondary'
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className='w-full'
-              >
-                Back
-              </Button>
-              {((!walkIn && currentStep !== 5) || (walkIn && currentStep !== 3)) && (
+          {currentStep === clientIdx && !showAddNewClient && (
+            <>
+              <ClientSearch
+                reservationForm={reservationForm}
+                guestForm={guestForm}
+                setShowAddNewClient={setShowAddNewClient}
+                selected={selectedClient}
+                setSelected={setSelectedClient}
+                tags={entities.tags}
+                token={token}
+                restaurantId={restaurantId}
+              />
+              {!selectedClient.guid && (
+                <p className='text-red-500 mb-6'>{reservationForm?.formState?.errors?.clientId?.message}</p>
+              )}
+
+              {reservationForm.getValues('clientId') === '0' && (
+                <p className='text-white mb-6'>client information skipped</p>
+              )}
+            </>
+          )}
+
+          {showAddNewClient && (
+            <Form {...guestForm}>
+              <form onSubmit={guestForm.handleSubmit(createGuest)} className='space-y-4'>
+                {!fetchingEntities && clientIdx && (
+                  <ClientSearchStep
+                    form={guestForm}
+                    sources={entities.sources}
+                    tags={entities.tags}
+                    submittingForm={addingGuest}
+                    setShowAddNewClient={setShowAddNewClient}
+                    walkIn={walkIn}
+                  />
+                )}
+              </form>
+            </Form>
+          )}
+          <Form {...reservationForm}>
+            <form onSubmit={handleConfirm} className='space-y-4'>
+              {currentStep === dateIdx &&
+                (walkIn ? <PartySizeStep form={reservationForm} /> : <DateStep form={reservationForm} />)}
+              {currentStep === 3 &&
+                (walkIn ? (
+                  <GeneralInfoStep form={reservationForm} tags={entities.tags} />
+                ) : (
+                  <PartySizeStep form={reservationForm} />
+                ))}
+
+              {!fetchingEntities &&
+                currentStep === 4 &&
+                (walkIn ? (
+                  <GeneralInfoStep form={reservationForm} tags={entities.tags} />
+                ) : (
+                  <TimeStep
+                    form={reservationForm}
+                    shifts={entities.shifts}
+                    tableTypes={entities.tableTypes}
+                    token={token}
+                    restaurantId={restaurantId}
+                  />
+                ))}
+              {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
+              <div className='flex justify-between gap-4 fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 bg-color-121020 md:bg-transparent border-t md:border-t-0 border-gray-800'>
                 <Button
                   type='button'
-                  onClick={nextStep}
-                  disabled={
-                    currentStep === 5 ||
-                    (currentStep === 3 && walkIn) ||
-                    !isCurrentStepValid() ||
-                    (currentStep === 1 && !walkIn && !selectedClient.guid) ||
-                    (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
-                  }
+                  variant='secondary'
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
                   className='w-full'
                 >
-                  Next
+                  Back
                 </Button>
-              )}
+                {((!walkIn && currentStep !== 5) || (walkIn && currentStep !== 3)) && (
+                  <Button
+                    type='button'
+                    onClick={nextStep}
+                    disabled={
+                      currentStep === 5 ||
+                      (currentStep === 3 && walkIn) ||
+                      !isCurrentStepValid() ||
+                      (currentStep === 1 && !walkIn && !selectedClient.guid) ||
+                      (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
+                    }
+                    className='w-full'
+                  >
+                    Next
+                  </Button>
+                )}
 
-              {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
-                <Button
-                  type='submit'
-                  disabled={
-                    submittingReservationForm ||
-                    submittingWalkinForm ||
-                    Object.keys(reservationForm.formState.errors).length > 0
-                  }
-                  className='w-full'
-                >
-                  Confirm
-                </Button>
-              )}
-            </div>
-          </form>
-        </Form>
+                {(currentStep === 5 || (currentStep === 3 && walkIn)) && (
+                  <Button
+                    type='submit'
+                    disabled={
+                      submittingReservationForm ||
+                      submittingWalkinForm ||
+                      Object.keys(reservationForm.formState.errors).length > 0
+                    }
+                    className='w-full'
+                  >
+                    Confirm
+                  </Button>
+                )}
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
 
       <ReservationConfirmDialog

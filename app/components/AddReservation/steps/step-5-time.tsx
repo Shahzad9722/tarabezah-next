@@ -31,7 +31,7 @@ function App({
   const [activeShift, setActiveShift] = useState(form.getValues('shiftId'));
   const [activeTableType, setActiveTableType] = useState<string | number>('View All');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(form.getValues('eventTime') || null);
-  const [duration, setDuration] = useState(form.getValues('duration') || 300); // Duration in minutes
+  const [duration, setDuration] = useState(form.getValues('duration') || 180); // Duration in minutes
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
 
   const { mutateAsync: fetchTimeSlots, isPending: submittingReservationForm } = useMutation({
@@ -126,7 +126,7 @@ function App({
   };
 
   const handleDurationChange = (change: number) => {
-    const newDuration = Math.max(30, Math.min(500, duration + change)); // Min 30 mins, max 180 mins, in 10-min steps
+    const newDuration = Math.max(30, Math.min(600, duration + change)); // Min 30 mins, max 180 mins, in 10-min steps
     setDuration(newDuration);
     if (selectedSlot) {
       form.setValue('duration', newDuration);
@@ -267,7 +267,7 @@ function App({
                         variant='outline'
                         size='icon'
                         onClick={() => handleDurationChange(10)}
-                        disabled={duration >= 500}
+                        disabled={duration >= 600}
                         className='h-8 w-8 bg-transparent border-none hover:bg-color-B98858/10 disabled:opacity-50'
                       >
                         <Plus className='h-4 w-4 text-color-E9E3D7' />
