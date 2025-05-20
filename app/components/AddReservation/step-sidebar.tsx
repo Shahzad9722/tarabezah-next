@@ -36,7 +36,7 @@ export default function StepSidebar({
 
   return (
     <div className="w-full md:w-[270px]">
-      <div className="flex mt-10 md:mt-0 sticky top-0 z-30 bg-color-121020 md:relative md:bg-transparent md:border-r-[1px] border-[#B9885859]">
+      <div className="flex mt-0 md:mt-0 lg:mt-10 sticky top-0 z-30 bg-color-121020 md:relative md:bg-transparent md:border-r-[1px] border-[#B9885859]">
         <div className="w-full relative flex md:flex-col overflow-x-auto md:h-[calc(100dvh-46px)] md:p-5 md:min-h-[600px] md:max-h-[1200px] justify-start md:justify-between px-4 py-2 md:p-5">
           {steps.map((step, index) => (
             <div key={index} className="relative flex items-center">
@@ -71,7 +71,7 @@ export default function StepSidebar({
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-md md:text-xl font-medium whitespace-nowrap">
+                  <span className="text-md flex flex-col text-center md:text-xl font-medium whitespace-nowrap">
                     {step.name}
                     {step.name === "Client Search" && step.step === 1 && !walkIn && (
                       <button
