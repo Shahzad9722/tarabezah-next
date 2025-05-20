@@ -105,11 +105,11 @@ export default function ClientSearch({
               ))
               : debouncedQuery &&
               !loading && (
-                <div className='text-center py-2 text-gray-600'>
+                <div className='text-center py-2 pb-6 text-gray-600'>
                   No clients found. Please try a different search or add a new guest.
                 </div>
               )}
-            {loading && <div className='text-center py-2 text-gray-600'>Searching...</div>}
+            {loading && <div className='text-center py-2 pb-6 text-gray-600'>Searching...</div>}
           </div>
         )}
 

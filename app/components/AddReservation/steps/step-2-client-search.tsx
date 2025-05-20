@@ -87,7 +87,7 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='Enter Email' {...field} />
+                <Input type='email' placeholder='Enter Email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

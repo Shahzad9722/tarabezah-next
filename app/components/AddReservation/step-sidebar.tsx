@@ -1,5 +1,5 @@
 import type { Step } from "../AddReservation/types";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface StepSidebarProps {
   steps: Step[];
@@ -20,23 +20,24 @@ export default function StepSidebar({
   moveClientSearchBeforeDate,
   walkIn
 }: StepSidebarProps) {
-  // Refs for each step icon
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
-    // Only scroll on mobile (horizontal stepper)
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    // Only scroll on mobile (horizontal stepper) and after the first render
+    if (typeof window !== 'undefined' && window.innerWidth < 768 && (hasScrolled || currentStep > 1)) {
       const activeRef = stepRefs.current[currentStep];
       if (activeRef) {
         activeRef.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        setHasScrolled(true);
       }
     }
-  }, [currentStep]);
+  }, [currentStep, hasScrolled]);
 
   return (
     <div className="w-full md:w-[270px]">
-      <div className="flex mt-2 md:mt-0 relative md:border-r-[1px] border-[#B9885859]">
-        <div className="w-full relative flex md:flex-col overflow-x-auto md:h-[calc(100dvh-46px)] md:p-5 md:min-h-[600px] md:max-h-[1200px] justify-between">
+      <div className="flex mt-10 md:mt-0 sticky top-0 z-30 bg-color-121020 md:relative md:bg-transparent md:border-r-[1px] border-[#B9885859]">
+        <div className="w-full relative flex md:flex-col overflow-x-auto md:h-[calc(100dvh-46px)] md:p-5 md:min-h-[600px] md:max-h-[1200px] justify-start md:justify-between px-4 py-2 md:p-5">
           {steps.map((step, index) => (
             <div key={index} className="relative flex items-center">
               {/* Step Indicator */}
@@ -55,10 +56,6 @@ export default function StepSidebar({
                       ? "bg-color-B98858 text-white"
                       : "bg-color-A4A4A4 text-gray-300"
                     }`}
-                // onClick={() => {
-                //   if (index > 0 && index < steps.length - 1)
-                //     setCurrentStep(index);
-                // }}
                 >
                   {step.icon}
                   {/* Vertical Line Connecting Steps */}
@@ -74,7 +71,7 @@ export default function StepSidebar({
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-md md:text-xl font-medium">
+                  <span className="text-md md:text-xl font-medium whitespace-nowrap">
                     {step.name}
                     {step.name === "Client Search" && step.step === 1 && !walkIn && (
                       <button
