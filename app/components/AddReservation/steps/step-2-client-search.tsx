@@ -22,7 +22,7 @@ export default function AddReservationStep({
   walkIn?: boolean;
 }) {
   return (
-    <div className='w-full'>
+    <div className='w-full between-area'>
       {/* Add New Client Form */}
       <div className='space-y-6 mb-4'>
         <div className='flex  flex-col-reverse gap-6 md:flex-row justify-between'>
