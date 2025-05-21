@@ -262,9 +262,16 @@ input[type="date"]::-ms-expand {
 }
 
 
+
+.focus-visible\:ring-2:focus-visible {
+  --tw-ring-offset-shadow: 0!important;
+  --tw-ring-shadow: 0!important;
+  box-shadow: 0!important;
+}
+
 @media (max-width: 768px) {
   .between-area {
-    height: calc(100dvh - 26dvh);
+    height: calc(100dvh - 30dvh);
     overflow: hidden;
     padding-bottom: 10px;
     overflow: auto;

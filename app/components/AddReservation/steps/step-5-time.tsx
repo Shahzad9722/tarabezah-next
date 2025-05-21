@@ -153,7 +153,7 @@ function App({
     <div className='w-full'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Select Shift & Time</h2>
 
-      <div>
+      <div className='between-area'>
         {/* Shift Tabs */}
         <div className='w-full mb-8 [box-shadow:0px_4px_11.2px_0px_#00000040_inset] rounded-lg py-2.5 px-6'>
           <FormField
@@ -295,7 +295,7 @@ function App({
               <FormItem>
                 <FormMessage />
                 <FormControl>
-                  <div className='flex flex-col space-y-2 between-area-3'>
+                  <div className='flex flex-col space-y-2'>
                     {timeSlots.length > 0 ? (
                       timeSlots.map((slot, index) => {
                         const isSelected = selectedSlot === formatTime(slot.time);

@@ -640,7 +640,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
       <div className='w-full flex-1 flex flex-col relative'>
         {/* pb-[120px] */}
-        <div className='flex-1 max-md:pt-3 p-6 md:pb-6 overflow-y-auto overflow-x-hidden'>
+        <div className='flex-1 max-md:pt-3 p-6 md:pb-6 overflow-y-auto overflow-x-hidden '>
           {/* <div className='w-full flex justify-end mb-8'>
           <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
             <path

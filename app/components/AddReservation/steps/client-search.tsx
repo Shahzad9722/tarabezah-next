@@ -67,7 +67,7 @@ export default function ClientSearch({
         <div className='relative mb-8 mr-0 md:mr-[100px]'>
           <Input
             placeholder='Search...'
-            className='relative pl-[72px]'
+            className='relative pl-[72px] input-focus-remove'
             value={searchQuery}
             onChange={handleSearchChange}
           />
