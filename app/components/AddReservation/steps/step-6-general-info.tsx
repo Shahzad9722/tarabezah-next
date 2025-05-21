@@ -13,7 +13,7 @@ export default function GeneralInfoStep({
   tags: { name: string; value: number; iconUrlWhite: string, iconUrlGold: string }[];
 }) {
   return (
-    <div className='w-full mb-6'>
+    <div className='w-full'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>General Information</h2>
 
       {/* Tags Select Options */}
@@ -93,7 +93,7 @@ export default function GeneralInfoStep({
       </div> */}
 
       {/* Client Note */}
-      <div className='mb-8'>
+      <div className='mb-6'>
         <FormField
           control={form.control}
           name='additionalNotes'

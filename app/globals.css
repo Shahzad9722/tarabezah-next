@@ -271,7 +271,7 @@ input[type="date"]::-ms-expand {
   }
 
   .between-area-2 {
-    height: calc(100dvh - 50dvh);
+    height: calc(100dvh - 55dvh);
     overflow: hidden;
     padding-bottom: 10px;
     overflow: auto;
@@ -279,13 +279,6 @@ input[type="date"]::-ms-expand {
 
   .between-area-3 {
     height: calc(100dvh - 84dvh);
-    overflow: hidden;
-    padding-bottom: 10px;
-    overflow: auto;
-  }
-
-  .between-area-4 {
-    height: calc(100dvh - 45dvh);
     overflow: hidden;
     padding-bottom: 10px;
     overflow: auto;

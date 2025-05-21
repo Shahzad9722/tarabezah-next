@@ -236,6 +236,27 @@ const stepsWalkIn: Step[] = [
   },
 ];
 
+// Returns current UTC time + 3 hours in 'h:mm AM/PM' format
+function getWalkInEventTime() {
+  const now = new Date();
+  const utcHours = now.getUTCHours();
+  const utcMinutes = now.getUTCMinutes();
+  // Add 3 hours to UTC
+  const eventDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    utcHours + 3,
+    utcMinutes
+  ));
+  let hours = eventDate.getUTCHours();
+  const minutes = eventDate.getUTCMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+}
+
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
@@ -339,7 +360,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       })(),
-      eventTime: walkIn ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : undefined,
+      eventTime: walkIn ? getWalkInEventTime() : undefined,
       numberOfGuests: 2,
       shiftId: undefined,
       tags: [],

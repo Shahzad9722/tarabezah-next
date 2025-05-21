@@ -16,6 +16,8 @@ import { ZoomIn, ZoomOut, RefreshCw, Move } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Slider } from '@/app/components/ui/slider';
 import CombinationDeleteConfirmation from '../accordionData/CombinationDeleteConfirmation';
+import { useFloorplan } from '@/app/context/FloorplanContext';
+
 
 interface Item {
   guid: string;
@@ -76,6 +78,7 @@ export default function TableCombinations() {
 
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters) || {};
   const dispatch = useDispatch();
+  const { activeFloorplanId } = useFloorplan();
 
   // Fetch floor plans
   const { isLoading: fetchingFloorPlans, data: floorPlans = [] } = useQuery({
@@ -211,7 +214,7 @@ export default function TableCombinations() {
   // Set default floor plan if not selected
   useEffect(() => {
     if (floorPlans.length && !selectedFilters.floorPlanId) {
-      dispatch(setFilters({ ...selectedFilters, floorPlanId: floorPlans[0].guid }));
+      dispatch(setFilters({ ...selectedFilters, floorPlanId: activeFloorplanId || floorPlans[0].guid }));
       setSelectedItems([]);
     }
   }, [floorPlans]);
