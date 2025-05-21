@@ -12,6 +12,8 @@ interface TimeSlot {
   totalTables: number;
   availableTables: number;
   isAvailable: boolean;
+  totalPatySizes: number;
+  allocatedTables: number;
 }
 
 function App({
@@ -325,7 +327,7 @@ function App({
                             </div>
                             <div className='flex items-center gap-3'>
                               <span>
-                                {slot.availableTables}/{slot.totalTables}
+                                {slot.totalPatySizes}/{slot.availableTables}
                               </span>
                             </div>
                           </div>

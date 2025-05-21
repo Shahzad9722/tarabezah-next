@@ -88,7 +88,7 @@ export default function TableCombinations() {
       const res = await fetch(`/api/restaurant/floorplans?restaurantId=${restaurantId}`);
       if (!res.ok) throw new Error('Failed to fetch floor plans');
       const data = await res.json();
-      return data.floorPlans;
+      return data.floorPlans?.reverse();
     },
     enabled: typeof window !== 'undefined' && !!localStorage.getItem('selected-restaurant-id'),
   });
