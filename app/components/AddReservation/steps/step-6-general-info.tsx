@@ -13,7 +13,7 @@ export default function GeneralInfoStep({
   tags: { name: string; value: number; iconUrlWhite: string, iconUrlGold: string }[];
 }) {
   return (
-    <div className='w-full between-area-4 mb-4'>
+    <div className='w-full mb-6'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>General Information</h2>
 
       {/* Tags Select Options */}
