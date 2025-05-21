@@ -271,7 +271,7 @@ input[type="date"]::-ms-expand {
   }
 
   .between-area-2 {
-    height: calc(100dvh - 55dvh);
+    height: calc(100dvh - 50dvh);
     overflow: hidden;
     padding-bottom: 10px;
     overflow: auto;
