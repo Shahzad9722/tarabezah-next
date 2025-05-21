@@ -9,7 +9,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
   const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
   return (
-    <div className='w-full'>
+    <div className='w-full between-area'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Select Party Size</h2>
 
       <FormField
@@ -18,7 +18,7 @@ export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <div className='flex flex-col gap-4 my-8 between-area-2'>
+              <div className='flex flex-col gap-4 my-8'>
                 {partySizes.map((size, index) => (
                   <p
                     key={index}

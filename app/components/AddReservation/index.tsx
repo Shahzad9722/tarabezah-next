@@ -626,7 +626,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   }
 
   return (
-    <div className='md:h-screen flex flex-col pt-12 md:pt-8 md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
+    <div className='md:h-screen flex flex-col pt-8 md:flex-row bg-color-121020 bg-[linear-gradient(119.26deg,_rgba(18,_17,_32,_0.23)_45.47%,_rgba(185,_136,_88,_0.23)_105.35%)] shadow-lg w-full min-h-screen'>
       <StepSidebar
         steps={walkIn ? stepsWalkIn : arrangedSteps}
         currentStep={currentStep}
@@ -640,7 +640,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
       <div className='w-full flex-1 flex flex-col relative'>
         {/* pb-[120px] */}
-        <div className='flex-1 p-6 md:pb-6 overflow-y-auto overflow-x-hidden'>
+        <div className='flex-1 max-md:pt-3 p-6 md:pb-6 overflow-y-auto overflow-x-hidden'>
           {/* <div className='w-full flex justify-end mb-8'>
           <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
             <path

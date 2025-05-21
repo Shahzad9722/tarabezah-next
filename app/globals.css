@@ -264,10 +264,11 @@ input[type="date"]::-ms-expand {
 
 @media (max-width: 768px) {
   .between-area {
-    height: calc(100dvh - 45dvh);
+    height: calc(100dvh - 26dvh);
     overflow: hidden;
     padding-bottom: 10px;
     overflow: auto;
+    padding-bottom: 10%;
   }
 
   .between-area-2 {
