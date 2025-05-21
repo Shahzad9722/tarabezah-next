@@ -283,6 +283,13 @@ input[type="date"]::-ms-expand {
     padding-bottom: 10px;
     overflow: auto;
   }
+
+  .between-area-4 {
+    height: calc(100dvh - 45dvh);
+    overflow: hidden;
+    padding-bottom: 10px;
+    overflow: auto;
+  }
 }
 
 @media (max-width: 767px) {
