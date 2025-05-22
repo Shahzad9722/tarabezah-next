@@ -558,7 +558,12 @@ const FloorPlan: React.FC = () => {
                 isNumeric={true}
                 maxLength={10}
                 value={newTableConfig.minCapacity}
-                onChange={(e) => setNewTableConfig((prev) => ({ ...prev, minCapacity: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || Number(value) >= 1) {
+                    setNewTableConfig((prev) => ({ ...prev, minCapacity: value }));
+                  }
+                }}
                 min={1}
                 required
               />
@@ -571,7 +576,12 @@ const FloorPlan: React.FC = () => {
                 type='number'
                 isNumeric={true}
                 value={newTableConfig.maxCapacity}
-                onChange={(e) => setNewTableConfig((prev) => ({ ...prev, maxCapacity: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || Number(value) >= 1) {
+                    setNewTableConfig((prev) => ({ ...prev, maxCapacity: value }));
+                  }
+                }}
                 required
                 min={1}
                 maxLength={10}

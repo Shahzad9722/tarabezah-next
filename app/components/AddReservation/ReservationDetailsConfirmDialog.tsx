@@ -78,7 +78,7 @@ export default function ReservationConfirmDialog({
               <div className='flex w-full items-start gap-4'>
                 <span className='font-medium whitespace-nowrap'>Notes:</span>
                 <span
-                  className='rounded-md break-words whitespace-pre-wrap flex-1'
+                  className='rounded-md break-words whitespace-pre-wrap flex-1 text-right'
                   style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
                 >
                   {reservationData.notes}

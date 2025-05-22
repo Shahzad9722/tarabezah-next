@@ -70,7 +70,7 @@ export default function AddReservationStep({
                   placeholder='Enter Phone Number'
                   {...field}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    const value = e.target.value.replace(/[^0-9+]/g, '');
                     field.onChange(value);
                   }}
                 />
