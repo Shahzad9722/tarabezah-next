@@ -257,6 +257,13 @@ function getWalkInEventTime() {
   return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 }
 
+// Helper to format duration as '0h:00m'
+function formatDurationForApi(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h:${m.toString().padStart(2, '0')}m`;
+}
+
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
@@ -342,7 +349,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       name: '',
       phone: '',
       email: undefined,
-      birthday: 'dd/mm/yyyy',
+      birthday: undefined,
       sources: [],
       tags: [],
       clientNotes: '',
@@ -366,6 +373,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       tags: [],
       additionalNotes: '',
       reminderTime: '',
+      duration: 0
     },
   });
 
@@ -406,9 +414,14 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         return false;
       }
 
+      const values = reservationForm.getValues();
+      if (values.duration) {
+        values.duration = formatDurationForApi(values.duration) as any;
+      }
+
       if (!walkIn) {
         if (isValid) {
-          const response = await addReservation(reservationForm.getValues());
+          const response = await addReservation(values);
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error);
@@ -422,7 +435,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
 
         const isValid = errorFields.every((field) => !requiredFields.includes(field));
         if (isValid) {
-          const response = await addWalkin(reservationForm.getValues());
+          const response = await addWalkin(values);
 
           if (!response.ok) {
             const error = await response.json();

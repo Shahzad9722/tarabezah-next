@@ -31,4 +31,5 @@ export const addReservationFormSchema = z.object({
   tags: z.array(z.number()).optional(),
   additionalNotes: z.string().optional(),
   reminderTime: z.string().optional(),
+  duration: z.number().optional(),
 });
