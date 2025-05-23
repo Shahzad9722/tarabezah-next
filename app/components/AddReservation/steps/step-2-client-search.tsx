@@ -5,6 +5,7 @@ import { MultiSelect } from '../../../components/ui/multi-select';
 import { Button } from '../../ui/button';
 import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
+import { cn } from '@/lib/utils';
 
 export default function AddReservationStep({
   form,
@@ -108,26 +109,27 @@ export default function AddReservationStep({
             <FormItem>
               <FormLabel>Birthday</FormLabel>
               <FormControl>
-                <div className='relative'>
+                <div className='relative flex items-center w-full'>
                   <input
                     type='date'
                     name='birthday'
                     max={new Date().toISOString().split('T')[0]}
                     {...field}
-                    className='w-full pr-10 bg-transparent text-white border border-gray-300 rounded px-3 py-2 appearance-none'
+                    className={cn(
+                      'flex h-10 w-full rounded-md border border-input bg-color-222036 px-3 border-color-222036 py-2 text-base ring-offset-background text-color-E9E3D7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pr-10'
+                    )}
                     onClick={() => {
                       const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
                       input?.showPicker?.();
                     }}
                   />
-                  {/* Custom calendar icon */}
                   <button
                     type='button'
                     onClick={() => {
                       const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
                       input?.showPicker?.();
                     }}
-                    className='absolute right-3 top-3.5 text-white'
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-white'
                   >
                     <Calendar size={18} />
                   </button>

@@ -329,3 +329,11 @@ input[type="date"]::-ms-expand {
     text-decoration: none !important;
   }
 }
+
+@media (max-width: 768px) {
+  input[type='date'] {
+    font-size: 14px;
+    padding-right: 2.5rem;
+    /* to keep space for icon */
+  }
+}
