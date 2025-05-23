@@ -264,18 +264,29 @@ input[type="date"]::-ms-expand {
 
 
 .focus-visible\:ring-2:focus-visible {
-  --tw-ring-offset-shadow: 0!important;
-  --tw-ring-shadow: 0!important;
-  box-shadow: 0!important;
+  --tw-ring-offset-shadow: 0 !important;
+  --tw-ring-shadow: 0 !important;
+  box-shadow: 0 !important;
 }
 
 @media (max-width: 768px) {
   .between-area {
     height: calc(100dvh - 30dvh);
-    overflow: hidden;
-    padding-bottom: 10px;
     overflow: auto;
     padding-bottom: 10%;
+
+    /* Hide scrollbar styles */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scroll-behavior: smooth;
+    /* Optional smooth scrolling */
+  }
+
+  .between-area::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
   }
 
   .between-area-2 {

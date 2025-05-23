@@ -65,12 +65,19 @@ export default function AddReservationStep({
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
                 <Input
-                  type='tel'
                   maxLength={15}
                   placeholder='Enter Phone Number'
                   {...field}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9+]/g, '');
+                    // Allow numbers and + only at the start
+                    let value = e.target.value;
+                    if (value.startsWith('+')) {
+                      console.log('starts with +');
+                      value = '+' + value.slice(1).replace(/[^0-9]/g, '');
+                    } else {
+                      console.log('does not start with +');
+                      value = value.replace(/[^0-9]/g, '');
+                    }
                     field.onChange(value);
                   }}
                 />

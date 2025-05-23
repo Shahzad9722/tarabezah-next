@@ -4,6 +4,9 @@ import { CanvasElement, Floorplan, Restaurant } from '@/app/types';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { useLoader } from '@/app/context/loaderContext';
+import { useDispatch, useSelector, UseSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { setFilters } from '@/store/features/combination-filters/combinationFilterSlice';
 
 interface FloorplanContextType {
   restaurant: Restaurant;
@@ -33,6 +36,10 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [activeFloorplanId, setActiveFloorplanId] = useState<string>('');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const { showLoader, hideLoader } = useLoader();
+  const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
+  const dispatch = useDispatch<AppDispatch>();
+
+
 
   // Load restaurant ID from localStorage on initialization
   useEffect(() => {
@@ -97,7 +104,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
       floorplans: [newFloorplan, ...prev.floorplans],
     }));
 
-    setActiveFloorplanId(newFloorplan.guid);
+    // setActiveFloorplanId(newFloorplan.guid);
     // toast.success(`Created new floorplan: ${name}`);
   };
 
@@ -209,6 +216,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const publishFloorplans = () => {
     // localStorage.setItem('restaurant', JSON.stringify(restaurant));
+    dispatch(setFilters({ ...selectedFilters, floorPlanId: activeFloorplanId }));
     toast.success('Floorplans published successfully!');
   };
 

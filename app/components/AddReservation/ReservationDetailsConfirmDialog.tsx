@@ -43,7 +43,7 @@ export default function ReservationConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className='sm:max-w-[425px] bg-color-121020 border-none'>
+      <DialogContent className='sm:max-w-[425px] bg-color-121020 rounded-xl border-none'>
         <DialogHeader>
           <DialogTitle>Confirm Reservation</DialogTitle>
           <DialogDescription>Please review the reservation details before confirming.</DialogDescription>
