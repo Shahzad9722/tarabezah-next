@@ -342,7 +342,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       name: '',
       phone: '',
       email: undefined,
-      birthday: undefined,
+      birthday: 'dd/mm/yyyy',
       sources: [],
       tags: [],
       clientNotes: '',
