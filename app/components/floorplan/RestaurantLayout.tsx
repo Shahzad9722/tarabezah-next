@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 const RestaurantLayout: React.FC = () => {
-  const { setActiveFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
+  const { setActiveFloorplanId, activeFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
 
   // Track last published floorplans for change detection
@@ -84,7 +84,7 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      setActiveFloorplanId(result[0].guid);
+      setActiveFloorplanId(activeFloorplanId || result[0].guid);
       setRestaurant({
         ...restaurant,
         floorplans: [...result],
