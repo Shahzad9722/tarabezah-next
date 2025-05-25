@@ -52,7 +52,7 @@ const Accordion = ({ combinations, onExpand, onDelete }: AccordionProps) => {
                 className='flex justify-between items-center px-4 py-3 cursor-pointer hover:bg-[#1F1C33]'
                 onClick={() => toggleAccordion(item)}
               >
-                <span className='truncate'>{item.index}&nbsp;&nbsp;&nbsp;{item.groupName}({item.members.length})</span>
+                <span className='truncate'>{item.groupName} ({item.members.length})</span>
                 <ChevronDown
                   className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
                   size={18}

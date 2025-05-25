@@ -20,13 +20,11 @@ function App({
   form,
   shifts,
   tableTypes,
-  token,
   restaurantId,
 }: {
   form: UseFormReturn<any>;
   shifts: { guid: string; name: string; startTime: string; endTime: string }[];
   tableTypes: { name: string; value: number }[];
-  token: string;
   restaurantId: string;
 }) {
   const { showLoader, hideLoader } = useLoader();
@@ -44,7 +42,6 @@ function App({
         Date: new Date(form.getValues('eventDate')).toISOString().slice(0, 10),
         ShiftGuid: data.ShiftGuid || '',
         TableType: data.TableType?.toString() || '',
-        token: token,
       });
 
       const response = await fetch(`/api/reservation/shift-time?${params.toString()}`, {

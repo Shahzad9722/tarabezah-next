@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const eventDate = searchParams.get('Date');
     const shiftGuid = searchParams.get('ShiftGuid');
     const tableType = searchParams.get('TableType') || 'Indoor'; // Default to 'Indoor' if not provided
-    const token = searchParams.get('token');
+    const token = process.env.BACKEND_TOKEN;
 
     if (!clientId || !numberOfGuests || !eventDate || !shiftGuid || !tableType) {
       return NextResponse.json({ error: 'Missing required query parameters' }, { status: 400 });

@@ -8,6 +8,8 @@ export async function GET() {
     // const cookieStore = await cookies();
     // const token = cookieStore.get('auth-token')?.value;
 
+    const token = process.env.BACKEND_TOKEN;
+
     // if (!token) {
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }

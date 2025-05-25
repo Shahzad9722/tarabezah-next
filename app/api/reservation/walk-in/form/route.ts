@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
+  const token = process.env.BACKEND_TOKEN;
+
   try {
     const payload = await request.json();
 
-    if (!payload?.token) {
+    if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${payload.token}`,
+          Authorization: `${token}`,
         },
       }
     );

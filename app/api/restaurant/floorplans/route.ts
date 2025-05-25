@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   try {
     // Get the auth token from cookies
     const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    const token = process.env.BACKEND_TOKEN;
 
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   try {
     // Get the auth token from cookies
     const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    const token = process.env.YOUR_API_TOKEN;
 
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

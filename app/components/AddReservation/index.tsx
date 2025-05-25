@@ -273,9 +273,6 @@ function isMobile() {
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
-  // const token = searchParams.get('token');
-  // const restaurantId = searchParams.get('restaurantId');
-  const token = "St4g1ng-4P1-K3y-V4lu3-S3cur3!";
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
 
@@ -305,7 +302,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     useQuery({
       queryKey: ['entities'],
       queryFn: async () => {
-        const res = await fetch(`/api/reservation/form/entities?restaurantId=${restaurantId}&token=${token}`);
+        const res = await fetch(`/api/reservation/form/entities?restaurantId=${restaurantId}`);
         if (!res.ok) throw new Error('Failed to fetch guest');
         const reservationFormEntities = await res.json();
         return reservationFormEntities.entities;
@@ -316,7 +313,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     mutationFn: (data: any) => {
       return fetch(`/api/reservation/guest`, {
         method: 'post',
-        body: JSON.stringify({ ...data, token }),
+        body: JSON.stringify({ ...data }),
       });
     },
   });
@@ -328,7 +325,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         body: JSON.stringify({
           ...data,
           tableId: table,
-          token,
           isUpcoming: screen === 'floorplan',
         }),
       });
@@ -342,7 +338,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
         body: JSON.stringify({
           ...data,
           tableId: table,
-          token,
           isUpcoming: screen === 'floorplan',
         }),
       });
@@ -644,7 +639,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   // console.log('reservationForm.formState.errors', reservationForm.formState.errors);
   // console.log('selectedClient', selectedClient);
 
-  if (!token || !restaurantId) {
+  if (!restaurantId) {
     return notFound();
   }
 
@@ -702,7 +697,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                 selected={selectedClient}
                 setSelected={setSelectedClient}
                 tags={entities.tags}
-                token={token}
                 restaurantId={restaurantId}
               />
               {!selectedClient.guid && (
@@ -751,7 +745,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                     form={reservationForm}
                     shifts={entities.shifts}
                     tableTypes={entities.tableTypes}
-                    token={token}
                     restaurantId={restaurantId}
                   />
                 ))}

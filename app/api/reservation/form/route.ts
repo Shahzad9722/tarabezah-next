@@ -4,10 +4,12 @@ import { cookies } from 'next/headers';
 import { convertTo24HourTimeString } from '@/app/lib/utils';
 
 export async function POST(request: Request) {
+  const token = process.env.BACKEND_TOKEN;
+
   try {
     const payload = await request.json();
 
-    if (!payload?.token) {
+    if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,12 +25,12 @@ export async function POST(request: Request) {
         notes: payload.additionalNotes,
         floorplanElementGuid: payload.tableId || null,
         isUpcoming: payload.isUpcoming,
-        duration: payload.duration || 60,
+        duration: payload.duration || 60, // Default to 60 minutes if not provided
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${payload.token}`,
+          Authorization: `${token}`,
         },
       }
     );

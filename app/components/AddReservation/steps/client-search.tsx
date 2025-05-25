@@ -13,7 +13,6 @@ export default function ClientSearch({
   guestForm,
   selected = {},
   setSelected,
-  token,
   tags,
   restaurantId,
 }: {
@@ -22,7 +21,6 @@ export default function ClientSearch({
   guestForm: UseFormReturn<any>;
   selected: any;
   setSelected: any;
-  token: string;
   tags: any;
   restaurantId: string;
 }) {
@@ -37,7 +35,7 @@ export default function ClientSearch({
       setLoading(true);
 
       const res = await fetch(
-        `/api/reservation/guest?query=${debouncedQuery}&restaurantId=${restaurantId}&token=${token}`
+        `/api/reservation/guest?query=${debouncedQuery}&restaurantId=${restaurantId}`
       );
       if (!res.ok) throw new Error('Failed to fetch guest');
       const data = await res.json();

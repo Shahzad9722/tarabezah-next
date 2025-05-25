@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const restaurantId = url.searchParams.get('restaurantId');
-    const token = url.searchParams.get('token');
+    const token = process.env.BACKEND_TOKEN;
 
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
