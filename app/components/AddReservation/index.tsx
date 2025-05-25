@@ -264,6 +264,12 @@ function formatDurationForApi(minutes: number) {
   return `${h}h:${m.toString().padStart(2, '0')}m`;
 }
 
+// Utility function to detect mobile devices
+function isMobile() {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768;
+}
+
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
@@ -403,7 +409,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   };
 
   const checkAndSubmitForm = async (): Promise<boolean> => {
-    const toastId = toast.info('Submitting reservation');
+    const toastId = !isMobile() ? toast.info('Submitting reservation') : undefined;
     try {
       // e.preventDefault();
       const isValid = await reservationForm.trigger(undefined, {
@@ -427,7 +433,9 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
             throw new Error(error.error);
           }
           formReset();
-          toast.success('Reservation created successfully!');
+          if (!isMobile()) {
+            toast.success('Reservation created successfully!');
+          }
         }
       } else {
         const errorFields = Object.keys(reservationForm?.formState?.errors);
@@ -442,7 +450,9 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
             throw new Error(error.error);
           }
           formReset();
-          toast.success('Reservation created successfully!');
+          if (!isMobile()) {
+            toast.success('Reservation created successfully!');
+          }
         }
       }
 
@@ -451,7 +461,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
       console.log('error submitting form', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to create reservation');
     } finally {
-      toast.dismiss(toastId);
+      if (toastId) toast.dismiss(toastId);
     }
   };
 
