@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         notes: payload.additionalNotes,
         floorplanElementGuid: payload.tableId || null,
         isUpcoming: payload.isUpcoming,
+        duration: payload.duration || 60,
       },
       {
         headers: {
