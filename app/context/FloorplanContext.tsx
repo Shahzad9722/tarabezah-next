@@ -141,13 +141,20 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
   const addElement = (element: Omit<CanvasElement, 'id'>) => {
     if (!activeFloorplan) return;
 
+    // Ensure width and height are integers
+    const roundedElement = {
+      ...element,
+      width: Math.round(element.width),
+      height: Math.round(element.height),
+    };
+
     setRestaurant((prev) => {
       const updatedFloorplans = prev.floorplans.map((fp) => {
         if (fp.guid === (activeFloorplanId || activeFloorplan?.guid)) {
           // Create a NEW array for elements
           return {
             ...fp,
-            elements: [...fp.elements, element],
+            elements: [...fp.elements, roundedElement],
           };
         }
         return fp;
@@ -179,6 +186,12 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const updateElement = (id: string, updates: Partial<CanvasElement>) => {
     if (!activeFloorplan) return;
+    // Ensure width and height are integers if present
+    const roundedUpdates = {
+      ...updates,
+      width: updates.width !== undefined ? Math.round(updates.width) : updates.width,
+      height: updates.height !== undefined ? Math.round(updates.height) : updates.height,
+    };
     setRestaurant(prev => {
       const updated = {
         ...prev,
@@ -187,7 +200,7 @@ export const FloorplanProvider: React.FC<{ children: ReactNode }> = ({ children 
             ? {
               ...fp,
               elements: fp.elements.map(el =>
-                el.localId === id ? { ...el, ...updates } : el
+                el.localId === id ? { ...el, ...roundedUpdates } : el
               ),
             }
             : fp
