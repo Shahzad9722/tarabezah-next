@@ -331,7 +331,7 @@ function App({
                             </div>
                             <div className='flex items-center gap-3'>
                               <span>
-                                {slot.totalPatySizes}/{slot.allocatedTables}
+                                {slot.allocatedTables}/{slot.totalPatySizes}
                               </span>
                             </div>
                           </div>
