@@ -301,40 +301,39 @@ function App({
                         const isSelected = selectedSlot === formatTime(slot.time);
                         const formattedTime = formatTime(slot.time);
                         const isAvailable = slot.isAvailable;
-                        // Disable if slot time is in the past
-                        const slotDate = new Date(form.getValues('eventDate') + 'T' + slot.time);
-                        const now = new Date();
-                        const isPast = slotDate < now;
 
                         return (
-                          <div
-                            key={index}
-                            onClick={
-                              isAvailable && !isPast
-                                ? () => {
-                                  handleTimeSlotSelect(formattedTime);
-                                  field.onChange(formattedTime);
-                                }
-                                : undefined // disables click completely
-                            }
-                            className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group
+                          <React.Fragment key={index}>
+                            <div
+                              onClick={() => {
+                                handleTimeSlotSelect(formattedTime);
+                                field.onChange(formattedTime);
+                              }}
+                              className={`w-full rounded-lg px-4 py-2 flex items-center justify-between transition-all group
             ${isSelected
-                                ? 'bg-color-B98858 text-[#0B0B0B]'
-                                : isAvailable && !isPast
-                                  ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
-                                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                              }`}
-                            title={isAvailable && !isPast ? '' : 'Slot not available or in the past'} // optional tooltip
-                          >
-                            <div className='flex items-center gap-3'>
-                              <span className='text-lg'>{formattedTime}</span>
+                                  ? (isAvailable ? 'bg-color-B98858 text-[#0B0B0B]' : 'bg-color-B98858 border border-red-500')
+                                  : isAvailable
+                                    ? 'bg-color-F2C45 text-color-E9E3D7 hover:bg-color-B98858/20 cursor-pointer'
+                                    : 'border border-red-500'}
+                            `}
+                              style={{ borderWidth: !isAvailable ? 2 : undefined }}
+                              title={!isAvailable ? 'Slot not available' : ''}
+                            >
+                              <div className='flex items-center gap-3'>
+                                <span className='text-lg'>{formattedTime}</span>
+                              </div>
+                              <div className='flex items-center gap-3'>
+                                <span>
+                                  {slot.allocatedTables}/{slot.totalPatySizes}
+                                </span>
+                              </div>
                             </div>
-                            <div className='flex items-center gap-3'>
-                              <span>
-                                {slot.allocatedTables}/{slot.totalPatySizes}
-                              </span>
-                            </div>
-                          </div>
+                            {!isAvailable && (
+                              <div className="text-red-500 text-xs mt-1">
+                                {formattedTime} No Regular Time Available
+                              </div>
+                            )}
+                          </React.Fragment>
                         );
                       })
                     ) : (
