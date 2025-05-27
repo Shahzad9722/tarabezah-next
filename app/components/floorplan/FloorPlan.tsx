@@ -540,11 +540,11 @@ const FloorPlan: React.FC = () => {
               <Label htmlFor='tableName'>Table Name</Label>
               <Input
                 id='tableName'
-                value={newTableConfig.tableName}
+                value={newTableConfig.tableName || ''}
                 onChange={(e) => setNewTableConfig((prev) => ({ ...prev, tableName: e.target.value }))}
                 placeholder='Table Name'
                 required
-                maxLength={10}
+                maxLength={18}
                 min={1}
                 type='text'
               />
@@ -557,7 +557,7 @@ const FloorPlan: React.FC = () => {
                 type='number'
                 isNumeric={true}
                 maxLength={10}
-                value={newTableConfig.minCapacity}
+                value={newTableConfig.minCapacity ?? ''}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || Number(value) >= 1) {
@@ -575,7 +575,7 @@ const FloorPlan: React.FC = () => {
                 id='maxCapacity'
                 type='number'
                 isNumeric={true}
-                value={newTableConfig.maxCapacity}
+                value={newTableConfig.maxCapacity ?? ''}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || Number(value) >= 1) {

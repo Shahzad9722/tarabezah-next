@@ -16,12 +16,14 @@ import { useMutation } from '@tanstack/react-query';
 import { Floor, Floorplan } from '@/app/types';
 import { v4 as uuidv4 } from 'uuid';
 import { queryClient } from '@/app/lib/queryClient';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
+import { setFilters } from '@/store/features/combination-filters/combinationFilterSlice';
 
 const RestaurantLayout: React.FC = () => {
   const { setActiveFloorplanId, activeFloorplanId, restaurant, setRestaurant, elementLibrary } = useFloorplan();
   const selectedFilters = useSelector((state: RootState) => state.combinationFilter.filters);
+  const dispatch = useDispatch();
 
   // Track last published floorplans for change detection
   const [lastPublishedFloorplans, setLastPublishedFloorplans] = useState<Floorplan[]>([]);
@@ -84,7 +86,16 @@ const RestaurantLayout: React.FC = () => {
         })),
       }));
 
-      setActiveFloorplanId(activeFloorplanId || result[0].guid);
+      // After mapping result, ensure active floor is valid
+      let newActiveFloorplanId = activeFloorplanId;
+      if (!result.some(fp => fp.guid === activeFloorplanId)) {
+        // Try to match by name if GUIDs changed
+        const oldFloor = restaurant.floorplans.find(fp => fp.guid === activeFloorplanId);
+        const matchByName = oldFloor && result.find(fp => fp.name === oldFloor.name);
+        newActiveFloorplanId = matchByName ? matchByName.guid : result[0]?.guid;
+      }
+      setActiveFloorplanId(newActiveFloorplanId);
+      dispatch(setFilters({ ...selectedFilters, floorPlanId: newActiveFloorplanId }));
       setRestaurant({
         ...restaurant,
         floorplans: [...result],
