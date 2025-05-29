@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -19,6 +19,7 @@ export default function Upload() {
     tableType: '',
   });
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const myHeaders = new Headers();
   myHeaders.append('Content-Type', 'multipart/form-data');
@@ -121,6 +122,13 @@ export default function Upload() {
           <div
             className={`border-2 border-dashed rounded-lg p-6 transition-colors ${errors.file ? 'border-red-500' : 'border-[#2d2a45] hover:border-[#b98858]'
               }`}
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              if (inputRef.current) {
+                inputRef.current.click();
+              }
+            }}
             onDragOver={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -194,6 +202,7 @@ export default function Upload() {
                 <label className='cursor-pointer text-[#b98858] hover:text-[#a77748] transition-colors'>
                   browse
                   <input
+                    ref={inputRef}
                     type='file'
                     accept='.svg'
                     onChange={(e) => {

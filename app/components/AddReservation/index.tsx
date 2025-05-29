@@ -694,12 +694,13 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                 reservationForm={reservationForm}
                 guestForm={guestForm}
                 setShowAddNewClient={setShowAddNewClient}
+                showAddNewClient={showAddNewClient}
                 selected={selectedClient}
                 setSelected={setSelectedClient}
                 tags={entities.tags}
                 restaurantId={restaurantId}
               />
-              {!selectedClient.guid && (
+              {!selectedClient?.guid && (
                 <p className='text-red-500 mb-6'>{reservationForm?.formState?.errors?.clientId?.message}</p>
               )}
 

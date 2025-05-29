@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${payload.token}`,
+          Authorization: `${token}`,
         },
       }
     );

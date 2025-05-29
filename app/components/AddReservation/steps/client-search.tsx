@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
@@ -10,6 +10,7 @@ import { isNumeric } from '@/app/lib/utils';
 export default function ClientSearch({
   reservationForm,
   setShowAddNewClient,
+  showAddNewClient,
   guestForm,
   selected = {},
   setSelected,
@@ -18,6 +19,7 @@ export default function ClientSearch({
 }: {
   reservationForm: UseFormReturn<any>;
   setShowAddNewClient: any;
+  showAddNewClient: boolean;
   guestForm: UseFormReturn<any>;
   selected: any;
   setSelected: any;
@@ -56,6 +58,18 @@ export default function ClientSearch({
     setSelected(guest);
     reservationForm.setValue('clientId', guest.guid);
   };
+
+  useEffect(() => {
+    if (showAddNewClient && searchQuery) {
+      if (isNumeric(searchQuery)) {
+        guestForm.setValue('phone', searchQuery);
+      } else {
+        guestForm.setValue('name', searchQuery);
+      }
+    }
+    // Only run when opening the form
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAddNewClient]);
 
   // console.log('selected', selected);
   return (
@@ -163,12 +177,12 @@ export default function ClientSearch({
 
               {/* Right Column - unchanged from original */}
               <div className='space-y-4'>
-                {selected?.lastVisit && (
+                {
                   <div className='flex flex-wrap gap-2 text-lg'>
                     <p className='font-medium'>Last Visit:</p>
-                    <p className='font-normal'>{selected.lastVisit}</p>
+                    <p className='font-normal'>{selected.lastVisit ? selected.lastVisit : ''}</p>
                   </div>
-                )}
+                }
 
                 <div className='grid lg:grid-cols-2 gap-4'>
                   <div>
