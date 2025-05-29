@@ -34,8 +34,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-
-    if (!payload?.token) {
+    const token = process.env.BACKEND_TOKEN;
+    if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
