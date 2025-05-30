@@ -4,9 +4,17 @@ import { UseFormReturn } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormMessage } from '../../ui/form';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
+interface PartySizeStepProps {
+  form: UseFormReturn<any>;
+  tableDetails: any; // replace `any` with the actual type if you know it
+}
 
-export default function PartySizeStep({ form }: { form: UseFormReturn<any> }) {
-  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps) {
+  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
+    (size) => size >= tableDetails.minCapacity && size <= tableDetails.maxCapacity
+  );
 
   return (
     <div className='w-full between-area'>

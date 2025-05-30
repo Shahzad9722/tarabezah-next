@@ -274,6 +274,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const searchParams = useSearchParams();
   const router = useRouter();
   const table = searchParams.get('table');
+  const tableInfo = searchParams.get('tableInfo')
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
 
@@ -380,6 +381,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   });
 
   useEffect(() => {
+    console.log("search params", searchParams.toString());
+    console.log("table", tableInfo)
     if (!fetchingEntities && !reservationForm.getValues('shiftId')) {
       reservationForm.setValue('shiftId', entities.shifts[0]?.guid);
     }
@@ -737,12 +740,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
           <Form {...reservationForm}>
             <form onSubmit={handleConfirm} className='space-y-4'>
               {currentStep === dateIdx &&
-                (walkIn ? <PartySizeStep form={reservationForm} /> : <DateStep form={reservationForm} />)}
+                (walkIn ? <PartySizeStep tableDetails={tableInfo} form={reservationForm} /> : <DateStep form={reservationForm} />)}
               {currentStep === 3 &&
                 (walkIn ? (
                   <GeneralInfoStep form={reservationForm} tags={entities.tags} />
                 ) : (
-                  <PartySizeStep form={reservationForm} />
+                  <PartySizeStep tableDetails={tableInfo} form={reservationForm} />
                 ))}
 
               {!fetchingEntities &&
