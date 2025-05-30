@@ -19,7 +19,7 @@ import ClientSearch from './steps/client-search';
 import { toast } from 'sonner';
 import ReservationConfirmDialog from './ReservationDetailsConfirmDialog';
 import { format } from 'date-fns';
-import { notFound, useSearchParams } from 'next/navigation';
+import { notFound, useSearchParams, useRouter } from 'next/navigation';
 
 const AddReservationIcon = () => (
   <svg width='29' height='29' viewBox='0 0 29 29' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -272,6 +272,7 @@ function isMobile() {
 
 export default function AddReservation({ walkIn = false }: { walkIn?: boolean }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const table = searchParams.get('table');
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
@@ -609,10 +610,17 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   };
 
   const handleFinalConfirm = () => {
-    // console.log("'Final confirm clicked!') // Placeholder for final confirmation action");
     formReset();
     setCurrentStep(1);
     setShowConfirmDialog(false);
+
+    // Set query parameters in the URL
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      params.set('reservation', 'success');
+      params.set('redirect', 'listing');
+      router.replace(`${window.location.pathname}?${params.toString()}`);
+    }
   };
 
   const prevStep = () => {
