@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@/app/hooks/use-debounce';
 import { UseFormReturn } from 'react-hook-form';
 import { isNumeric } from '@/app/lib/utils';
+import { format } from 'date-fns';
 
 export default function ClientSearch({
   reservationForm,
@@ -47,6 +48,10 @@ export default function ClientSearch({
     enabled: !!debouncedQuery,
   });
 
+
+  const isEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setShowResults(true);
@@ -61,7 +66,9 @@ export default function ClientSearch({
 
   useEffect(() => {
     if (showAddNewClient && searchQuery) {
-      if (isNumeric(searchQuery)) {
+      if (isEmail(searchQuery)) {
+        guestForm.setValue('email', searchQuery);
+      } else if (isNumeric(searchQuery)) {
         guestForm.setValue('phone', searchQuery);
       } else {
         guestForm.setValue('name', searchQuery);
@@ -96,7 +103,9 @@ export default function ClientSearch({
               type='button'
               onClick={() => {
                 setShowAddNewClient(true);
-                if (isNumeric(searchQuery)) {
+                if (isEmail(searchQuery)) {
+                  guestForm.setValue('email', searchQuery);
+                } else if (isNumeric(searchQuery)) {
                   guestForm.setValue('phone', searchQuery);
                 } else {
                   guestForm.setValue('name', searchQuery);
@@ -180,7 +189,11 @@ export default function ClientSearch({
                 {
                   <div className='flex flex-wrap gap-2 text-lg'>
                     <p className='font-medium'>Last Visit:</p>
-                    <p className='font-normal'>{selected.lastVisit ? selected.lastVisit : ''}</p>
+                    <p className='font-normal'>
+                      {selected.lastVisitDate
+                        ? format(new Date(selected.lastVisitDate), 'EEE. dd MMM yyyy')
+                        : ''}
+                    </p>
                   </div>
                 }
 
