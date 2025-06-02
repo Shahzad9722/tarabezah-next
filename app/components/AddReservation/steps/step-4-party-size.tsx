@@ -10,9 +10,7 @@ interface PartySizeStepProps {
   maxCapacity: any;
 }
 
-export default function c({ minCapacity, maxCapacity, form }: PartySizeStepProps) {
-  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-
+export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartySizeStepProps) {
   const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
     (size) => size >= minCapacity && size <= maxCapacity
   );
@@ -55,7 +53,8 @@ export default function c({ minCapacity, maxCapacity, form }: PartySizeStepProps
                   type='number'
                   isNumeric={true}
                   step={1}
-                  min={1}
+                  min={minCapacity}
+                  max={maxCapacity}
                   value={field.value ?? ''}
                   onKeyDown={(e) => {
                     if (['.', 'e', '-', 'Enter'].includes(e.key)) {
@@ -68,7 +67,7 @@ export default function c({ minCapacity, maxCapacity, form }: PartySizeStepProps
                       form.setValue('numberOfGuests', null);
                     } else {
                       const numValue = parseInt(value);
-                      if (!isNaN(numValue) && numValue > 0) {
+                      if (!isNaN(numValue) && numValue >= minCapacity && numValue <= maxCapacity) {
                         form.setValue('numberOfGuests', numValue);
                       }
                     }
