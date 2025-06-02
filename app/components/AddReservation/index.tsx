@@ -274,8 +274,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const searchParams = useSearchParams();
   const router = useRouter();
   const table = searchParams.get('table');
-  const minCapacity = searchParams.get('minCapacity')
-  const maxCapacity = searchParams.get('maxCapacity')
+  const minCapacity = searchParams.get('minCapacity') || 1
+  const maxCapacity = searchParams.get('maxCapacity') || 20
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
 
