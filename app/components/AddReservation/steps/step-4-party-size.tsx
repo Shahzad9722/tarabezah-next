@@ -20,6 +20,7 @@ export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps
   return (
     <div className='w-full between-area'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Select Party Size</h2>
+      <p> Testing first :{minCapacity} Testing second value : {maxCapacity}</p>
 
       <FormField
         control={form.control}
@@ -27,7 +28,6 @@ export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <p> Testing :{minCapacity}</p>
               <div className='flex flex-col gap-4 my-8'>
                 {partySizes.map((size, index) => (
                   <p
