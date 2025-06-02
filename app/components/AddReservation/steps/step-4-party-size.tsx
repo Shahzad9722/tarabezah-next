@@ -10,12 +10,12 @@ interface PartySizeStepProps {
 }
 
 export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps) {
-  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-  const minCapacity = tableDetails?.minCapacity ?? 1;
-  const maxCapacity = tableDetails?.maxCapacity ?? 20;
-  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
-    (size) => size >= minCapacity && size <= maxCapacity
-  );
+  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  const minCapacity = tableDetails?.minCapacity;
+  const maxCapacity = tableDetails?.maxCapacity;
+  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
+  //   (size) => size >= minCapacity && size <= maxCapacity
+  // );
 
   return (
     <div className='w-full between-area'>
