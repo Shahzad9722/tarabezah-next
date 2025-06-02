@@ -67,7 +67,7 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                       form.setValue('numberOfGuests', null);
                     } else {
                       const numValue = parseInt(value);
-                      if (!isNaN(numValue) && numValue >= minCapacity && numValue <= maxCapacity) {
+                      if (!isNaN(numValue) && numValue > 0) {
                         form.setValue('numberOfGuests', numValue);
                       }
                     }
