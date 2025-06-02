@@ -53,8 +53,7 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                   type='number'
                   isNumeric={true}
                   step={1}
-                  min={minCapacity}
-                  max={maxCapacity}
+                  min={1}
                   value={field.value ?? ''}
                   onKeyDown={(e) => {
                     if (['.', 'e', '-', 'Enter'].includes(e.key)) {
