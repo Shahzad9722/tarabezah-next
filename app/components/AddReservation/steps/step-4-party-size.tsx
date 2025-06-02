@@ -27,7 +27,7 @@ export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <p>{minCapacity}</p>
+              <p> Testing :{minCapacity}</p>
               <div className='flex flex-col gap-4 my-8'>
                 {partySizes.map((size, index) => (
                   <p
