@@ -11,16 +11,15 @@ interface PartySizeStepProps {
 }
 
 export default function c({ minCapacity, maxCapacity, form }: PartySizeStepProps) {
-  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
-  // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
-  //   (size) => size >= minCapacity && size <= maxCapacity
-  // );
+  const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
+    (size) => size >= minCapacity && size <= maxCapacity
+  );
 
   return (
     <div className='w-full between-area'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Select Party Size</h2>
-      <p> Testing first :{minCapacity} Testing second value : {maxCapacity}</p>
 
       <FormField
         control={form.control}
