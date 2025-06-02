@@ -6,13 +6,13 @@ import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 interface PartySizeStepProps {
   form: UseFormReturn<any>;
-  tableDetails: any; // replace `any` with the actual type if you know it
+  minCapacity: any;
+  maxCapacity: any;
 }
 
-export default function PartySizeStep({ tableDetails, form }: PartySizeStepProps) {
+export default function c({ minCapacity, maxCapacity, form }: PartySizeStepProps) {
   const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-  const minCapacity = tableDetails?.minCapacity;
-  const maxCapacity = tableDetails?.maxCapacity;
+
   // const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
   //   (size) => size >= minCapacity && size <= maxCapacity
   // );
