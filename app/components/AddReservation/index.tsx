@@ -278,6 +278,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const maxCapacity = searchParams.get('maxCapacity') || 20
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
+  const dateParam = searchParams.get('date');
 
   const [arrangedSteps, setArrangeSteps] = useState(steps);
   const [clientIdx, setClientIdx] = useState<number>(-1);
@@ -365,11 +366,23 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
     defaultValues: {
       clientId: '',
       eventDate: (() => {
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        if (!walkIn && dateParam) {
+          // Parse the dateParam and format as yyyy-MM-dd
+          const d = new Date(dateParam);
+          if (!isNaN(d.getTime())) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          }
+        }
+        else {
+          const d = new Date();
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        }
       })(),
       eventTime: walkIn ? getWalkInEventTime() : undefined,
       numberOfGuests: 2,
