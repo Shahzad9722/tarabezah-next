@@ -53,7 +53,8 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                   type='number'
                   isNumeric={true}
                   step={1}
-                  min={1}
+                  min={minCapacity}
+                  max={maxCapacity}
                   value={field.value ?? ''}
                   onKeyDown={(e) => {
                     if (['.', 'e', '-', 'Enter'].includes(e.key)) {
@@ -66,7 +67,7 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                       form.setValue('numberOfGuests', null);
                     } else {
                       const numValue = parseInt(value);
-                      if (!isNaN(numValue) && numValue > 0) {
+                      if (!isNaN(numValue) && numValue >= minCapacity && numValue <= maxCapacity) {
                         form.setValue('numberOfGuests', numValue);
                       }
                     }

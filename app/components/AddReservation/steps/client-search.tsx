@@ -52,6 +52,12 @@ export default function ClientSearch({
   const isEmail = (value: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
+  const isPhone = (value: string) => {
+    return /^\+?\d{7,15}$/.test(value);
+  }
+  const isName = (value: string) => {
+    return /^[a-zA-Z\s]+$/.test(value);
+  }
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setShowResults(true);
@@ -68,9 +74,9 @@ export default function ClientSearch({
     if (showAddNewClient && searchQuery) {
       if (isEmail(searchQuery)) {
         guestForm.setValue('email', searchQuery);
-      } else if (isNumeric(searchQuery)) {
+      } else if (isPhone(searchQuery)) {
         guestForm.setValue('phone', searchQuery);
-      } else {
+      } else if (isName(searchQuery)) {
         guestForm.setValue('name', searchQuery);
       }
     }
@@ -100,14 +106,15 @@ export default function ClientSearch({
         {showResults && (
           <div className='absolute top-14 bg-color-E9E3D7 w-full p-2 z-10 rounded-md flex flex-col gap-3'>
             <Button
+              className='add-guest-button'
               type='button'
               onClick={() => {
                 setShowAddNewClient(true);
                 if (isEmail(searchQuery)) {
                   guestForm.setValue('email', searchQuery);
-                } else if (isNumeric(searchQuery)) {
+                } else if (isPhone(searchQuery)) {
                   guestForm.setValue('phone', searchQuery);
-                } else {
+                } else if (isName(searchQuery)) {
                   guestForm.setValue('name', searchQuery);
                 }
               }}
@@ -197,7 +204,7 @@ export default function ClientSearch({
                   </div>
                 }
 
-                <div className='grid lg:grid-cols-2 gap-4'>
+                <div className='grid grid-cols-2 gap-4'>
                   <div>
                     <p className='font-medium flex justify-between'>
                       <span className='text-color-E9E3D7 text-lg'>

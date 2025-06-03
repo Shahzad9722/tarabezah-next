@@ -269,6 +269,27 @@ input[type="date"]::-ms-expand {
   box-shadow: 0 !important;
 }
 
+@media (max-width: 1080px) {
+  .between-area {
+    height: calc(100dvh - 20dvh);
+    overflow: auto;
+    padding-bottom: 10%;
+
+    /* Hide scrollbar styles */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scroll-behavior: smooth;
+    /* Optional smooth scrolling */
+  }
+
+  .between-area::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
+}
+
 @media (max-width: 768px) {
   .between-area {
     height: calc(100dvh - 30dvh);
@@ -302,9 +323,7 @@ input[type="date"]::-ms-expand {
     padding-bottom: 10px;
     overflow: auto;
   }
-}
 
-@media (max-width: 767px) {
   .calendar-container .react-calendar__month-view__weekdays {
     display: flex !important;
     flex-direction: row !important;
@@ -328,13 +347,15 @@ input[type="date"]::-ms-expand {
     font-size: 14px !important;
     text-decoration: none !important;
   }
-}
 
-@media (max-width: 768px) {
   input[type='date'] {
     font-size: 14px;
     padding-right: 2.5rem;
     /* to keep space for icon */
+  }
+
+  .add-guest-button {
+    max-height: 32px;
   }
 }
 

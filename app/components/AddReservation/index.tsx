@@ -382,8 +382,6 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   });
 
   useEffect(() => {
-    console.log("search params", searchParams.toString());
-    // console.log("table", tableInfo)
     if (!fetchingEntities && !reservationForm.getValues('shiftId')) {
       reservationForm.setValue('shiftId', entities.shifts[0]?.guid);
     }
@@ -741,12 +739,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
           <Form {...reservationForm}>
             <form onSubmit={handleConfirm} className='space-y-4'>
               {currentStep === dateIdx &&
-                (walkIn ? <PartySizeStep maxCapacity={maxCapacity} minCapacity={minCapacity} form={reservationForm} /> : <DateStep form={reservationForm} />)}
+                (walkIn ? <PartySizeStep minCapacity={minCapacity} maxCapacity={maxCapacity} form={reservationForm} /> : <DateStep form={reservationForm} />)}
               {currentStep === 3 &&
                 (walkIn ? (
                   <GeneralInfoStep form={reservationForm} tags={entities.tags} />
                 ) : (
-                  <PartySizeStep maxCapacity={maxCapacity} minCapacity={minCapacity} form={reservationForm} />
+                  <PartySizeStep minCapacity={minCapacity} maxCapacity={maxCapacity} form={reservationForm} />
                 ))}
 
               {!fetchingEntities &&
