@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Calendar, NotebookTabs } from 'lucide-react';
 import { Input } from '../../../components/ui/input';
 import { MultiSelect } from '../../../components/ui/multi-select';
@@ -9,6 +9,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Controller } from 'react-hook-form';
 import { cn } from '@/lib/utils';
+import BirthdayCalendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default function AddReservationStep({
   form,
@@ -108,41 +110,86 @@ export default function AddReservationStep({
         <FormField
           control={form.control}
           name='birthday'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Birthday</FormLabel>
-              <FormControl>
-                <div className='relative flex items-center w-full'>
-                  <Controller
-                    control={form.control}
-                    name="birthday"
-                    render={({ field }) => (
-                      <DatePicker
-                        selected={field.value ? new Date(field.value) : null}
-                        onChange={(date: Date | null) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
-                        maxDate={new Date()}
-                        placeholderText="dd/mm/yyyy"
-                        dateFormat="dd/MM/yyyy"
-                        className="flex h-10 w-full rounded-md border border-input bg-color-222036 px-3 border-color-222036 py-2 text-base ring-offset-background text-color-E9E3D7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pr-10"
-                        showPopperArrow={false}
-                      />
+          render={({ field }) => {
+            const [showCalendar, setShowCalendar] = useState(false);
+            const inputRef = useRef<HTMLInputElement>(null);
+            // Format date as dd/MM/yyyy
+            const formatDisplayDate = (dateStr: string) => {
+              if (!dateStr) return '';
+              const d = new Date(dateStr + 'T00:00:00');
+              if (isNaN(d.getTime())) return '';
+              return d.toLocaleDateString('en-GB');
+            };
+            // Close calendar if clicked outside
+            React.useEffect(() => {
+              function handleClickOutside(event: MouseEvent) {
+                if (
+                  inputRef.current &&
+                  !inputRef.current.contains(event.target as Node) &&
+                  !(event.target as HTMLElement).closest('.birthday-calendar-popover')
+                ) {
+                  setShowCalendar(false);
+                }
+              }
+              if (showCalendar) {
+                document.addEventListener('mousedown', handleClickOutside);
+              } else {
+                document.removeEventListener('mousedown', handleClickOutside);
+              }
+              return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+              };
+            }, [showCalendar]);
+            return (
+              <FormItem>
+                <FormLabel>Birthday</FormLabel>
+                <FormControl>
+                  <div className="relative w-full">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      readOnly
+                      value={formatDisplayDate(field.value)}
+                      placeholder="dd/mm/yyyy"
+                      className="flex h-10 w-full rounded-md border border-input bg-color-222036 px-3 border-color-222036 py-2 text-base ring-offset-background text-color-E9E3D7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pr-10"
+                      onClick={() => setShowCalendar((v) => !v)}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowCalendar((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
+                    >
+                      <Calendar size={18} />
+                    </button>
+                    {showCalendar && (
+                      <div
+                        className="birthday-calendar-popover absolute z-50 mt-2 left-0 w-[320px] max-w-full bg-color-222036 border border-[#E9E3D736] rounded shadow-lg"
+                        style={{ top: '110%' }}
+                      >
+                        <BirthdayCalendar
+                          className="!w-full !bg-transparent border-none rounded"
+                          maxDate={new Date()}
+                          onChange={(value) => {
+                            if (value instanceof Date) {
+                              const year = value.getFullYear();
+                              const month = String(value.getMonth() + 1).padStart(2, '0');
+                              const day = String(value.getDate()).padStart(2, '0');
+                              field.onChange(`${year}-${month}-${day}`);
+                              setShowCalendar(false);
+                            }
+                          }}
+                          value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
+                          formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, { weekday: 'narrow' })}
+                        />
+                      </div>
                     )}
-                  />
-                  <button
-                    type='button'
-                    onClick={() => {
-                      const input = document.querySelector("input[name='birthday']") as HTMLInputElement;
-                      input?.showPicker?.();
-                    }}
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-white'
-                  >
-                    <Calendar size={18} />
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
