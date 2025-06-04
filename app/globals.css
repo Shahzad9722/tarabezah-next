@@ -274,7 +274,7 @@ input[type="date"]::-ms-expand {
     height: calc(100dvh - 20dvh);
     overflow: auto;
     padding-bottom: 10%;
-
+    padding-bottom: 80px;
     /* Hide scrollbar styles */
     scrollbar-width: none;
     /* Firefox */
