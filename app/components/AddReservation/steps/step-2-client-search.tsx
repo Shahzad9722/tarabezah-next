@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Calendar, NotebookTabs } from 'lucide-react';
 import { Input } from '../../../components/ui/input';
 import { MultiSelect } from '../../../components/ui/multi-select';
@@ -27,6 +27,37 @@ export default function AddReservationStep({
   setShowAddNewClient: any;
   walkIn?: boolean;
 }) {
+  // Birthday calendar popover state and ref
+  const [showBirthdayCalendar, setShowBirthdayCalendar] = useState(false);
+  const birthdayInputRef = useRef<HTMLInputElement>(null);
+  // Format date as dd/MM/yyyy
+  const formatDisplayDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-GB');
+  };
+  // Close calendar if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        birthdayInputRef.current &&
+        !birthdayInputRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('.birthday-calendar-popover')
+      ) {
+        setShowBirthdayCalendar(false);
+      }
+    }
+    if (showBirthdayCalendar) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showBirthdayCalendar]);
+
   return (
     <div className='w-full between-area'>
       {/* Add New Client Form */}
@@ -110,86 +141,55 @@ export default function AddReservationStep({
         <FormField
           control={form.control}
           name='birthday'
-          render={({ field }) => {
-            const [showCalendar, setShowCalendar] = useState(false);
-            const inputRef = useRef<HTMLInputElement>(null);
-            // Format date as dd/MM/yyyy
-            const formatDisplayDate = (dateStr: string) => {
-              if (!dateStr) return '';
-              const d = new Date(dateStr + 'T00:00:00');
-              if (isNaN(d.getTime())) return '';
-              return d.toLocaleDateString('en-GB');
-            };
-            // Close calendar if clicked outside
-            React.useEffect(() => {
-              function handleClickOutside(event: MouseEvent) {
-                if (
-                  inputRef.current &&
-                  !inputRef.current.contains(event.target as Node) &&
-                  !(event.target as HTMLElement).closest('.birthday-calendar-popover')
-                ) {
-                  setShowCalendar(false);
-                }
-              }
-              if (showCalendar) {
-                document.addEventListener('mousedown', handleClickOutside);
-              } else {
-                document.removeEventListener('mousedown', handleClickOutside);
-              }
-              return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-              };
-            }, [showCalendar]);
-            return (
-              <FormItem>
-                <FormLabel>Birthday</FormLabel>
-                <FormControl>
-                  <div className="relative w-full">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      readOnly
-                      value={formatDisplayDate(field.value)}
-                      placeholder="dd/mm/yyyy"
-                      className="flex h-10 w-full rounded-md border border-input bg-color-222036 px-3 border-color-222036 py-2 text-base ring-offset-background text-color-E9E3D7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pr-10"
-                      onClick={() => setShowCalendar((v) => !v)}
-                    />
-                    <button
-                      type="button"
-                      tabIndex={-1}
-                      onClick={() => setShowCalendar((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Birthday</FormLabel>
+              <FormControl>
+                <div className="relative w-full">
+                  <input
+                    ref={birthdayInputRef}
+                    type="text"
+                    readOnly
+                    value={formatDisplayDate(field.value)}
+                    placeholder="dd/mm/yyyy"
+                    className="flex h-10 w-full rounded-md border border-input bg-color-222036 px-3 border-color-222036 py-2 text-base ring-offset-background text-color-E9E3D7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pr-10"
+                    onClick={() => setShowBirthdayCalendar((v) => !v)}
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowBirthdayCalendar((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
+                  >
+                    <Calendar size={18} />
+                  </button>
+                  {showBirthdayCalendar && (
+                    <div
+                      className="birthday-calendar-popover absolute z-50 mt-2 bg-color-222036 border border-[#E9E3D736] rounded shadow-lg left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[90vw] max-w-[320px] md:w-[320px]"
+                      style={{ top: '110%' }}
                     >
-                      <Calendar size={18} />
-                    </button>
-                    {showCalendar && (
-                      <div
-                        className="birthday-calendar-popover absolute z-50 mt-2 left-0 w-[320px] max-w-full bg-color-222036 border border-[#E9E3D736] rounded shadow-lg"
-                        style={{ top: '110%' }}
-                      >
-                        <BirthdayCalendar
-                          className="!w-full !bg-transparent border-none rounded"
-                          maxDate={new Date()}
-                          onChange={(value) => {
-                            if (value instanceof Date) {
-                              const year = value.getFullYear();
-                              const month = String(value.getMonth() + 1).padStart(2, '0');
-                              const day = String(value.getDate()).padStart(2, '0');
-                              field.onChange(`${year}-${month}-${day}`);
-                              setShowCalendar(false);
-                            }
-                          }}
-                          value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
-                          formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, { weekday: 'narrow' })}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+                      <BirthdayCalendar
+                        className="!w-full !bg-transparent border-none rounded"
+                        maxDate={new Date()}
+                        onChange={(value) => {
+                          if (value instanceof Date) {
+                            const year = value.getFullYear();
+                            const month = String(value.getMonth() + 1).padStart(2, '0');
+                            const day = String(value.getDate()).padStart(2, '0');
+                            field.onChange(`${year}-${month}-${day}`);
+                            setShowBirthdayCalendar(false);
+                          }
+                        }}
+                        value={field.value ? new Date(field.value + 'T00:00:00') : undefined}
+                        formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, { weekday: 'narrow' })}
+                      />
+                    </div>
+                  )}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <FormField

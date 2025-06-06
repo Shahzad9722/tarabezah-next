@@ -262,7 +262,7 @@ export default function ClientSearch({
                 <p className='font-medium'>Blacklist:</p>
               </div>
 
-              <div className='grid lg:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
                 <div>
                   <p className='font-medium flex justify-between'>
                     <span className='text-color-E9E3D7 text-lg'>Other Places: {selected?.blackList?.others || 0}</span>
