@@ -773,7 +773,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                   />
                 ))}
               {currentStep === 5 && <GeneralInfoStep form={reservationForm} tags={entities.tags} />}
-              <div className='flex justify-between gap-4 fixed bottom-0 left-0 right-0 p-4 bg-color-121020 border-t border-gray-800 z-30 md:sticky md:bottom-0 md:left-0 md:right-0 md:p-4 md:bg-color-121020 md:border-t md:border-gray-800 lg:static lg:bg-transparent lg:border-t-0 lg:p-0'>
+              <div className='flex justify-between gap-4 fixed bottom-0 left-0 right-0 p-4 bg-color-121020 border-t border-gray-800 z-30 md:sticky md:bottom-0 md:left-0 md:right-0 md:p-4 md:border-t md:border-gray-800 lg:static lg:bg-transparent lg:border-t-0 lg:p-0'>
                 <Button
                   type='button'
                   variant='secondary'
