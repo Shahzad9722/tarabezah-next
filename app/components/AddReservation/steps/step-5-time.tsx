@@ -147,7 +147,7 @@ function App({
   };
 
   return (
-    <div className='w-full'>
+    <div className='w-full between-area'>
       <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Select Shift & Time</h2>
 
       <div className='between-area'>
