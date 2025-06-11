@@ -292,7 +292,7 @@ input[type="date"]::-ms-expand {
 
 @media (max-width: 768px) {
   .between-area {
-    height: calc(100dvh - 30dvh);
+    height: calc(100dvh - 20dvh);
     overflow: auto;
     padding-bottom: 10%;
 

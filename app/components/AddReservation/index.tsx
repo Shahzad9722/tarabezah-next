@@ -276,6 +276,7 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
   const table = searchParams.get('table');
   const minCapacity = searchParams.get('minCapacity') || 1
   const maxCapacity = searchParams.get('maxCapacity') || 20
+  const hasCapacityLimits = searchParams.get('maxCapacity') !== null && searchParams.get('minCapacity') !== null
   const restaurantId = "a7fa1095-d8c5-4d00-8a44-7ba684eae835";
   const screen = searchParams.get('screen');
   const dateParam = searchParams.get('date');
@@ -752,12 +753,12 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
           <Form {...reservationForm}>
             <form onSubmit={handleConfirm} className='space-y-4'>
               {currentStep === dateIdx &&
-                (walkIn ? <PartySizeStep minCapacity={minCapacity} maxCapacity={maxCapacity} form={reservationForm} /> : <DateStep form={reservationForm} />)}
+                (walkIn ? <PartySizeStep minCapacity={minCapacity} hasCapacityLimits={hasCapacityLimits} maxCapacity={maxCapacity} form={reservationForm} /> : <DateStep form={reservationForm} />)}
               {currentStep === 3 &&
                 (walkIn ? (
                   <GeneralInfoStep form={reservationForm} tags={entities.tags} />
                 ) : (
-                  <PartySizeStep minCapacity={minCapacity} maxCapacity={maxCapacity} form={reservationForm} />
+                  <PartySizeStep minCapacity={minCapacity} hasCapacityLimits={hasCapacityLimits} maxCapacity={maxCapacity} form={reservationForm} />
                 ))}
 
               {!fetchingEntities &&

@@ -7,12 +7,13 @@ import { Label } from '../../ui/label';
 interface PartySizeStepProps {
   form: UseFormReturn<any>;
   minCapacity: any;
+  hasCapacityLimits: any;
   maxCapacity: any;
 }
 
-export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartySizeStepProps) {
+export default function PartySizeStep({ minCapacity, maxCapacity, hasCapacityLimits, form }: PartySizeStepProps) {
   const partySizes = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(
-    (size) => size >= minCapacity && size <= maxCapacity
+    (size) => !hasCapacityLimits || (size >= minCapacity && size <= maxCapacity)
   );
 
   return (
@@ -53,8 +54,8 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                   type='number'
                   isNumeric={true}
                   step={1}
-                  min={minCapacity}
-                  max={maxCapacity}
+                  min={hasCapacityLimits ? minCapacity : undefined}
+                  max={hasCapacityLimits ? maxCapacity : undefined}
                   value={field.value ?? ''}
                   onKeyDown={(e) => {
                     if (['.', 'e', '-', 'Enter'].includes(e.key)) {
@@ -67,8 +68,14 @@ export default function PartySizeStep({ minCapacity, maxCapacity, form }: PartyS
                       form.setValue('numberOfGuests', null);
                     } else {
                       const numValue = parseInt(value);
-                      if (!isNaN(numValue) && numValue >= minCapacity && numValue <= maxCapacity) {
-                        form.setValue('numberOfGuests', numValue);
+                      if (!isNaN(numValue)) {
+                        if (hasCapacityLimits) {
+                          if (numValue >= minCapacity && numValue <= maxCapacity) {
+                            form.setValue('numberOfGuests', numValue);
+                          }
+                        } else {
+                          form.setValue('numberOfGuests', numValue);
+                        }
                       }
                     }
                   }}
