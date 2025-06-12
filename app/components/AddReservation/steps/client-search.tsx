@@ -86,9 +86,9 @@ export default function ClientSearch({
 
   // console.log('selected', selected);
   return (
-    <div className='w-full'>
+    <div className='w-full between-area'>
       {/* Search Bar */}
-      <div className='relative mb-8 between-area'>
+      <div className='relative mb-8'>
         <div className='relative mb-8 mr-0 md:mr-[100px]'>
           <Input
             placeholder='Search...'
@@ -143,7 +143,7 @@ export default function ClientSearch({
 
         {/* Current Client Details */}
         {Object.keys(selected).length > 0 && (
-          <div className='w-full between-area text-color-E9E3D7'>
+          <div className='w-full text-color-E9E3D7'>
             <h2 className='text-color-E9E3D7 text-[22px] font-semibold mb-6'>Current Client</h2>
 
             <div className='relative grid md:grid-cols-2 mb-6 pb-6 gap-4 md:gap-[60px] lg:gap-[120px] border-b border-[#FFFFFF30]'>
