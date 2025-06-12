@@ -86,7 +86,7 @@ export default function ClientSearch({
 
   // console.log('selected', selected);
   return (
-    <div className='w-full between-area'>
+    <div className='w-full between-area-client-search'>
       {/* Search Bar */}
       <div className='relative mb-8'>
         <div className='relative mb-8 mr-0 md:mr-[100px]'>

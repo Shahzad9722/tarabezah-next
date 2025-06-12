@@ -270,6 +270,22 @@ input[type="date"]::-ms-expand {
 }
 
 @media (max-width: 3000px) {
+
+  /* only for client search screen */
+  .between-area-client-search {
+    height: calc(100dvh - 25dvh);
+    overflow: auto;
+    padding-bottom: 10%;
+    padding-bottom: 80px;
+    /* Hide scrollbar styles */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scroll-behavior: smooth;
+    /* Optional smooth scrolling */
+  }
+
   .between-area {
     height: calc(100dvh - 20dvh);
     overflow: auto;
