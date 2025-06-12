@@ -273,7 +273,7 @@ input[type="date"]::-ms-expand {
 
   /* only for client search screen */
   .between-area-client-search {
-    height: calc(100dvh - 25dvh);
+    height: calc(100dvh - 30dvh);
     overflow: auto;
     padding-bottom: 10%;
     padding-bottom: 80px;
