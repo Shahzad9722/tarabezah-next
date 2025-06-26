@@ -792,8 +792,8 @@ export default function AddReservation({ walkIn = false }: { walkIn?: boolean })
                       currentStep === 5 ||
                       (currentStep === 3 && walkIn) ||
                       !isCurrentStepValid() ||
-                      (currentStep === 1 && !walkIn && !selectedClient.guid) ||
-                      (currentStep === 1 && walkIn && !selectedClient.guid && reservationForm.getValues('clientId') !== '0')
+                      (currentStep === 1 && !walkIn && !selectedClient?.guid) ||
+                      (currentStep === 1 && walkIn && !selectedClient?.guid && reservationForm.getValues('clientId') !== '0')
                     }
                     className='w-full'
                   >
