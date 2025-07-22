@@ -25,7 +25,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const result = await dispatch(login(credentials)).unwrap();
-
+       console.log('Login result:', result);
       if (result) {
         // After successful login, fetch restaurants
         const response = await fetch('/api/restaurants');
@@ -37,10 +37,12 @@ export default function LoginPage() {
         const { restaurants } = await response.json();
 
         if (restaurants.length > 0) {
-          // Store the first restaurant's ID in localStorage
-          localStorage.setItem('selected-restaurant-id', restaurants[0].guid);
+          // Use the index from the login response
+          const index = result.data.index;
+          const selectedRestaurant = restaurants[index] || restaurants[0];
+          localStorage.setItem('selected-restaurant-id', selectedRestaurant.guid);
           // Set restaurant data in context
-          // setRestaurant({ id: restaurants[0].guid, name: restaurants[0].name, floorplans: [] });
+          // setRestaurant({ id: selectedRestaurant.guid, name: selectedRestaurant.name, floorplans: [] });
           // Navigate to home page
           window.location.href = '/';
         } else {

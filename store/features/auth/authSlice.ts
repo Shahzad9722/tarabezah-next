@@ -23,7 +23,7 @@ const initialState: AuthState = {
 
 // Define the login async thunk
 export const login = createAsyncThunk<
-  { user: any; token: string }, // Success return type
+  { message: string; data: any }, // Success return type
   { username: string; password: string }, // Arguments type
   { rejectValue: string } // Error return type
 >('auth/login', async (credentials, { rejectWithValue }) => {
