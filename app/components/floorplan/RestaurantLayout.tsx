@@ -105,10 +105,10 @@ const RestaurantLayout: React.FC = () => {
   }, [floorPlans]);
 
   const removeFloor = (id: string) => {
-    if (restaurant.floorplans.length <= 1) {
-      toast.error('Cannot remove the last floor');
-      return;
-    }
+    // if (restaurant.floorplans.length <= 1) {
+    //   toast.error('Cannot remove the last floor');
+    //   return;
+    // }
     const floor = restaurant.floorplans.find((floor) => floor.guid === id);
     if (floor) {
       setRestaurant({
