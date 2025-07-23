@@ -111,7 +111,7 @@ export function FloorControls({ onRemoveFloor, onRenameFloor }: FloorControlsPro
             size='icon'
             onClick={() => onRemoveFloor(activeFloorplanId)}
             className='bg-color-222036 h-[44px] w-[30px] backdrop-blur-sm text-color-B98858 rounded-none'
-            disabled={restaurant.floorplans.length <= 1}
+            // disabled={restaurant.floorplans.length <= 1}
             title='Remove Floor'
             aria-label='Remove Floor'
           >
