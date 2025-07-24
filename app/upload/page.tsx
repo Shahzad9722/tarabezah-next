@@ -210,7 +210,7 @@ export default function Upload() {
                     </p>
                   </div>
                 ) : (
-                  <p className='text-sm text-white mb-1'>Drag & drop your SVG file here, or</p>
+                  <p className='text-sm text-white mb-1'>Drag & drop your SVG, PNG, JPG, or JPEG file here, or</p>
                 )}
                 <label className='cursor-pointer text-[#b98858] hover:text-[#a77748] transition-colors'>
                   browse
